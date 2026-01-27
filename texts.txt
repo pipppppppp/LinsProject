@@ -1,0 +1,221 @@
+A. BACKEND FORMAT COMMENT 
+o> BLOCK COMMENT
+    # BLOCK FIRST/BASE ============================================================ Begin
+    # Block Second ---------------------------------------- Start
+    # Request Data ======================================== 
+    # POST https://127.0.0.1:5000/admin/login
+    # Block Second ---------------------------------------- Finish
+    # BLOCK FIRST/BASE ============================================================ End
+
+
+o> SINGLE BLOCK
+    # Block Content ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    # End Block Content ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+o> SINGLE LINE
+    # Single Block ======================================== 
+
+o> BLOCK FOR SINGLE CODE
+    # Title Comment
+
+o> FOLDER ROUTES NAME
+    routes/FolderName
+
+
+o> FILE ROUTES NAME
+    routes/FolderName/fileName
+
+
+o> INITIALIZATION NAME
+    class BigFirstLetter():
+        def use_underscore():
+            likeThis = ""
+
+
+o> CONTROLLERS
+o>> IMPORT FORMAT
+    from package import something
+    from package import something
+    from package import something
+
+    from folder.file import function/class
+    from folder.file import function/class
+
+    import library
+
+o>> BLUEPRINT
+    smallletter = Blueprint()
+
+o>> FUNCTION CONTROLLER
+    def create_data() -> for api create
+    def get_data() -> for api get all
+    def update_data() -> for api update
+    def delete_data() -> for api delete
+    def detail_data() -> for api get detail
+    def count_data() -> for api row count
+    def signin() -> for api login
+    def upload_data() -> for api upload
+    def download_data() -> for api download
+    etc..
+
+
+o> MODELS
+o>> CLASS
+    class NameModels()
+
+o>> FUNCTION
+    def add_nameapi()
+    def view_nameapi()
+    def edit_nameapi()
+    def delete_nameapi()
+    def view_detail_nameapi()
+    def get_count_nameapi()
+    etc..
+
+
+o> REQUEST FIELD
+    smallcase+_underscore
+
+
+
+B. FRONTEND FORMAT COMMENT
+o> BLOCK ATTRIBUTE PAGE
+    # ============================================================== 
+    # COMMENT - START
+    # ============================================================== 
+    # ============================================================== 
+    # COMMENT - END
+    # ============================================================== 
+
+o> BLOCK HTML
+    <!-- ============================================================== -->
+    <!-- Comment -->
+    <!-- ============================================================== -->
+    <!-- ============================================================== -->
+    <!-- End Comment -->
+    <!-- ============================================================== -->
+
+o> BLOCK Content
+    <!-- ============================================================== -->
+    <!-- Comment -->
+    <!-- End Comment -->
+    <!-- ============================================================== -->
+
+o> BLOCK PART OR LOOPING AREA
+    <!-- ============================================================== -->
+    <!-- Comment -->
+    <!-- End Comment -->
+
+    <!-- Comment -->
+    <!-- End Comment -->
+    <!-- ============================================================== -->
+
+
+
+C. STATUS HTTP RESPONSE
+o> 1xx -> Information, 
+o>> None
+
+o> 2xx -> Success, 
+o>> 200 => Successed
+0>> 201 => Created
+
+o> 3xx -> Redirect, 
+o>> None
+
+o> 4xx -> Client Error,
+o>> 400 => Bad Request
+o>> 401 => Unauthorized
+o>> 403 => Forbidden
+o>> 404 => Not Found
+o>> 405 => Method Not Allowed
+o>> 419 => Authentication Timeout
+o>> 440 => Login Timeout
+
+o> 5xx -> Server Error,
+o>> 500 -> Internal Server Error
+o>> 502 -> Bad Gateway
+o>> 504 -> Gateway Timeout
+
+
+
+D. REQUEST BODY SETTING
+O> JSON Key Name
+    nameapi_namekey -> template_id
+
+
+f"Admin dengan id {user_id} menambahkan template baru: {title}."
+
+
+
+E. ERROR TEXT SETTING
+    return not_found("Number of categories not found.")
+    return not_found("Data .... tidak dapat ditemukan.")
+    return not_found("Data .... dengan id ... tidak dapat ditemukan.")
+    return not_found(f"Data .... untuk user {user_id} tidak dapat ditemukan.")
+
+o> BLOCK COMMENT
+# BLOCK FIRST/BASE ============================================================ Begin
+    ## Block Second ---------------------------------------- Start
+        ### Request Data ======================================== 
+        # POST https://127.0.0.1:5000/admin/login
+    ## Block Second ---------------------------------------- Finish
+# BLOCK FIRST/BASE ============================================================ End
+
+
+o> SINGLE BLOCK
+# Block Content ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# End Block Content ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+o> BLOCK HTML
+<!-- ============================================================== -->
+<!-- Comment -->
+<!-- ============================================================== -->
+<!-- ============================================================== -->
+<!-- End Comment -->
+<!-- ============================================================== -->
+
+o> FOLDER ROUTES NAME
+routes/FolderName
+
+o> FILE ROUTES NAME
+routes/FolderName/fileName
+
+o> INITIALIZATION NAME
+class BigFirstLetter():
+    def use_underscore():
+        likeThis = 
+
+o> CONTROLLERS
+o>> IMPORT FORMAT
+from package import something
+from package import something
+from package import something
+
+from folder.file import function/class
+from folder.file import function/class
+
+import library
+
+o>> BLUEPRINT
+smallletter = Blueprint()
+
+o>> FUNCTION CRUD
+def create_data() -> for api create
+def get_all_data() -> for api get all 
+def get_detail_data() -> for api get detail
+def update_data() -> for api update
+def delete_data() -> for api delete
+def login_user() -> for api login 
+def upload_data() -> for api upload 
+def download_data() -> for api download
+etc..
+
+o> MODELS
+o>> FUNCTION
+def create_specificfunction()
+etc..
+
+o> REQUEST FIELD
+smallcase+_underscore
