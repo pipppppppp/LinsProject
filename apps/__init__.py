@@ -6,5 +6,5 @@ app = Flask(__name__)
 @app.route("/index")
 def index():
     return render_template(
-        template_name_or_list='index.html'
+        template_name_or_list='pages/index.html'
     )
