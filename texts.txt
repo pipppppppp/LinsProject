@@ -1,23 +1,33 @@
 A. BACKEND FORMAT COMMENT 
+o> CONFIGURATION BLOCK ONLY
+    # ========================= FIRST BLOCK =========================
+    # First Section ==============================##
+    # Sub Section ------------------------###
+    # End Sub Section --------------------###
+    # End First Section ==========================##
+    # ====================== END - FIRST BLOCK ======================
+
 o> BLOCK COMMENT
-    # BLOCK FIRST/BASE ============================================================ Begin
-    # Block Second ---------------------------------------- Start
-    # Request Data ======================================== 
-    # POST https://127.0.0.1:5000/admin/login
-    # Block Second ---------------------------------------- Finish
-    # BLOCK FIRST/BASE ============================================================ End
+    # BLOCK FIRST/BASE ================================================== Begin
+        # Block Second ---------------------------------------- Start
+            # Request Data ======================================== 
+            # POST https://127.0.0.1:5000/admin/login
+        # Block Second ---------------------------------------- Finish
+    # BLOCK FIRST/BASE ================================================== End
 
 
 o> SINGLE BLOCK
-    # Block Content ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    # Block Content ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     # End Block Content ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
 o> SINGLE LINE
     # Single Block ======================================== 
 
+
 o> BLOCK FOR SINGLE CODE
     # Title Comment
+
 
 o> FOLDER ROUTES NAME
     routes/FolderName

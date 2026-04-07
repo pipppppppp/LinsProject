@@ -1,6 +1,43 @@
+# flask library
 from flask import Flask, Blueprint, render_template, url_for
+from flask_jwt_extended import JWTManager
+from flask_migrate import Migrate
+from flask_sqlalchemy import SQLAlchemy
+import os
 
+# app library
+from .configure import config, configDB
+
+# ========================= APPS CONFIGURATION =========================
+# Apps Section ==============================##
 app = Flask(__name__)
+app.config['PRODUCT_ENVIRONMENT'] = config.PRODUCT_ENVIRONMENT
+app.config['BASE_URL'] = config.BASE_URL
+app.config['JWT_ACCESS_TOKE_EXPIRES'] = config.JWT_ACCESS_TOKEN_EXPIRED
+
+# Database Section ==============================##
+db = SQLAlchemy(app)
+migrate = Migrate(app, db)
+app.config.from_object(configDB.ConnectDB)
+
+# JWT Section ==============================##
+jwt = JWTManager(app)
+
+# Folder Section ==============================##
+# Base ------------------------###
+app.config['PROFILE_IMAGES'] = config.STATIC_FOLDER_PATH + "images/profiles"
+app.config['ITEM_IMAGES'] = config.STATIC_FOLDER_PATH + "images/items"
+
+# Auto Created Set ------------------------###
+list_folder = [
+    app.config['PROFILE_IMAGES'],
+    app.config['ITEM_IMAGES'],
+]
+for x in list_folder:
+    if os.path.exists(x) == False:
+        os.makedirs(x)
+# End Folder Section ==========================##
+# ====================== END - APPS CONFIGURATION ======================
 
 @app.route("/")
 @app.route("/index")
