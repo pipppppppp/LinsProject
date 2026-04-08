@@ -3,7 +3,7 @@ from . import config
 class ConnectDB(object):
     DATABASE = config.DB_NAME
     USERNAME = config.DB_USER
-    PASSWORD = config.DB_DWB
+    PASSWORD = config.DB_PASS
     HOST = config.DB_HOST
 
     SQLALCHEMY_DATABASE_URL = '' + USERNAME + ':' + PASSWORD + '@' + HOST + '/' + DATABASE

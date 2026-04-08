@@ -39,9 +39,30 @@ for x in list_folder:
 # End Folder Section ==========================##
 # ====================== END - APPS CONFIGURATION ======================
 
+
+# ========================= DATABASE CONFIGURATION =========================
+from .database import db_admin
+from .database import db_auth
+from .database import db_item
+from .database import db_item
+# ====================== END - DATABASE CONFIGURATION ======================
+
+
+# ========================= ROUTE CONFIGURATION =========================
+# Route Base Section ==============================##
 @app.route("/")
 @app.route("/index")
 def index():
     return render_template(
         template_name_or_list='pages/index.html'
     )
+# End Route Base Section ==========================##
+
+# Blueprint Section ==============================##
+# Import
+# from .routes.models import admin
+
+# Register
+# app.register_blueprint()
+# End Blueprint Section ==========================##
+# ====================== END - ROUTE CONFIGURATION ======================
