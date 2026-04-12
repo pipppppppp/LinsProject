@@ -6,6 +6,6 @@ class ConnectDB(object):
     PASSWORD = config.DB_PASS
     HOST = config.DB_HOST
 
-    SQLALCHEMY_DATABASE_URL = '' + USERNAME + ':' + PASSWORD + '@' + HOST + '/' + DATABASE
+    SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://' + USERNAME + ':' + PASSWORD + '@' + HOST + '/' + DATABASE
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SQLALCHEMY_RECORD_QUERIES = True

@@ -6,7 +6,8 @@ from flask_sqlalchemy import SQLAlchemy
 import os
 
 # app library
-from .configure import config, configDB
+from .configure import config
+from .configure.configDB import ConnectDB
 
 # ========================= APPS CONFIGURATION =========================
 # Apps Section ==============================##
@@ -16,9 +17,9 @@ app.config['BASE_URL'] = config.BASE_URL
 app.config['JWT_ACCESS_TOKE_EXPIRES'] = config.JWT_ACCESS_TOKEN_EXPIRED
 
 # Database Section ==============================##
+app.config.from_object(ConnectDB)
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
-app.config.from_object(configDB.ConnectDB)
 
 # JWT Section ==============================##
 jwt = JWTManager(app)
@@ -42,9 +43,9 @@ for x in list_folder:
 
 # ========================= DATABASE CONFIGURATION =========================
 from .database import db_admin
-from .database import db_auth
-from .database import db_item
-from .database import db_item
+# from .database import db_auth
+# from .database import db_item
+# from .database import db_item
 # ====================== END - DATABASE CONFIGURATION ======================
 
 
