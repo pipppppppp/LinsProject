@@ -61,9 +61,9 @@ def index():
 
 # Blueprint Section ==============================##
 # Import
-# from .routes.models import admin
+from .routes.controllers.login import auth
 
 # Register
-# app.register_blueprint()
+app.register_blueprint(auth)
 # End Blueprint Section ==========================##
 # ====================== END - ROUTE CONFIGURATION ======================

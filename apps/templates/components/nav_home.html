@@ -1,0 +1,41 @@
+<!-- ============================================================== -->
+<!-- Navbar | Start -->
+<!-- ============================================================== -->
+<div class="container-fluid sticky-top">
+    <div class="container">
+        <nav class="navbar navbar-expand-lg navbar-light border-bottom border-2 border-white">
+            <!-- ============================================================== -->
+            <!-- Logo - Start -->
+            <a href="index.html" class="navbar-brand">
+                <h1>iSTUDIO</h1>
+            </a>
+            <!-- Logo - End -->
+            <!-- ============================================================== -->
+
+            <!-- ============================================================== -->
+            <!-- Collapse Button - Start -->
+            <button type="button" class="navbar-toggler ms-auto me-0" data-bs-toggle="collapse"
+                data-bs-target="#navbarCollapse">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <!-- Collapse Button - End -->
+            <!-- ============================================================== -->
+
+            <!-- ============================================================== -->
+            <!-- Menu Nav - Start -->
+            <div class="collapse navbar-collapse" id="navbarCollapse">
+                <div class="navbar-nav ms-auto">
+                    <a href="index.html" class="nav-item nav-link active">Home</a>
+                    <a href="about.html" class="nav-item nav-link">About</a>
+                    <a href="{{ url_for('auth.login_page') }}" class="nav-item nav-link">Login</a>
+                </div>
+            </div>
+            <!-- Menu Nav - End -->
+            <!-- ============================================================== -->
+        </nav>
+    </div>
+</div>
+<!-- ============================================================== -->
+<!-- Navbar | End -->
+<!-- ============================================================== -->
+ 
