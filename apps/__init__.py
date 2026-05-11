@@ -42,7 +42,7 @@ for x in list_folder:
 
 
 # ========================= DATABASE CONFIGURATION =========================
-from .database import db_admin
+from .database import db_admins
 # from .database import db_auth
 # from .database import db_item
 # from .database import db_item
@@ -61,9 +61,11 @@ def index():
 
 # Blueprint Section ==============================##
 # Import
-from .routes.controllers.login import auth
+from .routes.controllers.signin import auth
+from .routes.controllers.dashboard import dashboard
 
 # Register
 app.register_blueprint(auth)
+app.register_blueprint(dashboard)
 # End Blueprint Section ==========================##
 # ====================== END - ROUTE CONFIGURATION ======================

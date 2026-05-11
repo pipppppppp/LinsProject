@@ -1,6 +1,6 @@
 from .. import db
 
-class Admin(db.Model):
+class Admins(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     username = db.Column(db.String(100), nullable=False)
     email = db.Column(db.String(50), nullable=False)
@@ -12,4 +12,4 @@ class Admin(db.Model):
     is_delete = db.Column(db.Integer, nullable=False, server_default='0')
     
     def __repr__(self):
-        return '<Admin {}>'.format(self.name)
+        return '<Admins {}>'.format(self.name)
