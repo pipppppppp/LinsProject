@@ -1,54 +1,50 @@
 <!doctype html>
-<html lang="zxx">
+<html lang="en">
    <head>
-      <meta charset="utf-8" />
-      <meta http-equiv="x-ua-compatible" content="IE=edge" />
-      <meta name="viewport" content="width=device-width, initial-scale=1" />
-      <meta name="description" content="" />
-      <meta name="keyword" content="" />
-      <meta name="author" content="flexilecode" />
-      <!--! The above 6 meta tags *must* come first in the head; any other head content must come *after* these tags !-->
-      <!--! BEGIN: Apps Title-->
-      <title>Duralux || Dashboard</title>
-      <!--! END:  Apps Title-->
-      <!--! BEGIN: Favicon-->
-      <link rel="shortcut icon" type="image/x-icon" href="{{ url_for('static', filename='images/favicon.ico') }}" />
-      <!--! END: Favicon-->
-      <!--! BEGIN: Bootstrap CSS-->
-      <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/bootstrap-db.min.css') }}" />
-      <!--! END: Bootstrap CSS-->
-      <!--! BEGIN: Vendors CSS-->
-      <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='vendors/css/daterangepicker.min.css') }}" />
-      <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='vendors/css/vendors.min.css') }}" />
-      <!--! END: Vendors CSS-->
-      <!--! BEGIN: Custom CSS-->
-      <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/theme.min.css') }}" />
-      <!--! END: Custom CSS-->
+      <meta charset="UTF-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <title>Dashboard - Mazer Admin Dashboard</title>
+
+      <link rel="preconnect" href="https://fonts.gstatic.com" />
+      <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;600;700;800&display=swap" rel="stylesheet" />
+      <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap-db.css') }}" />
+
+      <link rel="stylesheet" href="{{ url_for('static', filename='vendors/iconly/bold.css') }}" />
+
+      <link rel="stylesheet" href="{{ url_for('static', filename='vendors/perfect-scrollbar/perfect-scrollbar.css') }}" />
+      <link rel="stylesheet" href="{{ url_for('static', filename='vendors/bootstrap-icons/bootstrap-icons.css') }}" />
+      <link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}" />
+
+      <!--! BEGIN: Datatables !-->
+      <link rel="stylesheet" href="{{ url_for('static', filename='vendors/simple-datatables/style.css') }}" />
+      <!--! END: Datatables !-->
+
+      <link rel="shortcut icon" href="images/favicon.svg" type="image/x-icon" />
    </head>
    <body>
       <!--! ================================================================ !-->
-      <!--! [Start] Content !-->
+      <!--! [Start] Header !-->
       <!--! ================================================================ !-->
       {% block content %}{% endblock %}
       <!--! ================================================================ !-->
-      <!--! [End]  Content !-->
+      <!--! [End] Header !-->
       <!--! ================================================================ !-->
 
-      <!--! ================================================================ !-->
-      <!--! Footer Script !-->
-      <!--! ================================================================ !-->
-      <!--! BEGIN: Vendors JS !-->
-      <script src="{{ url_for('static', filename='vendors/js/vendors.min.js') }}"></script>
-      <script src="{{ url_for('static', filename='vendors/js/daterangepicker.min.js') }}"></script>
-      <script src="{{ url_for('static', filename='vendors/js/apexcharts.min.js') }}"></script>
-      <script src="{{ url_for('static', filename='vendors/js/circle-progress.min.js') }}"></script>
-      <!--! END: Vendors JS !-->
-      <!--! BEGIN: Apps Init  !-->
-      <script src="{{ url_for('static', filename='javascript/common-init.min.js') }}"></script>
-      <script src="{{ url_for('static', filename='javascript/dashboard-init.min.js') }}"></script>
-      <!--! END: Apps Init !-->
-      <!--! BEGIN: Theme Customizer  !-->
-      <script src="{{ url_for('static', filename='javascript/theme-customizer-init.min.js') }}"></script>
-      <!--! END: Theme Customizer !-->
+      <script src="{{ url_for('static', filename='vendors/perfect-scrollbar/perfect-scrollbar.min.js') }}"></script>
+      <script src="{{ url_for('static', filename='javascript/bootstrap.bundle.min.js') }}"></script>
+
+      <script src="{{ url_for('static', filename='vendors/apexcharts/apexcharts.js') }}"></script>
+      <script src="{{ url_for('static', filename='javascript/pages/dashboard.js') }}"></script>
+
+      <script src="{{ url_for('static', filename='javascript/main-db.js') }}"></script>
+
+      <!--! BEGIN: Datatables !-->
+      <script src="{{ url_for('static', filename='vendors/simple-datatables/simple-datatables.js') }}"></script>
+      <script>
+         // Simple Datatable
+         let table1 = document.querySelector("#table1");
+         let dataTable = new simpleDatatables.DataTable(table1);
+      </script>
+      <!--! END: Datatables !-->
    </body>
 </html>

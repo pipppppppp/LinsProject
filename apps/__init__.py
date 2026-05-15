@@ -63,9 +63,11 @@ def index():
 # Import
 from .routes.controllers.signin import auth
 from .routes.controllers.dashboard import dashboard
+from .routes.controllers.category import category
 
 # Register
 app.register_blueprint(auth)
 app.register_blueprint(dashboard)
+app.register_blueprint(category)
 # End Blueprint Section ==========================##
 # ====================== END - ROUTE CONFIGURATION ======================
