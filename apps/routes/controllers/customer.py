@@ -1,0 +1,37 @@
+from flask import Blueprint, request, redirect, url_for, render_template
+from flask import current_app as app
+from flask_jwt_extended import jwt_required
+
+from ..models.signin import SigninModels
+from ...utilities.forms import SigninForm
+
+
+# BLUEPRINT ================================================== Begin
+customer = Blueprint(
+    name='customer',
+    import_name=__name__,
+    template_folder="../../templates/pages/appPages",
+    url_prefix='/customer',
+)
+# BLUEPRINT ================================================== End
+
+# DASHBOARD PAGE ============================================================ Begin
+# GET https://127.0.0.1:5000/customer/
+@customer.get('/')
+def index():
+    try:
+        # Return Page ======================================== 
+        # return redirect(url_for('dashboard'))
+        return render_template(
+            title='TITLE_DASHBD',
+            template_name_or_list='customer.html',
+        )
+
+    except Exception as e:
+        # return bad_request(str(e))
+        # return "gagal boss! Durung dadi:)"
+        return render_template(
+            title="Error $04 - Aplikasi e Hel",
+            template_name_or_list='errorPages/404.html'
+        )
+# SIGNIN PAGE ============================================================ End

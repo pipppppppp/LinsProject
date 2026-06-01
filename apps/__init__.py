@@ -64,10 +64,12 @@ def index():
 from .routes.controllers.signin import auth
 from .routes.controllers.dashboard import dashboard
 from .routes.controllers.category import category
+from .routes.controllers.customer import customer
 
 # Register
 app.register_blueprint(auth)
 app.register_blueprint(dashboard)
 app.register_blueprint(category)
+app.register_blueprint(customer)
 # End Blueprint Section ==========================##
 # ====================== END - ROUTE CONFIGURATION ======================

@@ -15,7 +15,7 @@ category = Blueprint(
 )
 # BLUEPRINT ================================================== End
 
-# DASHBOARD PAGE ============================================================ Begin
+# CATEGORY PAGE ============================================================ Begin
 # GET https://127.0.0.1:5000/category/
 @category.get('/')
 def index():
@@ -35,4 +35,26 @@ def index():
             title="Error $04 - Aplikasi e Hel",
             template_name_or_list='errorPages/404.html'
         )
-# SIGNIN PAGE ============================================================ End
+# CATEGORY PAGE ============================================================ End
+
+
+# ADD CATEGORY DATA ============================================================ Begin
+# POST https://127.0.0.1:5000/category/add
+@category.post('/add')
+def createCategory():
+    try:
+        # Return Page ======================================== 
+        # return redirect(url_for('dashboard'))
+        print("okee")
+        print(request.json)
+        js = {"message": "iyaaa"}
+        return js
+
+    except Exception as e:
+        # return bad_request(str(e))
+        # return "gagal boss! Durung dadi:)"
+        return render_template(
+            title="Error $04 - Aplikasi e Hel",
+            template_name_or_list='errorPages/404.html'
+        )
+# ADD CATEGORY DATA ============================================================ End
