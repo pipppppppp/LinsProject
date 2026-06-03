@@ -86,7 +86,6 @@
                         <tbody>
                            {% for customer in customers %}
                            <tr>
-                           
                                <td>{{ customer.nama }}</td>
                                <td>{{ customer.alamat }}</td>
                                <td>{{ customer.telepon }}</td>
@@ -100,12 +99,17 @@
                                  <button
                                      class="btn btn-warning btn-sm"
                                      onclick="openEditModal(
-                                         {{ customer.id }},
+                                         '{{ customer.id }}',
                                          '{{ customer.nama }}',
                                          '{{ customer.alamat }}',
                                          '{{ customer.telepon }}'
                                      )">
                                      Edit
+                                 </button>
+                                 <button
+                                    class="btn btn-danger btn-sm"
+                                    onclick="deleteCustomer('{{ customer.id }}')">
+                                    Hapus
                                  </button>
                              </td>
                            </tr>

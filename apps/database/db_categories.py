@@ -2,11 +2,11 @@ from .. import db
 
 class Categories(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    category = db.Column(db.String, nullable=False)
+    category = db.Column(db.String(50), nullable=False)
     created_at = db.Column(db.BigInteger, nullable=False)
     updated_at = db.Column(db.BigInteger, nullable=False)
     deleted_at = db.Column(db.BigInteger, nullable=True)
     is_delete = db.Column(db.Integer, nullable=False, server_default='0')
     
     def __repr__(self):
-        return '<Categories {}>'.format(self.name)
+        return '<Categories {}>'.format(self.category)

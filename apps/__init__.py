@@ -23,6 +23,7 @@ migrate = Migrate(app, db)
 
 
 from .database import db_customer
+from .database import db_categories
 
 # JWT Section ==============================##
 jwt = JWTManager(app)

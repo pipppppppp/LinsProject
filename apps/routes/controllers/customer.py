@@ -75,3 +75,20 @@ def updateCustomer(id):
             "status": False,
             "message": str(e)
         }, 500
+
+
+# DELETE
+@customer.delete('/delete/<int:id>')
+def deleteCustomer(id):
+
+    data = Customers.query.get_or_404(id)
+
+    data.is_delete = 1
+    data.deleted_at = int(time.time())
+
+    db.session.commit()
+
+    return {
+        "status": True,
+        "message": "Data berhasil dihapus"
+    }

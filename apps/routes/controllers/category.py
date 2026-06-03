@@ -4,7 +4,9 @@ from flask_jwt_extended import jwt_required
 
 from ..models.signin import SigninModels
 from ...utilities.forms import SigninForm
-
+from ... import db
+from ...database.db_categories import Categories
+import time
 
 # BLUEPRINT ================================================== Begin
 category = Blueprint(
@@ -22,15 +24,19 @@ def index():
     try:
         # Return Page ======================================== 
         # return redirect(url_for('dashboard'))
+        categories = Categories.query.filter_by(
+            is_delete=0
+        ).all()
+
         return render_template(
             title='TITLE_DASHBD',
             template_name_or_list='category.html',
+            categories=categories
             # active='dashboard.index'
         )
 
     except Exception as e:
-        # return bad_request(str(e))
-        # return "gagal boss! Durung dadi:)"
+
         return render_template(
             title="Error $04 - Aplikasi e Hel",
             template_name_or_list='errorPages/404.html'
@@ -43,18 +49,74 @@ def index():
 @category.post('/add')
 def createCategory():
     try:
-        # Return Page ======================================== 
-        # return redirect(url_for('dashboard'))
-        print("okee")
-        print(request.json)
-        js = {"message": "iyaaa"}
-        return js
+        body = request.json
+
+        data = Categories(
+            category=body['category'],
+            created_at=int(time.time()),
+            updated_at=int(time.time())
+        )
+
+        db.session.add(data)
+        db.session.commit()
+
+        return {
+            "status": True,
+            "message": "Data berhasil ditambahkan"
+        }
 
     except Exception as e:
-        # return bad_request(str(e))
-        # return "gagal boss! Durung dadi:)"
         return render_template(
             title="Error $04 - Aplikasi e Hel",
             template_name_or_list='errorPages/404.html'
         )
+
 # ADD CATEGORY DATA ============================================================ End
+
+@category.put('/update/<int:id>')
+def updateCategory(id):
+
+    try:
+
+        body = request.json
+
+        data = Categories.query.get_or_404(id)
+
+        data.category = body['category']
+        data.updated_at = int(time.time())
+
+        db.session.commit()
+
+        return {
+            "status": True,
+            "message": "Kategori berhasil diupdate"
+        }
+
+    except Exception as e:
+        return render_template(
+            title="Error $04 - Aplikasi e Hel",
+            template_name_or_list='errorPages/404.html'
+        )
+
+@category.delete('/delete/<int:id>')
+def deleteCategory(id):
+
+    try:
+
+        data = Categories.query.get_or_404(id)
+
+        data.is_delete = 1
+        data.deleted_at = int(time.time())
+
+        db.session.commit()
+
+        return {
+            "status": True,
+            "message": "Kategori berhasil dihapus"
+        }
+        
+    except Exception as e:
+        return {
+            "status": False,
+            "message": str(e)
+        }, 500
