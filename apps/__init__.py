@@ -21,6 +21,9 @@ app.config.from_object(ConnectDB)
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 
+
+from .database import db_customer
+
 # JWT Section ==============================##
 jwt = JWTManager(app)
 

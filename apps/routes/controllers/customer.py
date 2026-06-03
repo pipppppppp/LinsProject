@@ -1,37 +1,77 @@
-from flask import Blueprint, request, redirect, url_for, render_template
+from flask import Blueprint, request, render_template
 from flask import current_app as app
-from flask_jwt_extended import jwt_required
 
-from ..models.signin import SigninModels
-from ...utilities.forms import SigninForm
+from ... import db
+from ...database.db_customer import Customers
 
+import time
 
-# BLUEPRINT ================================================== Begin
 customer = Blueprint(
     name='customer',
     import_name=__name__,
     template_folder="../../templates/pages/appPages",
     url_prefix='/customer',
 )
-# BLUEPRINT ================================================== End
 
-# DASHBOARD PAGE ============================================================ Begin
-# GET https://127.0.0.1:5000/customer/
+# TAMPIL HALAMAN
 @customer.get('/')
 def index():
+
+    customers = Customers.query.filter_by(
+        is_delete=0
+    ).all()
+
+    return render_template(
+        template_name_or_list='customer.html',
+        title='Data Pelanggan',
+        customers=customers
+    )
+
+
+# TAMBAH DATA
+@customer.post('/add')
+def addCustomer():
+
+    body = request.json
+
+    customer = Customers(
+        nama=body['nama'],
+        alamat=body['alamat'],
+        telepon=body['telepon'],
+        created_at=int(time.time()),
+        updated_at=int(time.time())
+    )
+
+    db.session.add(customer)
+    db.session.commit()
+
+    return {
+        "status": True,
+        "message": "Data berhasil disimpan"
+    }
+
+# UPDATE
+@customer.put('/update/<int:id>')
+def updateCustomer(id):
     try:
-        # Return Page ======================================== 
-        # return redirect(url_for('dashboard'))
-        return render_template(
-            title='TITLE_DASHBD',
-            template_name_or_list='customer.html',
-        )
+        body = request.json
+
+        data = Customers.query.get_or_404(id)
+
+        data.nama = body['nama']
+        data.alamat = body['alamat']
+        data.telepon = body['telepon']
+        data.updated_at = int(time.time())
+
+        db.session.commit()
+
+        return {
+            "status": True,
+            "message": "Data berhasil diupdate"
+        }
 
     except Exception as e:
-        # return bad_request(str(e))
-        # return "gagal boss! Durung dadi:)"
-        return render_template(
-            title="Error $04 - Aplikasi e Hel",
-            template_name_or_list='errorPages/404.html'
-        )
-# SIGNIN PAGE ============================================================ End
+        return {
+            "status": False,
+            "message": str(e)
+        }, 500
