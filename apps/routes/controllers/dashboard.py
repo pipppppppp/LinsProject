@@ -1,4 +1,4 @@
-from flask import Blueprint, request, redirect, url_for, render_template
+from flask import Blueprint, request, redirect, url_for, render_template, session
 from flask import current_app as app
 from flask_jwt_extended import jwt_required
 
@@ -22,10 +22,16 @@ def index():
     try:
         # Return Page ======================================== 
         # return redirect(url_for('dashboard'))
+        if 'user_id' not in session:
+    
+            return redirect(
+                url_for('auth.signin_page')
+            )
+
         return render_template(
-            title='TITLE_DASHBD',
+            title='Dashboard POS Bengkel',
             template_name_or_list='dashboard.html',
-            # active='dashboard.index'
+            username=session.get('username')
         )
 
     except Exception as e:

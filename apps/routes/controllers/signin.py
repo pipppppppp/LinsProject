@@ -1,4 +1,4 @@
-from flask import Blueprint, request, redirect, url_for, render_template
+from flask import Blueprint, request, redirect, url_for, render_template, session
 from flask import current_app as app
 from flask_jwt_extended import jwt_required
 
@@ -28,7 +28,7 @@ def signin_page():
         # return "gagal boss! Durung dadi:)"
         return render_template(
             title="Error $04 - Aplikasi e Hel",
-            template_name_or_list='errorPages/404.html'
+            template_name_or_list='authPages/signin-page.html'
         )
 # SIGNIN PAGE ============================================================ End
 
@@ -37,15 +37,35 @@ def signin_page():
 # GET https://127.0.0.1:5000/auth/signin/account
 @auth.post('/signin/account')
 def signin_process():
+    
     try:
-        # Request Data ======================================== 
+
         datas = SigninForm()
 
-        # Request Data ======================================== 
-        response = SigninModels.signin(datas)
+        admin = SigninModels.signin(datas)
+
+        if admin:
+
+            session['user_id'] = admin.id
+            session['username'] = admin.username
+            session['email'] = admin.email
+
+            return redirect(
+                url_for('dashboard.index')
+        )
+
+        return render_template(
+           'authPages/signin-page.html'
+        )
 
         # Request Data ======================================== 
-        return response
+        # datas = SigninForm()
+
+        # # Request Data ======================================== 
+        # response = SigninModels.signin(datas)
+
+        # # Request Data ======================================== 
+        # return response
 
     except Exception as e:
         # return bad_request(str(e))
@@ -55,3 +75,16 @@ def signin_process():
             template_name_or_list='errorPages/404.html'
         )
 # SIGNIN PROCESS ============================================================ End
+
+# LOGOUT ============================================================ Begin
+# GET https://127.0.0.1:5000/auth/logout
+@auth.get('/logout')
+def logout():
+
+    session.clear()
+
+    return redirect(
+        url_for('auth.signin_page')
+    )
+
+# LOGOUT ============================================================ End

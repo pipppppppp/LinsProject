@@ -12,4 +12,4 @@ class Admins(db.Model):
     is_delete = db.Column(db.Integer, nullable=False, server_default='0')
     
     def __repr__(self):
-        return '<Admins {}>'.format(self.name)
+        return '<Admins {}>'.format(self.username)

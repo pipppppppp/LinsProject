@@ -15,6 +15,7 @@ app = Flask(__name__)
 app.config['PRODUCT_ENVIRONMENT'] = config.PRODUCT_ENVIRONMENT
 app.config['BASE_URL'] = config.BASE_URL
 app.config['JWT_ACCESS_TOKE_EXPIRES'] = config.JWT_ACCESS_TOKEN_EXPIRED
+app.config['SECRET_KEY'] = 'posbegkel_secret_key'
 
 # Database Section ==============================##
 app.config.from_object(ConnectDB)
