@@ -32,11 +32,18 @@
             </li>
 
             <li class="sidebar-item">
+               <a href="{{ url_for('supplier.index') }}" class="sidebar-link">
+                  <i class="bi bi-grid-fill"></i>
+                  <span>Data Supplier</span>
+               </a>
+            </li>
+
+            <!-- <li class="sidebar-item">
                <a href="{{ url_for('dashboard.index') }}" class="sidebar-link">
                   <i class="bi bi-grid-fill"></i>
                   <span>Data Motor</span>
                </a>
-            </li>
+            </li> -->
 
             <li class="sidebar-item has-sub">
                <a href="#" class="sidebar-link">
@@ -48,16 +55,27 @@
                      <a href="{{ url_for('category.index') }}">Kategori</a>
                   </li>
                   <li class="submenu-item">
-                     <a href="layout-vertical-1-column.html">Stok Barang</a>
+                     <a href="{{ url_for('item.index') }}">Stok Barang</a>
                   </li>
                </ul>
             </li>
 
-            <li class="sidebar-item">
-               <a href="{{ url_for('dashboard.index') }}" class="sidebar-link">
-                  <i class="bi bi-grid-fill"></i>
+            <li class="sidebar-item has-sub">
+               <a href="#" class="sidebar-link">
+                  <i class="bi bi-grid-1x2-fill"></i>
                   <span>Transaksi</span>
                </a>
+               <ul class="submenu">
+                  <li class="sidebar-item">
+                     <a href="{{ url_for('purchase.index') }}" class="sidebar-link">
+                         <i class="bi bi-cart-plus"></i>
+                         <span>Pembelian</span>
+                     </a>
+                 </li>
+                  <li class="submenu-item">
+                     <a href="#">Penjualan</a>
+                  </li>
+               </ul>
             </li>
 
             <li class="sidebar-item">

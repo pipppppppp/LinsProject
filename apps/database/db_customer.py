@@ -5,7 +5,7 @@ class Customers(db.Model):
 
     nama = db.Column(db.String(100), nullable=False)
     alamat = db.Column(db.Text)
-    telepon = db.Column(db.String(20))
+    telepon = db.Column(db.String(20), nullable=False)
 
     created_at = db.Column(db.BigInteger, nullable=False)
     updated_at = db.Column(db.BigInteger, nullable=False)

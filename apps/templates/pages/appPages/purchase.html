@@ -1,0 +1,219 @@
+{% extends 'layouts/dashboard_layout.html' %} {% block content %}
+
+<div id="app">
+  <!--! ================================================================ !-->
+  <!--! [Start] Navigation Section !-->
+  <!--! ================================================================ !-->
+  {% include 'components/nav_dashboard.html' %}
+  <!--! ================================================================ !-->
+  <!--! [End] Navigation Section !-->
+  <!--! ================================================================ !-->
+
+  <!--! ================================================================ !-->
+  <!--! [Start] Page Content !-->
+  <!--! ================================================================ !-->
+  <div id="main">
+    <!--! ================================================================ !-->
+    <!--! [Start] Burger Button !-->
+    <!--! ================================================================ !-->
+    <header class="mb-3">
+      <a href="#" class="burger-btn d-block d-xl-none">
+        <i class="bi bi-justify fs-3"></i>
+      </a>
+    </header>
+    <!--! ================================================================ !-->
+    <!--! [End] Burger Button !-->
+    <!--! ================================================================ !-->
+
+    <!--! ================================================================ !-->
+    <!--! [Start] Main Content !-->
+    <!--! ================================================================ !-->
+    <div class="page-heading">
+      <!--! ================================================================ !-->
+      <!--! [Start] Header !-->
+      <div class="page-title">
+        <div class="row">
+          <div class="col-12 col-md-6 order-md-1 order-last">
+            <h3>PEMBELIAN BARANG</h3>
+            <!-- <p class="text-subtitle text-muted">The default layout</p> -->
+          </div>
+          <div class="col-12 col-md-6 order-md-2 order-first">
+            <nav
+              aria-label="breadcrumb"
+              class="breadcrumb-header float-start float-lg-end"
+            >
+              <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                  <a href="{{ url_for('dashboard.index') }}">Dashboard</a>
+                </li>
+                <li class="breadcrumb-item active" aria-current="page">
+                  Pembelian Barang
+                </li>
+              </ol>
+            </nav>
+          </div>
+        </div>
+      </div>
+      <!--! [End] Header !-->
+      <!--! ================================================================ !-->
+
+      <!--! ============================ PEMBELIAN - START ==================================== !-->
+      <!--! [Start] Card Supllier !-->
+      <section class="section">
+
+        <div class="card">
+    
+            <div class="card-header">
+                <h4>Pembelian Barang</h4>
+            </div>
+    
+            <div class="card-body">
+    
+                <div class="row">
+    
+                    <div class="col-md-6">
+    
+                        <label>Supplier</label>
+    
+                        <select
+                            id="supplier_id"
+                            class="form-control">
+    
+                            <option value="">
+                                Pilih Supplier
+                            </option>
+    
+                            {% for supplier in suppliers %}
+                            <option value="{{ supplier.id }}">
+                                {{ supplier.nama }}
+                            </option>
+                            {% endfor %}
+    
+                        </select>
+    
+                    </div>
+    
+                    <div class="col-md-6">
+    
+                        <label>Tanggal</label>
+    
+                        <input
+                            type="date"
+                            id="tanggal"
+                            class="form-control">
+    
+                    </div>
+    
+                </div>
+    
+            </div>
+    
+        </div>
+       
+      </section>
+      <!--! [End] Card Supplier !-->
+
+      <!--! [Start] Card Detail Barang !-->
+      <section class="section">
+
+        <div class="card">
+    
+            <div class="card-header">
+                <h4>Detail Barang</h4>
+            </div>
+    
+            <div class="card-body">
+    
+                <table class="table table-bordered">
+    
+                    <thead>
+                        <tr>
+                            <th>Barang</th>
+                            <th>Qty</th>
+                            <th>Harga Beli</th>
+                            <th>Subtotal</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+    
+                    <tbody id="purchase-items">
+    
+                    </tbody>
+    
+                </table>
+    
+                <button
+                    class="btn btn-primary"
+                    onclick="addRow()">
+    
+                    Tambah Barang
+    
+                </button>
+    
+            </div>
+    
+        </div>
+    
+      </section>
+      <!--! [End] Card Detail Barang !-->
+
+      <!--! [Start] Card Total Pembelian !-->
+      <section class="section">
+
+        <div class="card">
+    
+            <div class="card-body">
+    
+                <h4>
+                    Total :
+                    Rp <span id="grand-total">0</span>
+                </h4>
+    
+                <button
+                    class="btn btn-success"
+                    onclick="savePurchase()">
+    
+                    Simpan Pembelian
+    
+                </button>
+    
+            </div>
+    
+        </div>
+    
+      </section>
+      <!--! [End] Card Total Pembelian !-->
+      <!--! =============================== PEMBELIAN - END ================================= !-->
+
+    </div>
+    <!--! ================================================================ !-->
+    <!--! [End] Main Content !-->
+    <!--! ================================================================ !-->
+
+    <!--! ================================================================ !-->
+    <!--! [Start] Footer !-->
+    {% include 'components/footer_dashboard.html' %}
+    <!--! [End] Footer !-->
+    <!--! ================================================================ !-->
+
+  </div>
+  <!--! ================================================================ !-->
+  <!--! [End] Page Content !-->
+  <!--! ================================================================ !-->
+</div>
+<script>
+
+  const itemsData = [
+      {% for item in items %}
+      {
+          id: "{{ item.id }}",
+          nama_barang: "{{ item.nama_barang }}"
+      }{% if not loop.last %},{% endif %}
+      {% endfor %}
+  ];
+  
+  console.log(itemsData);
+  
+</script>
+<script src="{{ url_for('static', filename='javascript/backend/purchase.js') }}"></script>
+{% endblock %}

@@ -34,14 +34,14 @@
          <div class="page-title">
             <div class="row">
                <div class="col-12 col-md-6 order-md-1 order-last">
-                  <h3>DATA PELANGGAN</h3>
+                  <h3>DATA SUPPLIER</h3>
                   <!-- <p class="text-subtitle text-muted">The default layout</p> -->
                </div>
                <div class="col-12 col-md-6 order-md-2 order-first">
                   <nav aria-label="breadcrumb" class="breadcrumb-header float-start float-lg-end">
                      <ol class="breadcrumb">
                         <li class="breadcrumb-item"><a href="{{ url_for('dashboard.index') }}">Dashboard</a></li>
-                        <li class="breadcrumb-item active" aria-current="page">Pelanggan</li>
+                        <li class="breadcrumb-item active" aria-current="page">Supplier</li>
                      </ol>
                   </nav>
                </div>
@@ -83,11 +83,11 @@
                         </tr>
                      </thead>
                         <tbody>
-                           {% for customer in customers %}
+                           {% for supplier in suppliers %}
                            <tr>
-                               <td>{{ customer.nama }}</td>
-                               <td>{{ customer.alamat }}</td>
-                               <td>{{ customer.telepon }}</td>
+                               <td>{{ supplier.nama }}</td>
+                               <td>{{ supplier.alamat }}</td>
+                               <td>{{ supplier.telepon }}</td>
                            
                                <td>
                                    <span class="badge bg-success">
@@ -98,16 +98,16 @@
                                  <button
                                      class="btn btn-warning btn-sm"
                                      onclick="openEditModal(
-                                         '{{ customer.id }}',
-                                         '{{ customer.nama }}',
-                                         '{{ customer.alamat }}',
-                                         '{{ customer.telepon }}'
+                                         '{{ supplier.id }}',
+                                         '{{ supplier.nama }}',
+                                         '{{ supplier.alamat }}',
+                                         '{{ supplier.telepon }}'
                                      )">
                                      Edit
                                  </button>
                                  <button
                                     class="btn btn-danger btn-sm"
-                                    onclick="deleteCustomer('{{ customer.id }}')">
+                                    onclick="deleteSupplier('{{ supplier.id }}')">
                                     Hapus
                                  </button>
                              </td>
@@ -139,7 +139,7 @@
          <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable" role="document">
             <div class="modal-content">
                <div class="modal-header">
-                  <h4 class="modal-title" id="myModalLabel33">Tambah Pelanggan</h4>
+                  <h4 class="modal-title" id="myModalLabel33">Tambah Supplier</h4>
                   <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
                      <i data-feather="x"></i>
                   </button>
@@ -167,7 +167,7 @@
                      <button
                         type="button"
                         class="btn btn-primary"
-                        onclick="saveCustomer()">
+                        onclick="saveSupplier()">
                         Simpan
                      </button>
                   </div>
@@ -184,7 +184,7 @@
          <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable" role="document">
             <div class="modal-content">
                <div class="modal-header">
-                  <h4 class="modal-title" id="myModalLabel33">Edit Data Pelanggan</h4>
+                  <h4 class="modal-title" id="myModalLabel33">Edit Data Supplier</h4>
                   <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
                      <i data-feather="x"></i>
                   </button>
@@ -213,7 +213,7 @@
                      <button
                         type="button"
                         class="btn btn-primary"
-                        onclick="updateCustomer()">
+                        onclick="updateSupplier()">
                         Simpan
                      </button>
                   </div>
@@ -230,5 +230,5 @@
    <!--! ================================================================ !-->
 </div>
 
-<script src="{{ url_for('static', filename='javascript/backend/customer.js') }}"></script>
+<script src="{{ url_for('static', filename='javascript/backend/supplier.js') }}"></script>
 {% endblock %}

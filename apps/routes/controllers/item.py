@@ -2,19 +2,20 @@ from flask import Blueprint, request, render_template, session, redirect, url_fo
 from flask import current_app as app
 
 from ... import db
-from ...database.db_customer import Customers
+from ...database.db_items import Items
+from ...database.db_categories import Categories
 
 import time
 
-customer = Blueprint(
-    name='customer',
+item = Blueprint(
+    name='item',
     import_name=__name__,
     template_folder="../../templates/pages/appPages",
-    url_prefix='/customer',
+    url_prefix='/item',
 )
 
 # TAMPIL HALAMAN
-@customer.get('/')
+@item.get('/')
 def index():
 
     if 'user_id' not in session:
@@ -22,32 +23,40 @@ def index():
             url_for('auth.signin_page')
         )
 
-    customers = Customers.query.filter_by(
+    items = Items.query.filter_by(
+        is_delete=0
+    ).all()
+
+    # Ambil data category
+    categories = Categories.query.filter_by(
         is_delete=0
     ).all()
 
     return render_template(
-        template_name_or_list='customer.html',
-        title='Data Pelanggan',
-        customers=customers
+        template_name_or_list='item.html',
+        title='Data Barang',
+        items=items,
+        categories=categories
     )
 
 
 # TAMBAH DATA
-@customer.post('/add')
-def addCustomer():
+@item.post('/add')
+def addItem():
 
     body = request.json
 
-    customer = Customers(
-        nama=body['nama'],
-        alamat=body['alamat'],
-        telepon=body['telepon'],
+    item_data = Items(
+        category_id=body['category_id'],
+        nama_barang=body['nama_barang'],
+        stok=body['stok'],
+        harga_beli=body['harga_beli'],
+        harga_jual=body['harga_jual'],
         created_at=int(time.time()),
         updated_at=int(time.time())
     )
 
-    db.session.add(customer)
+    db.session.add(item_data)
     db.session.commit()
 
     return {
@@ -56,16 +65,18 @@ def addCustomer():
     }
 
 # UPDATE
-@customer.put('/update/<int:id>')
-def updateCustomer(id):
+@item.put('/update/<int:id>')
+def updateItem(id):
     try:
         body = request.json
 
-        data = Customers.query.get_or_404(id)
+        data = Items.query.get_or_404(id)
 
-        data.nama = body['nama']
-        data.alamat = body['alamat']
-        data.telepon = body['telepon']
+        data.category_id = body['category_id']
+        data.nama_barang = body['nama_barang']
+        data.stok = body['stok']
+        data.harga_beli = body['harga_beli']
+        data.harga_jual = body['harga_jual']
         data.updated_at = int(time.time())
 
         db.session.commit()
@@ -83,10 +94,10 @@ def updateCustomer(id):
 
 
 # DELETE
-@customer.delete('/delete/<int:id>')
-def deleteCustomer(id):
+@item.delete('/delete/<int:id>')
+def deleteItem(id):
 
-    data = Customers.query.get_or_404(id)
+    data = Items.query.get_or_404(id)
 
     data.is_delete = 1
     data.deleted_at = int(time.time())

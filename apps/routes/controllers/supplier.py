@@ -2,19 +2,19 @@ from flask import Blueprint, request, render_template, session, redirect, url_fo
 from flask import current_app as app
 
 from ... import db
-from ...database.db_customer import Customers
+from ...database.db_suppliers import Suppliers
 
 import time
 
-customer = Blueprint(
-    name='customer',
+supplier = Blueprint(
+    name='supplier',
     import_name=__name__,
     template_folder="../../templates/pages/appPages",
-    url_prefix='/customer',
+    url_prefix='/supplier',
 )
 
 # TAMPIL HALAMAN
-@customer.get('/')
+@supplier.get('/')
 def index():
 
     if 'user_id' not in session:
@@ -22,24 +22,24 @@ def index():
             url_for('auth.signin_page')
         )
 
-    customers = Customers.query.filter_by(
+    suppliers = Suppliers.query.filter_by(
         is_delete=0
     ).all()
 
     return render_template(
-        template_name_or_list='customer.html',
-        title='Data Pelanggan',
-        customers=customers
+        template_name_or_list='supplier.html',
+        title='Data Supplier',
+        suppliers=suppliers
     )
 
 
 # TAMBAH DATA
-@customer.post('/add')
-def addCustomer():
+@supplier.post('/add')
+def addSupplier():
 
     body = request.json
 
-    customer = Customers(
+    supplier = Suppliers(
         nama=body['nama'],
         alamat=body['alamat'],
         telepon=body['telepon'],
@@ -47,7 +47,7 @@ def addCustomer():
         updated_at=int(time.time())
     )
 
-    db.session.add(customer)
+    db.session.add(supplier)
     db.session.commit()
 
     return {
@@ -56,12 +56,12 @@ def addCustomer():
     }
 
 # UPDATE
-@customer.put('/update/<int:id>')
-def updateCustomer(id):
+@supplier.put('/update/<int:id>')
+def updateSupplier(id):
     try:
         body = request.json
 
-        data = Customers.query.get_or_404(id)
+        data = Suppliers.query.get_or_404(id)
 
         data.nama = body['nama']
         data.alamat = body['alamat']
@@ -83,10 +83,10 @@ def updateCustomer(id):
 
 
 # DELETE
-@customer.delete('/delete/<int:id>')
-def deleteCustomer(id):
+@supplier.delete('/delete/<int:id>')
+def deleteSupplier(id):
 
-    data = Customers.query.get_or_404(id)
+    data = Suppliers.query.get_or_404(id)
 
     data.is_delete = 1
     data.deleted_at = int(time.time())

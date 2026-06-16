@@ -1,19 +1,17 @@
 from .. import db
 
 class Items(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
 
-    name = db.Column(db.String(75), nullable=False)
+    category_id = db.Column(db.Integer, nullable=False)
 
-    category_id = db.Column(
-        db.Integer,
-        db.ForeignKey('categories.id')
-    )
+    nama_barang = db.Column(db.String(100), nullable=False)
 
-    harga_beli = db.Column(db.Integer)
-    harga_jual = db.Column(db.Integer)
+    stok = db.Column(db.Integer,nullable=False, server_default='0')
 
-    stock = db.Column(db.Integer, default=0)
+    harga_beli = db.Column(db.Integer, nullable=False)
+
+    harga_jual = db.Column(db.Integer,nullable=False)
 
     created_at = db.Column(db.BigInteger, nullable=False)
     updated_at = db.Column(db.BigInteger, nullable=False)
@@ -22,4 +20,4 @@ class Items(db.Model):
     is_delete = db.Column(db.Integer, nullable=False, server_default='0')
     
     def __repr__(self):
-        return '<Categories {}>'.format(self.name)
+        return '<Items {}>'.format(self.nama_barang)
