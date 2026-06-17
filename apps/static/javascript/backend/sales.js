@@ -1,22 +1,17 @@
 function addRow() {
+  const tbody = document.getElementById("sales-items");
 
-    const tbody = document.getElementById(
-        "sales-items"
-    );
+  let options = "";
 
-    let options = "";
-
-    itemsData.forEach(item => {
-    
-        options += `
+  itemsData.forEach((item) => {
+    options += `
             <option value="${item.id}">
                 ${item.nama_barang}
             </option>
         `;
-    
-    });
+  });
 
-    const row = `
+  const row = `
         <tr>
 
             <td>
@@ -64,130 +59,105 @@ function addRow() {
         </tr>
     `;
 
-    tbody.insertAdjacentHTML(
-        "beforeend",
-        row
-    );
-
+  tbody.insertAdjacentHTML("beforeend", row);
 }
 
-function calculateRow(element){
+function calculateRow(element) {
+  const row = element.closest("tr");
 
-    const row = element.closest("tr");
+  const qty = parseInt(row.querySelector(".qty").value || 0);
 
-    const qty = parseInt(
-        row.querySelector(".qty").value || 0
-    );
+  const harga = parseInt(row.querySelector(".harga_jual").value || 0);
 
-    const harga = parseInt(
-        row.querySelector(".harga_jual").value || 0
-    );
+  const subtotal = qty * harga;
 
-    const subtotal = qty * harga;
+  row.querySelector(".subtotal").innerText = subtotal;
 
-    row.querySelector(".subtotal").innerText = subtotal;
-
-    calculateGrandTotal();
-
+  calculateGrandTotal();
 }
 
-function calculateGrandTotal(){
+function calculateGrandTotal() {
+  let total = 0;
 
-    let total = 0;
+  document.querySelectorAll(".subtotal").forEach((item) => {
+    total += parseInt(item.innerText || 0);
+  });
 
-    document.querySelectorAll(".subtotal")
-        .forEach(item => {
-
-            total += parseInt(
-                item.innerText || 0
-            );
-
-        });
-
-    document.getElementById(
-        "grand-total"
-    ).innerText = total;
-
+  document.getElementById("grand-total").innerText = total;
 }
 
-function removeRow(button){
+function removeRow(button) {
+  button.closest("tr").remove();
 
-    button.closest("tr").remove();
-
-    calculateGrandTotal();
-
+  calculateGrandTotal();
 }
 
 async function saveSales() {
+  // Ambil customer yang dipilih
+  const customerId = document.getElementById("customer_id").value;
 
-    // Ambil customer yang dipilih
-    const customerId = document.getElementById(
-        "customer_id"
-    ).value;
+  // Validasi customer
+  if (!customerId) {
+    alert("Pilih customer terlebih dahulu");
+    return;
+  }
 
-    // Ambil total Penjualan
-    const total = document.getElementById(
-        "grand-total"
-    ).innerText;
+  // Ambil total penjualan
+  const total = document.getElementById("grand-total").innerText;
 
-    // Menyimpan semua detail penjualan
-    const details = [];
+  // Menyimpan semua detail barang yang dijual
+  const details = [];
 
-    // Loop setiap baris barang
-    document.querySelectorAll(
-        "#sales-items tr"
-    ).forEach(row => {
+  // Mengambil data dari setiap baris barang
+  document.querySelectorAll("#sales-items tr").forEach((row) => {
+    details.push({
+      item_id: row.querySelector(".item_id").value,
 
-        details.push({
+      qty: row.querySelector(".qty").value,
 
-            // ID barang
-            item_id: row.querySelector(
-                ".item_id"
-            ).value,
+      harga_jual: row.querySelector(".harga_jual").value,
 
-            // Jumlah barang
-            qty: row.querySelector(
-                ".qty"
-            ).value,
+      subtotal: row.querySelector(".subtotal").innerText,
+    });
+  });
 
-            // Harga jual barang
-            harga_jual: row.querySelector(
-                ".harga_jual"
-            ).value,
+  // Menyiapkan data penjualan untuk dikirim ke backend
+  const data = {
+    customer_id: customerId,
 
-            // Total per barang
-            subtotal: row.querySelector(
-                ".subtotal"
-            ).innerText
+    total: total,
 
-        });
+    details: details,
+  };
 
+  try {
+    // Mengirim data penjualan ke server
+    const response = await fetch("/sales/add", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
     });
 
-    // Kirim data ke backend Flask
-    const response = await fetch(
-        "/sales/add",
-        {
-            method: "POST",
-
-            headers: {
-                "Content-Type": "application/json"
-            },
-
-            body: JSON.stringify({
-
-                customer_id: customerId,
-                total: total,
-                details: details
-            
-            })
-        }
-    );
-
-    // Ambil response dari backend
+    // Mengambil response dari server
     const result = await response.json();
 
-    // Tampilkan hasil di console
-    console.log(result);
+    // Menampilkan pesan jika transaksi gagal
+    if (!response.ok) {
+      alert(result.message);
 
+      return;
+    }
+
+    // Menampilkan pesan jika transaksi berhasil
+    alert(result.message);
+
+    // Memuat ulang halaman
+    location.reload();
+  } catch (error) {
+    console.error(error);
+
+    alert("Terjadi kesalahan saat menyimpan data");
+  }
 }

@@ -31,8 +31,8 @@ def index():
         return render_template(
             title='TITLE_DASHBD',
             template_name_or_list='category.html',
+            active_menu="category",
             categories=categories
-            # active='dashboard.index'
         )
 
     except Exception as e:

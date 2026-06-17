@@ -1,5 +1,5 @@
 from flask import Blueprint, request, render_template, session, redirect, url_for
-
+from datetime import datetime
 from ... import db
 
 from ...database.db_purchases import Purchases
@@ -41,7 +41,8 @@ def index():
         title='Pembelian Barang',
         suppliers=suppliers,
         items=items,
-        purchases=purchases
+        purchases=purchases,
+        active_menu="purchase"
     )
 
 # ROUTE MENYIMPAN PEMBELIAN
@@ -152,10 +153,15 @@ def history():
             purchase.supplier_id
         )
 
+    purchase.tanggal_format = datetime.fromtimestamp(
+        purchase.tanggal
+    ).strftime("%d-%m-%Y")
+    
     return render_template(
         template_name_or_list='purchase_history.html',
         title='Riwayat Pembelian',
-        purchases=purchases
+        purchases=purchases,
+        active_menu="purchase_history"
     )
 
 @purchase.get('/detail/<int:id>')
@@ -179,5 +185,6 @@ def detail(id):
     return render_template(
         template_name_or_list='purchase_detail.html',
         title='Detail Pembelian',
-        details=details
+        details=details,
+        active_menu="purchase_detail"
     )

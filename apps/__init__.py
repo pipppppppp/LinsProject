@@ -15,7 +15,7 @@ app = Flask(__name__)
 app.config['PRODUCT_ENVIRONMENT'] = config.PRODUCT_ENVIRONMENT
 app.config['BASE_URL'] = config.BASE_URL
 app.config['JWT_ACCESS_TOKE_EXPIRES'] = config.JWT_ACCESS_TOKEN_EXPIRED
-app.config['SECRET_KEY'] = 'posbegkel_secret_key'
+app.config['SECRET_KEY'] = config.JWT_SECRET_KEY
 
 # Database Section ==============================##
 app.config.from_object(ConnectDB)
@@ -32,6 +32,8 @@ from .database import db_purchases
 from .database import db_purchase_details
 from .database import db_sales
 from .database import db_sale_details
+from .database import db_services
+
 # ====================== END - DATABASE CONFIGURATION ======================
 
 # JWT Section ==============================##
@@ -74,6 +76,7 @@ from .routes.controllers.item import item
 from .routes.controllers.purchase import purchase
 from .routes.controllers.sales import sales
 from .routes.controllers.report import report
+from .routes.controllers.services import services
 
 # Register
 app.register_blueprint(auth)
@@ -85,5 +88,6 @@ app.register_blueprint(item)
 app.register_blueprint(purchase)
 app.register_blueprint(sales)
 app.register_blueprint(report)
+app.register_blueprint(services)
 # End Blueprint Section ==========================##
 # ====================== END - ROUTE CONFIGURATION ======================

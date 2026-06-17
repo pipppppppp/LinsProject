@@ -28,6 +28,7 @@ def index():
 
     return render_template(
         template_name_or_list='customer.html',
+        active_menu="customer",
         title='Data Pelanggan',
         customers=customers
     )

@@ -59,6 +59,7 @@ def index():
         return render_template(
             title='Dashboard POS Bengkel',
             template_name_or_list='dashboard.html',
+            active_menu="dashboard",
 
             username=session.get('username'),
 

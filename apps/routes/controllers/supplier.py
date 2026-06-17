@@ -28,6 +28,7 @@ def index():
 
     return render_template(
         template_name_or_list='supplier.html',
+        active_menu="supplier",
         title='Data Supplier',
         suppliers=suppliers
     )

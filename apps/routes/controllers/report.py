@@ -1,4 +1,5 @@
 from flask import Blueprint, render_template, session, redirect, url_for
+from datetime import datetime
 
 from ...database.db_purchases import Purchases
 from ...database.db_suppliers import Suppliers
@@ -32,10 +33,15 @@ def purchase_report():
             purchase.supplier_id
         )
 
+        purchase.tanggal_format = datetime.fromtimestamp(
+            purchase.tanggal
+        ).strftime("%d-%m-%Y")
+
     return render_template(
         template_name_or_list='report_purchase.html',
         title='Laporan Pembelian',
-        purchases=purchases
+        purchases=purchases,
+        active_menu="purchase_report"
     )
 
 @report.get('/sales')
@@ -56,10 +62,15 @@ def sales_report():
             sale.customer_id
         )
 
+        sale.tanggal_format = datetime.fromtimestamp(
+            sale.tanggal
+        ).strftime("%d-%m-%Y")
+
     return render_template(
         template_name_or_list='report_sales.html',
         title='Laporan Penjualan',
-        sales=sales
+        sales=sales,
+        active_menu="sales_report"
     )
 
 @report.get('/stock')
@@ -83,5 +94,6 @@ def stock_report():
     return render_template(
         template_name_or_list='report_stock.html',
         title='Laporan Stok Barang',
-        items=items
+        items=items,
+        active_menu="stock_report"
     )

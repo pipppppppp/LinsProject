@@ -36,7 +36,8 @@ def index():
         template_name_or_list='item.html',
         title='Data Barang',
         items=items,
-        categories=categories
+        categories=categories,
+        active_menu="item"
     )
 
 

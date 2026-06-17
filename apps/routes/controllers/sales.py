@@ -1,5 +1,5 @@
 from flask import Blueprint, request, render_template, session, redirect, url_for
-
+from datetime import datetime
 from ... import db
 
 from ...database.db_sales import Sales
@@ -35,13 +35,12 @@ def index():
         is_delete=0
     ).all()
 
-    print("SALES PAGE")
-
     return render_template(
         template_name_or_list='sales.html',
         title='Penjualan Barang',
         customers=customers,
-        items=items
+        items=items,
+        active_menu="sales"
     )
 
 @sales.post('/add')
@@ -80,6 +79,24 @@ def addSales():
 
         # Buat ID sale tanpa commit
         db.session.flush()
+
+        # Validasi stok terlebih dahulu
+        for item in details:
+
+            item_data = Items.query.get(
+                item['item_id']
+            )
+
+            qty = int(
+                item['qty']
+            )
+
+            if item_data.stok < qty:
+
+                return {
+                    "status": False,
+                    "message": f"Stok {item_data.nama_barang} tidak mencukupi"
+                }, 400
 
         # Simpan detail penjualan
         for item in details:
@@ -146,11 +163,16 @@ def history():
         sale.customer = Customers.query.get(
             sale.customer_id
         )
+    
+    sale.tanggal_format = datetime.fromtimestamp(
+        sale.tanggal
+    ).strftime("%d-%m-%Y")
 
     return render_template(
         template_name_or_list='sales_history.html',
         title='Riwayat Penjualan',
-        sales=sales_data
+        sales=sales_data,
+        active_menu="sales_history"
     )
 
 @sales.get('/detail/<int:id>')
