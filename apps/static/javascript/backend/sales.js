@@ -1,7 +1,7 @@
 function addRow() {
 
     const tbody = document.getElementById(
-        "purchase-items"
+        "sales-items"
     );
 
     let options = "";
@@ -42,7 +42,7 @@ function addRow() {
             <td>
                 <input
                     type="number"
-                    class="form-control harga_beli"
+                    class="form-control harga_jual"
                     value="0"
                     oninput="calculateRow(this)">
             </td>
@@ -80,7 +80,7 @@ function calculateRow(element){
     );
 
     const harga = parseInt(
-        row.querySelector(".harga_beli").value || 0
+        row.querySelector(".harga_jual").value || 0
     );
 
     const subtotal = qty * harga;
@@ -118,24 +118,24 @@ function removeRow(button){
 
 }
 
-async function savePurchase() {
+async function saveSales() {
 
-    // Ambil supplier yang dipilih
-    const supplierId = document.getElementById(
-        "supplier_id"
+    // Ambil customer yang dipilih
+    const customerId = document.getElementById(
+        "customer_id"
     ).value;
 
-    // Ambil total pembelian
+    // Ambil total Penjualan
     const total = document.getElementById(
         "grand-total"
     ).innerText;
 
-    // Menyimpan semua detail barang
+    // Menyimpan semua detail penjualan
     const details = [];
 
     // Loop setiap baris barang
     document.querySelectorAll(
-        "#purchase-items tr"
+        "#sales-items tr"
     ).forEach(row => {
 
         details.push({
@@ -150,9 +150,9 @@ async function savePurchase() {
                 ".qty"
             ).value,
 
-            // Harga beli barang
-            harga_beli: row.querySelector(
-                ".harga_beli"
+            // Harga jual barang
+            harga_jual: row.querySelector(
+                ".harga_jual"
             ).value,
 
             // Total per barang
@@ -166,7 +166,7 @@ async function savePurchase() {
 
     // Kirim data ke backend Flask
     const response = await fetch(
-        "/purchase/add",
+        "/sales/add",
         {
             method: "POST",
 
@@ -176,10 +176,10 @@ async function savePurchase() {
 
             body: JSON.stringify({
 
-                supplier_id: supplierId,
+                customer_id: customerId,
                 total: total,
                 details: details
-
+            
             })
         }
     );

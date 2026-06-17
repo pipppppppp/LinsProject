@@ -1,12 +1,47 @@
 from .. import db
 
-class Items(db.Model):
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+class Sales(db.Model):
 
-    created_at = db.Column(db.BigInteger, nullable=False)
-    updated_at = db.Column(db.BigInteger, nullable=False)
-    deleted_at = db.Column(db.BigInteger, nullable=True)
-    is_delete = db.Column(db.Integer, nullable=False, server_default='0')
-    
+    id = db.Column(
+        db.Integer,
+        primary_key=True,
+        autoincrement=True
+    )
+
+    customer_id = db.Column(
+        db.Integer,
+        nullable=False
+    )
+
+    tanggal = db.Column(
+        db.BigInteger,
+        nullable=False
+    )
+
+    total = db.Column(
+        db.BigInteger,
+        nullable=False
+    )
+
+    created_at = db.Column(
+        db.BigInteger,
+        nullable=False
+    )
+
+    updated_at = db.Column(
+        db.BigInteger,
+        nullable=False
+    )
+
+    deleted_at = db.Column(
+        db.BigInteger
+    )
+
+    is_delete = db.Column(
+        db.Integer,
+        nullable=False,
+        server_default='0'
+    )
+
     def __repr__(self):
-        return '<Categories {}>'.format(self.name)
+        return '<Sales {}>'.format(self.id)

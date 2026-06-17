@@ -1,0 +1,63 @@
+body{
+  overflow:hidden;
+}
+
+#auth{
+  height:100vh;
+}
+
+#auth-left{
+  height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  background:#f8f9fa;
+  padding:2rem;
+}
+
+#auth-right{
+  height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  background:linear-gradient(
+      135deg,
+      #435ebe,
+      #2d3e99
+  );
+}
+
+.login-card{
+  width:550px;
+  border:none;
+  border-radius:20px;
+}
+
+.login-logo{
+  width:100px;
+}
+
+.logo-right{
+  width:350px;
+}
+
+.form-control{
+  border-radius:10px;
+}
+
+.btn{
+  border-radius:10px;
+}
+
+.btn-primary{
+  height:50px;
+  font-weight:600;
+}
+
+.login-card{
+  transition:0.3s;
+}
+
+.login-card:hover{
+  transform:translateY(-3px);
+}

@@ -30,9 +30,8 @@ from .database import db_suppliers
 from .database import db_items
 from .database import db_purchases
 from .database import db_purchase_details
-# from .database import db_auth
-# from .database import db_item
-# from .database import db_item
+from .database import db_sales
+from .database import db_sale_details
 # ====================== END - DATABASE CONFIGURATION ======================
 
 # JWT Section ==============================##
@@ -73,6 +72,8 @@ from .routes.controllers.customer import customer
 from .routes.controllers.supplier import supplier
 from .routes.controllers.item import item
 from .routes.controllers.purchase import purchase
+from .routes.controllers.sales import sales
+from .routes.controllers.report import report
 
 # Register
 app.register_blueprint(auth)
@@ -82,5 +83,7 @@ app.register_blueprint(customer)
 app.register_blueprint(supplier)
 app.register_blueprint(item)
 app.register_blueprint(purchase)
+app.register_blueprint(sales)
+app.register_blueprint(report)
 # End Blueprint Section ==========================##
 # ====================== END - ROUTE CONFIGURATION ======================
