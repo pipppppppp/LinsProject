@@ -37,6 +37,11 @@ def purchase_report():
             purchase.tanggal
         ).strftime("%d-%m-%Y")
 
+        
+        purchase.total_format = (
+            f"Rp {purchase.total:,}"
+        ).replace(",", ".")
+
     return render_template(
         template_name_or_list='report_purchase.html',
         title='Laporan Pembelian',
@@ -66,6 +71,10 @@ def sales_report():
             sale.tanggal
         ).strftime("%d-%m-%Y")
 
+        sale.total_format = (
+            f"Rp {sale.total:,}"
+        ).replace(",", ".")
+
     return render_template(
         template_name_or_list='report_sales.html',
         title='Laporan Penjualan',
@@ -90,6 +99,14 @@ def stock_report():
         item.category = Categories.query.get(
             item.category_id
     )
+
+        item.harga_beli_format = (
+            f"Rp {item.harga_beli:,}"
+        ).replace(",", ".")
+
+        item.harga_jual_format = (
+            f"Rp {item.harga_jual:,}"
+        ).replace(",", ".")
 
     return render_template(
         template_name_or_list='report_stock.html',

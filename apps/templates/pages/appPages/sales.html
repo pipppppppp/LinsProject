@@ -120,6 +120,40 @@
       </section>
       <!--! [End] Card Detail Barang !-->
 
+      <!--! [Start] Card Detail jasa !-->
+      <section class="section">
+        <div class="card">
+          <div class="card-header">
+            <h4>Detail Jasa</h4>
+          </div>
+
+          <div class="card-body">
+            <table class="table table-bordered">
+              <thead>
+                  <tr>
+                      <th>Jasa</th>
+                      <th>Qty</th>
+                      <th>Harga Jasa</th>
+                      <th>Subtotal</th>
+                      <th>Aksi</th>
+                  </tr>
+              </thead>
+          
+              <tbody id="service-items"></tbody>
+          </table>
+          
+          <button
+              class="btn btn-info"
+              onclick="addServiceRow()">
+          
+              Tambah Jasa
+          
+          </button>
+          </div>
+        </div>
+      </section>
+      <!--! [End] Card Detail Jasa !-->
+
       <!--! [Start] Card Total Pembelian !-->
       <section class="section">
         <div class="card">
@@ -155,7 +189,18 @@
       {% for item in items %}
       {
           id: "{{ item.id }}",
-          nama_barang: "{{ item.nama_barang }}"
+          nama_barang: "{{ item.nama_barang }}",
+          harga_jual: "{{ item.harga_jual }}"
+      }{% if not loop.last %},{% endif %}
+      {% endfor %}
+  ];
+
+  const servicesData = [
+      {% for service in services %}
+      {
+          id: "{{ service.id }}",
+          nama_jasa: "{{ service.nama_jasa }}",
+          biaya_jasa: "{{ service.biaya_jasa }}"
       }{% if not loop.last %},{% endif %}
       {% endfor %}
   ];

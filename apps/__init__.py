@@ -33,6 +33,7 @@ from .database import db_purchase_details
 from .database import db_sales
 from .database import db_sale_details
 from .database import db_services
+from .database import db_sale_service_details
 
 # ====================== END - DATABASE CONFIGURATION ======================
 

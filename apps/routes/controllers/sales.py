@@ -4,6 +4,8 @@ from ... import db
 
 from ...database.db_sales import Sales
 from ...database.db_sale_details import SaleDetails
+from ...database.db_services import Services
+from ...database.db_sale_service_details import SaleServiceDetails
 from ...database.db_customer import Customers
 from ...database.db_items import Items
 
@@ -35,11 +37,17 @@ def index():
         is_delete=0
     ).all()
 
+    # Ambil service
+    services = Services.query.filter_by(
+        is_delete=0
+    ).all()
+
     return render_template(
         template_name_or_list='sales.html',
         title='Penjualan Barang',
         customers=customers,
         items=items,
+        services=services,
         active_menu="sales"
     )
 
@@ -59,6 +67,9 @@ def addSales():
 
         # Detail barang
         details = body['details']
+
+        # Detail Jasa
+        service_details = body.get('service_details',[])
 
         # Simpan header penjualan
         sale = Sales(
@@ -127,6 +138,27 @@ def addSales():
                 item['qty']
             )
 
+        # Simpan detail jasa
+        for service in service_details:
+
+            detail_service = SaleServiceDetails(
+
+                sale_id=sale.id,
+
+                service_id=service['service_id'],
+
+                qty=service['qty'],
+
+                harga_jasa=service['harga_jasa'],
+
+                subtotal=service['subtotal']
+
+            )
+
+            db.session.add(
+                detail_service
+            )
+
         db.session.commit()
 
         return {
@@ -164,10 +196,12 @@ def history():
             sale.customer_id
         )
     
-    sale.tanggal_format = datetime.fromtimestamp(
-        sale.tanggal
-    ).strftime("%d-%m-%Y")
+        sale.tanggal_format = datetime.fromtimestamp(
+            sale.tanggal
+        ).strftime("%d-%m-%Y")
 
+        sale.total_format = f"Rp {sale.total:,}".replace(",", ".")
+        
     return render_template(
         template_name_or_list='sales_history.html',
         title='Riwayat Penjualan',
@@ -184,7 +218,7 @@ def detail(id):
             url_for('auth.signin_page')
         )
 
-    # Ambil detail penjualan
+    # Ambil detail penjualan barang
     details = SaleDetails.query.filter_by(
         sale_id=id
     ).all()
@@ -196,8 +230,21 @@ def detail(id):
             detail.item_id
         )
 
+    # Ambil detail penjualan jasa
+    service_details = SaleServiceDetails.query.filter_by(
+        sale_id=id
+    ).all()
+
+    # Ambil data jasa
+    for service in service_details:
+    
+        service.service = Services.query.get(
+            service.service_id
+        )
+
     return render_template(
         template_name_or_list='sales_detail.html',
         title='Detail Penjualan',
-        details=details
+        details=details,
+        service_details=service_details
     )

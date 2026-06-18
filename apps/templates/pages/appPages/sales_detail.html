@@ -64,43 +64,82 @@
           <!-- <div class="card-header">Simple Datatable</div> -->
           <div class="card-body">
             <table class="table table-striped" id="table1">
-            <thead>
+              <thead>
                 <tr>
-                    <th>No</th>
-                    <th>Barang</th>
-                    <th>Qty</th>
-                    <th>Harga Jual</th>
-                    <th>Subtotal</th>
+                  <th>No</th>
+                  <th>Barang</th>
+                  <th>Qty</th>
+                  <th>Harga Jual</th>
+                  <th>Subtotal</th>
                 </tr>
-            </thead>
-            
-            <tbody>
-            
-            {% for detail in details %}
-            
-            <tr>
-            
-                <td>{{ loop.index }}</td>
-            
-                <td>{{ detail.item.nama_barang }}</td>
-            
-                <td>{{ detail.qty }}</td>
-            
-                <td>{{ detail.harga_jual }}</td>
-            
-                <td>{{ detail.subtotal }}</td>
-            
-            </tr>
-            
-            {% endfor %}
-            
-            </tbody>
+              </thead>
+
+              <tbody>
+                {% for detail in details %}
+
+                <tr>
+                  <td>{{ loop.index }}</td>
+
+                  <td>{{ detail.item.nama_barang }}</td>
+
+                  <td>{{ detail.qty }}</td>
+
+                  <td>{{ detail.harga_jual }}</td>
+
+                  <td>{{ detail.subtotal }}</td>
+                </tr>
+
+                {% endfor %}
+              </tbody>
             </table>
           </div>
         </div>
       </section>
       <!--! [End] Header !-->
       <!--! ================================================================ !-->
+
+      <!--! ================================================================ !-->
+      <!--! [Start] Detail Jasa !-->
+      <section class="section">
+        <div class="card">
+          <div class="card-header">
+            <h4>Detail Jasa</h4>
+          </div>
+
+          <div class="card-body">
+            <table class="table table-striped">
+              <thead>
+                <tr>
+                  <th>No</th>
+                  <th>Jasa</th>
+                  <th>Qty</th>
+                  <th>Harga Jasa</th>
+                  <th>Subtotal</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                {% for service in service_details %}
+
+                <tr>
+                  <td>{{ loop.index }}</td>
+
+                  <td>{{ service.service.nama_jasa }}</td>
+
+                  <td>{{ service.qty }}</td>
+
+                  <td>{{ service.harga_jasa }}</td>
+
+                  <td>{{ service.subtotal }}</td>
+                </tr>
+
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+      <!--! [End] Detail Jasa !-->
     </div>
     <!--! ================================================================ !-->
     <!--! [End] Main Content !-->
