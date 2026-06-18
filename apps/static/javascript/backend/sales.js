@@ -9,9 +9,12 @@ function addRow() {
 
   itemsData.forEach((item) => {
     options += `
-            <option value="${item.id}"
-            data-harga="${item.harga_jual}">
+            <option
+                value="${item.id}"
+                data-harga="${item.harga_jual}">
+
                 ${item.nama_barang}
+
             </option>
         `;
   });
@@ -20,9 +23,10 @@ function addRow() {
         <tr>
 
             <td>
-            <select
-            class="form-control item_id"
-            onchange="selectItem(this)">
+
+                <select
+                    class="form-control item_id"
+                    onchange="selectItem(this)">
 
                     <option value="">
                         Pilih Barang
@@ -31,22 +35,27 @@ function addRow() {
                     ${options}
 
                 </select>
+
             </td>
 
             <td>
+
                 <input
                     type="number"
-                    class="form-control qty"
+                    min="1"
+                    class="form-control qty text-center"
                     value="1"
                     oninput="calculateRow(this)">
+
             </td>
 
             <td>
+
                 <input
                     type="number"
                     class="form-control harga_jual"
-                    value="0"
-                    oninput="calculateRow(this)">
+                    readonly>
+
             </td>
 
             <td class="subtotal">
@@ -54,13 +63,15 @@ function addRow() {
             </td>
 
             <td>
+
                 <button
                     class="btn btn-danger btn-sm"
                     onclick="removeRow(this)">
-                
+
                     Hapus
-            
+
                 </button>
+
             </td>
 
         </tr>
@@ -69,29 +80,76 @@ function addRow() {
   tbody.insertAdjacentHTML("beforeend", row);
 }
 
-function selectItem(element) {
+function addItemToCart(item) {
+  const rows = document.querySelectorAll("#sales-items tr");
 
-    const row =
-        element.closest("tr");
+  for (const row of rows) {
+    const itemId = row.querySelector(".item_id")?.value;
 
-    const harga =
-        parseInt(
-            element.options[
-                element.selectedIndex
-            ]?.dataset.harga || 0
-        );
+    if (itemId == item.id) {
+      const qtyInput = row.querySelector(".qty");
 
-    row.querySelector(
-        ".harga_jual"
-    ).value = harga;
+      qtyInput.value = parseInt(qtyInput.value) + 1;
 
-    calculateRow(
-        row.querySelector(
-            ".harga_jual"
-        )
-    );
+      calculateRow(qtyInput);
+
+      return;
+    }
+  }
+
+  addRow();
+
+  const lastRow = document.querySelector("#sales-items tr:last-child");
+
+  const select = lastRow.querySelector(".item_id");
+
+  select.value = item.id;
+
+  selectItem(select);
 }
 
+$(document).ready(function () {
+  $("#search-item").select2({
+    placeholder: "Cari Barang",
+
+    width: "100%",
+    minimumInputLength: 1,
+  });
+
+  $("#search-item").on("change", function () {
+    const itemId = $(this).val();
+
+    if (!itemId) {
+      return;
+    }
+
+    const item = itemsData.find((x) => x.id == itemId);
+
+    if (!item) {
+      return;
+    }
+
+    addItemToCart(item);
+
+    $(this).val(null).trigger("change");
+  });
+});
+
+function selectItem(element) {
+  const row = element.closest("tr");
+
+  const harga = parseInt(
+    element.options[element.selectedIndex]?.dataset.harga || 0
+  );
+
+  row.querySelector(".harga_jual").value = harga;
+
+  calculateRow(row.querySelector(".harga_jual"));
+}
+
+function formatRupiah(number) {
+  return new Intl.NumberFormat("id-ID").format(number);
+}
 function calculateRow(element) {
   const row = element.closest("tr");
 
@@ -101,7 +159,7 @@ function calculateRow(element) {
 
   const subtotal = qty * harga;
 
-  row.querySelector(".subtotal").innerText = subtotal;
+  row.querySelector(".subtotal").innerText = "Rp " + formatRupiah(subtotal);
 
   calculateGrandTotal();
 }
@@ -110,17 +168,12 @@ function calculateRow(element) {
 // JASA
 // ======================================================
 function addServiceRow() {
-
-  const tbody =
-      document.getElementById(
-          "service-items"
-      );
+  const tbody = document.getElementById("service-items");
 
   let options = "";
 
-  servicesData.forEach(service => {
-
-      options += `
+  servicesData.forEach((service) => {
+    options += `
           <option
               value="${service.id}"
               data-harga="${service.biaya_jasa}">
@@ -192,48 +245,25 @@ function addServiceRow() {
       </tr>
   `;
 
-  tbody.insertAdjacentHTML(
-      "beforeend",
-      row
-  );
+  tbody.insertAdjacentHTML("beforeend", row);
 }
 
-function calculateServiceRow(
-  element
-) {
+function calculateServiceRow(element) {
+  const row = element.closest("tr");
 
-  const row =
-      element.closest("tr");
+  const select = row.querySelector(".service_id");
 
-  const select =
-      row.querySelector(
-          ".service_id"
-      );
+  const qty = parseInt(row.querySelector(".service_qty").value || 0);
 
-  const qty =
-      parseInt(
-          row.querySelector(
-              ".service_qty"
-          ).value || 0
-      );
+  const harga = parseInt(
+    select.options[select.selectedIndex]?.dataset.harga || 0
+  );
 
-  const harga =
-      parseInt(
-          select.options[
-              select.selectedIndex
-          ]?.dataset.harga || 0
-      );
+  row.querySelector(".harga_jasa").value = harga;
 
-  row.querySelector(
-      ".harga_jasa"
-  ).value = harga;
+  const subtotal = qty * harga;
 
-  const subtotal =
-      qty * harga;
-
-  row.querySelector(
-      ".service_subtotal"
-  ).innerText = subtotal;
+  row.querySelector(".service_subtotal").innerText = subtotal;
 
   calculateGrandTotal();
 }
@@ -243,30 +273,17 @@ function calculateServiceRow(
 // ======================================================
 
 function calculateGrandTotal() {
-
   let total = 0;
 
-  document.querySelectorAll(
-      ".subtotal"
-  ).forEach(item => {
-
-      total += parseInt(
-          item.innerText || 0
-      );
+  document.querySelectorAll(".subtotal").forEach((item) => {
+    total += parseInt(item.innerText || 0);
   });
 
-  document.querySelectorAll(
-      ".service_subtotal"
-  ).forEach(item => {
-
-      total += parseInt(
-          item.innerText || 0
-      );
+  document.querySelectorAll(".service_subtotal").forEach((item) => {
+    total += parseInt(item.innerText || 0);
   });
 
-  document.getElementById(
-      "grand-total"
-  ).innerText = total;
+  document.getElementById("grand-total").innerText = total;
 }
 
 // ======================================================
@@ -274,7 +291,6 @@ function calculateGrandTotal() {
 // ======================================================
 
 function removeRow(button) {
-
   button.closest("tr").remove();
 
   calculateGrandTotal();
@@ -285,151 +301,79 @@ function removeRow(button) {
 // ======================================================
 
 async function saveSales() {
-
-  const customerId =
-      document.getElementById(
-          "customer_id"
-      ).value;
+  const customerId = document.getElementById("customer_id").value;
 
   if (!customerId) {
+    alert("Pilih customer terlebih dahulu");
 
-      alert(
-          "Pilih customer terlebih dahulu"
-      );
-
-      return;
+    return;
   }
 
-  const total =
-      document.getElementById(
-          "grand-total"
-      ).innerText;
+  const total = document.getElementById("grand-total").innerText;
 
   const details = [];
 
   const service_details = [];
 
   // BARANG
-  document.querySelectorAll(
-      "#sales-items tr"
-  ).forEach((row) => {
+  document.querySelectorAll("#sales-items tr").forEach((row) => {
+    details.push({
+      item_id: row.querySelector(".item_id").value,
 
-      details.push({
+      qty: row.querySelector(".qty").value,
 
-          item_id:
-              row.querySelector(
-                  ".item_id"
-              ).value,
+      harga_jual: row.querySelector(".harga_jual").value,
 
-          qty:
-              row.querySelector(
-                  ".qty"
-              ).value,
-
-          harga_jual:
-              row.querySelector(
-                  ".harga_jual"
-              ).value,
-
-          subtotal:
-              row.querySelector(
-                  ".subtotal"
-              ).innerText
-
-      });
-
+      subtotal: row.querySelector(".subtotal").innerText,
+    });
   });
 
   // JASA
-  document.querySelectorAll(
-      "#service-items tr"
-  ).forEach((row) => {
+  document.querySelectorAll("#service-items tr").forEach((row) => {
+    service_details.push({
+      service_id: row.querySelector(".service_id").value,
 
-      service_details.push({
+      qty: row.querySelector(".service_qty").value,
 
-          service_id:
-              row.querySelector(
-                  ".service_id"
-              ).value,
+      harga_jasa: row.querySelector(".harga_jasa").value,
 
-          qty:
-              row.querySelector(
-                  ".service_qty"
-              ).value,
-
-          harga_jasa:
-              row.querySelector(
-                  ".harga_jasa"
-              ).value,
-
-          subtotal:
-              row.querySelector(
-                  ".service_subtotal"
-              ).innerText
-
-      });
-
+      subtotal: row.querySelector(".service_subtotal").innerText,
+    });
   });
 
   const data = {
+    customer_id: customerId,
 
-      customer_id:
-          customerId,
+    total: total,
 
-      total:
-          total,
+    details: details,
 
-      details:
-          details,
-
-      service_details:
-          service_details
-
+    service_details: service_details,
   };
 
   try {
+    const response = await fetch("/sales/add", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    });
 
-      const response =
-          await fetch(
-              "/sales/add",
-              {
-                  method: "POST",
-                  headers: {
-                      "Content-Type":
-                          "application/json"
-                  },
-                  body:
-                      JSON.stringify(
-                          data
-                      )
-              }
-          );
+    const result = await response.json();
 
-      const result =
-          await response.json();
+    if (!response.ok) {
+      alert(result.message);
 
-      if (!response.ok) {
+      return;
+    }
 
-          alert(
-              result.message
-          );
+    alert(result.message);
 
-          return;
-      }
-
-      alert(
-          result.message
-      );
-
-      location.reload();
-
+    location.reload();
   } catch (error) {
+    console.error(error);
 
-      console.error(error);
-
-      alert(
-          "Terjadi kesalahan saat menyimpan data"
-      );
-
+    alert("Terjadi kesalahan saat menyimpan data");
   }
 }

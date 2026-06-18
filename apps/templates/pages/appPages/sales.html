@@ -93,10 +93,22 @@
       <!--! [Start] Card Detail Barang !-->
       <section class="section">
         <div class="card">
-          <div class="card-header">
-            <h4>Detail Barang</h4>
-          </div>
+          <div class="card-body pb-0">
+            <label class="form-label"> Cari Barang </label>
 
+            <select id="search-item" class="form-select">
+              <option value="">Cari Barang...</option>
+
+              {% for item in items %}
+              <option value="{{ item.id }}">{{ item.nama_barang }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="card-body pb-0">
+            <div class="form-label text-center">
+              <h4>Detail Barang</h4>
+            </div>
+          </div>
           <div class="card-body">
             <table class="table table-bordered">
               <thead>
@@ -111,10 +123,6 @@
 
               <tbody id="sales-items"></tbody>
             </table>
-
-            <button class="btn btn-primary" onclick="addRow()">
-              Tambah Barang
-            </button>
           </div>
         </div>
       </section>
@@ -130,25 +138,21 @@
           <div class="card-body">
             <table class="table table-bordered">
               <thead>
-                  <tr>
-                      <th>Jasa</th>
-                      <th>Qty</th>
-                      <th>Harga Jasa</th>
-                      <th>Subtotal</th>
-                      <th>Aksi</th>
-                  </tr>
+                <tr>
+                  <th>Jasa</th>
+                  <th>Qty</th>
+                  <th>Harga Jasa</th>
+                  <th>Subtotal</th>
+                  <th>Aksi</th>
+                </tr>
               </thead>
-          
+
               <tbody id="service-items"></tbody>
-          </table>
-          
-          <button
-              class="btn btn-info"
-              onclick="addServiceRow()">
-          
+            </table>
+
+            <button class="btn btn-info" onclick="addServiceRow()">
               Tambah Jasa
-          
-          </button>
+            </button>
           </div>
         </div>
       </section>
