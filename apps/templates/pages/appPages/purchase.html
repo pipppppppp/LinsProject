@@ -58,133 +58,109 @@
       <!--! ================================================================ !-->
 
       <!--! ============================ PEMBELIAN - START ==================================== !-->
-      <!--! [Start] Card Supllier !-->
-      <section class="section">
 
+      <section class="section">
         <div class="card">
-    
-            <div class="card-header">
-                <h4>Pembelian Barang</h4>
+          <div class="card-header">
+            <h4>Pembelian Barang</h4>
+          </div>
+
+          <div class="card-body">
+            <div class="row">
+              <!-- Input tanggal -->
+              <div class="col-md-6">
+                <label>Tanggal</label>
+
+                <input
+                  type="date"
+                  id="tanggal"
+                  class="form-control"
+                  value="{{ current_date }}"
+                />
+              </div>
+
+              <!-- Input supplier -->
+              <div class="col-md-6">
+                <label>Supplier</label>
+
+                <select id="supplier_id" class="form-control">
+                  <option value="">Pilih Supplier</option>
+
+                  {% for supplier in suppliers %}
+                  <option value="{{ supplier.id }}">{{ supplier.nama }}</option>
+                  {% endfor %}
+                </select>
+              </div>
             </div>
-    
-            <div class="card-body">
-    
-                <div class="row">
-    
-                    <div class="col-md-6">
-    
-                        <label>Supplier</label>
-    
-                        <select
-                            id="supplier_id"
-                            class="form-control">
-    
-                            <option value="">
-                                Pilih Supplier
-                            </option>
-    
-                            {% for supplier in suppliers %}
-                            <option value="{{ supplier.id }}">
-                                {{ supplier.nama }}
-                            </option>
-                            {% endfor %}
-    
-                        </select>
-    
-                    </div>
-    
-                    <div class="col-md-6">
-    
-                        <label>Tanggal</label>
-    
-                        <input
-                            type="date"
-                            id="tanggal"
-                            class="form-control">
-    
-                    </div>
-    
+
+            <hr />
+
+            <!-- Start - Import file excel  -->
+            <div class="alert alert-success mt-3">
+              <strong> Import Pembelian Excel </strong>
+
+              <div class="row mt-2">
+                <div class="col-md-9">
+                  <input
+                    type="file"
+                    id="excel-file"
+                    class="form-control"
+                    accept=".xlsx,.xls"
+                  />
                 </div>
-    
+
+                <div class="col-md-3">
+                  <button class="btn btn-success w-100" onclick="importExcel()">
+                    Import Excel
+                  </button>
+                </div>
+              </div>
             </div>
-    
-        </div>
-       
-      </section>
-      <!--! [End] Card Supplier !-->
+            <!-- End - Import file excel  -->
 
-      <!--! [Start] Card Detail Barang !-->
-      <section class="section">
-
-        <div class="card">
-    
+            <!-- Start - Detail Barang -->
             <div class="card-header">
-                <h4>Detail Barang</h4>
+              <h4>Detail Barang</h4>
             </div>
-    
             <div class="card-body">
-    
-                <table class="table table-bordered">
-    
-                    <thead>
-                        <tr>
-                            <th>Barang</th>
-                            <th>Qty</th>
-                            <th>Harga Beli</th>
-                            <th>Subtotal</th>
-                            <th>Aksi</th>
-                        </tr>
-                    </thead>
-    
-                    <tbody id="purchase-items">
-    
-                    </tbody>
-    
-                </table>
-    
-                <button
-                    class="btn btn-primary"
-                    onclick="addRow()">
-    
-                    Tambah Barang
-    
-                </button>
-    
-            </div>
-    
-        </div>
-    
-      </section>
-      <!--! [End] Card Detail Barang !-->
+              <table class="table table-bordered">
+                <thead>
+                  <tr>
+                    <th>Barang</th>
+                    <th>Qty</th>
+                    <th>Harga Beli</th>
+                    <th>Subtotal</th>
+                    <th>Aksi</th>
+                  </tr>
+                </thead>
 
-      <!--! [Start] Card Total Pembelian !-->
-      <section class="section">
-
-        <div class="card">
-    
-            <div class="card-body">
-    
-                <h4>
-                    Total :
-                    Rp <span id="grand-total">0</span>
-                </h4>
-    
-                <button
-                    class="btn btn-success"
-                    onclick="savePurchase()">
-    
-                    Simpan Pembelian
-    
-                </button>
-    
+                <tbody id="purchase-items">
+                  <tr id="empty-row">
+                    <td colspan="5" class="text-center text-muted">
+                      Belum ada data pembelian
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
             </div>
-    
+            <!-- End - Detail Barang -->
+
+            <!-- Start -  total  -->
+            <div class="d-flex justify-content-between align-items-center">
+              <h3 class="text-success mb-0">
+                Total : Rp <span id="grand-total">0</span>
+              </h3>
+
+              <button class="btn btn-success" onclick="savePurchase()">
+                Simpan Pembelian
+              </button>
+            </div>
+            <!-- End -  total  -->
+          </div>
         </div>
-    
       </section>
-      <!--! [End] Card Total Pembelian !-->
+
       <!--! =============================== PEMBELIAN - END ================================= !-->
-
     </div>
     <!--! ================================================================ !-->
     <!--! [End] Main Content !-->
@@ -195,7 +171,6 @@
     {% include 'components/footer_dashboard.html' %}
     <!--! [End] Footer !-->
     <!--! ================================================================ !-->
-
   </div>
   <!--! ================================================================ !-->
   <!--! [End] Page Content !-->
@@ -211,9 +186,9 @@
       }{% if not loop.last %},{% endif %}
       {% endfor %}
   ];
-  
+
   console.log(itemsData);
-  
 </script>
 <script src="{{ url_for('static', filename='javascript/backend/purchase.js') }}"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 {% endblock %}

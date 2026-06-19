@@ -109,11 +109,19 @@ function addItemToCart(item) {
 }
 
 $(document).ready(function () {
+  $('#customer_id').select2({
+
+    placeholder: 'Cari Customer',
+
+    width: '100%',
+    minimumInputLength: 1
+
+});
   $("#search-item").select2({
     placeholder: "Cari Barang",
 
     width: "100%",
-    minimumInputLength: 1,
+    minimumInputLength: 1
   });
 
   $("#search-item").on("change", function () {

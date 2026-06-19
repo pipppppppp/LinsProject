@@ -71,12 +71,14 @@
                 <label>Customer</label>
 
                 <select id="customer_id" class="form-select">
+
                   {% for customer in customers %}
-
-                  <option value="{{ customer.id }}">{{ customer.nama }}</option>
-
+                  <option value="{{ customer.id }}">
+                      {{ customer.nama }}
+                  </option>
                   {% endfor %}
-                </select>
+              
+              </select>
               </div>
 
               <div class="col-md-6">
@@ -211,5 +213,7 @@
 
   console.log(itemsData);
 </script>
+<script src="{{ url_for('static', filename='javascript/backend/sales.js') }}"></script>
+  
 <script src="{{ url_for('static', filename='javascript/backend/sales.js') }}"></script>
 {% endblock %}

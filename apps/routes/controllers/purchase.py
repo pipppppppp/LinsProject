@@ -1,6 +1,7 @@
 from flask import Blueprint, request, render_template, session, redirect, url_for
 from datetime import datetime
 from ... import db
+import pandas as pd
 
 from ...database.db_purchases import Purchases
 from ...database.db_purchase_details import PurchaseDetails
@@ -42,8 +43,47 @@ def index():
         suppliers=suppliers,
         items=items,
         purchases=purchases,
+        current_date=datetime.now().strftime("%Y-%m-%d"),
         active_menu="purchase"
     )
+
+# IMPORT FILE PEMBELIAN
+@purchase.post('/import')
+def import_purchase():
+
+    try:
+
+        file = request.files['file']
+
+        df = pd.read_excel(file)
+
+        data = []
+
+        for _, row in df.iterrows():
+
+            data.append({
+
+                "nama_barang": row["nama_barang"],
+                "qty": int(row["qty"]),
+                "harga_beli": int(row["harga_beli"])
+
+            })
+
+        return {
+
+            "status": True,
+            "data": data
+
+        }
+
+    except Exception as e:
+
+        return {
+
+            "status": False,
+            "message": str(e)
+
+        }, 500
 
 # ROUTE MENYIMPAN PEMBELIAN
 @purchase.post('/add')
@@ -54,13 +94,17 @@ def addPurchase():
         # MENGAMBIL DATA JSON DARI JAVASCRIPT
         body = request.json
 
-        # ID SUPPLIER YANG DIPILIH
         supplier_id = body['supplier_id']
 
-        # TOTAL SELURUH PEMBELIAN
+        tanggal = int(
+            datetime.strptime(
+                body['tanggal'],
+                "%Y-%m-%d"  
+            ).timestamp()
+        )
+
         total = body['total']
 
-        # DETAIL BARANG YANG DIBELI
         details = body['details']
 
         # SIMPAN DATA KE TABEL PURCHASES
@@ -68,7 +112,7 @@ def addPurchase():
 
             supplier_id=supplier_id,
 
-            tanggal=int(time.time()),
+            tanggal=tanggal,
 
             total=total,
 
