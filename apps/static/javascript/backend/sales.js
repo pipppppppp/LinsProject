@@ -1,4 +1,4 @@
-// ======================================================
+// ====================date==================================
 // BARANG
 // ======================================================
 
@@ -108,20 +108,45 @@ function addItemToCart(item) {
   selectItem(select);
 }
 
+function addServiceToCart(service) {
+  const rows = document.querySelectorAll("#service-items tr");
+
+  for (const row of rows) {
+    const serviceId = row.querySelector(".service_id")?.value;
+
+    if (serviceId == service.id) {
+      const qtyInput = row.querySelector(".service_qty");
+
+      qtyInput.value = parseInt(qtyInput.value) + 1;
+
+      calculateServiceRow(qtyInput);
+
+      return;
+    }
+  }
+
+  addServiceRow();
+
+  const lastRow = document.querySelector("#service-items tr:last-child");
+
+  const select = lastRow.querySelector(".service_id");
+
+  select.value = service.id;
+
+  calculateServiceRow(select);
+}
+
 $(document).ready(function () {
   $('#customer_id').select2({
-
-    placeholder: 'Cari Customer',
-
-    width: '100%',
-    minimumInputLength: 1
-
-});
+    placeholder: 'Pilih Member (Opsional)',
+    allowClear: true,
+    width: '100%'
+  });
   $("#search-item").select2({
     placeholder: "Cari Barang",
 
     width: "100%",
-    minimumInputLength: 1
+    minimumInputLength: 1,
   });
 
   $("#search-item").on("change", function () {
@@ -143,6 +168,48 @@ $(document).ready(function () {
   });
 });
 
+$("#search-service").select2({
+
+  placeholder:
+      "Cari Jasa",
+
+  width: "100%",
+
+  minimumInputLength: 1
+
+});
+
+$("#search-service").on(
+  "change",
+  function () {
+
+      const serviceId =
+          $(this).val();
+
+      if (!serviceId) {
+          return;
+      }
+
+      const service =
+          servicesData.find(
+              x =>
+              x.id == serviceId
+          );
+
+      if (!service) {
+          return;
+      }
+
+      addServiceToCart(
+          service
+      );
+
+      $(this)
+          .val(null)
+          .trigger("change");
+  }
+);
+
 function selectItem(element) {
   const row = element.closest("tr");
 
@@ -158,6 +225,7 @@ function selectItem(element) {
 function formatRupiah(number) {
   return new Intl.NumberFormat("id-ID").format(number);
 }
+
 function calculateRow(element) {
   const row = element.closest("tr");
 
@@ -271,7 +339,8 @@ function calculateServiceRow(element) {
 
   const subtotal = qty * harga;
 
-  row.querySelector(".service_subtotal").innerText = subtotal;
+  row.querySelector(".service_subtotal").innerText =
+    "Rp " + formatRupiah(subtotal);
 
   calculateGrandTotal();
 }
@@ -284,14 +353,31 @@ function calculateGrandTotal() {
   let total = 0;
 
   document.querySelectorAll(".subtotal").forEach((item) => {
-    total += parseInt(item.innerText || 0);
+
+    const value =
+      item.innerText
+        .replace("Rp", "")
+        .replace(/\./g, "")
+        .trim();
+
+    total += parseInt(value || 0);
+
   });
 
   document.querySelectorAll(".service_subtotal").forEach((item) => {
-    total += parseInt(item.innerText || 0);
+
+    const value =
+        item.innerText
+            .replace("Rp", "")
+            .replace(/\./g, "")
+            .trim();
+  
+    total += parseInt(value || 0);
+  
   });
 
-  document.getElementById("grand-total").innerText = total;
+  document.getElementById("grand-total").innerText =
+    formatRupiah(total);
 }
 
 // ======================================================
@@ -310,14 +396,15 @@ function removeRow(button) {
 
 async function saveSales() {
   const customerId = document.getElementById("customer_id").value;
+  const tanggal = document.getElementById("tanggal").value;
 
-  if (!customerId) {
-    alert("Pilih customer terlebih dahulu");
-
-    return;
-  }
-
-  const total = document.getElementById("grand-total").innerText;
+  const total = parseInt(
+    document.getElementById("grand-total")
+        .innerText
+        .replace("Rp", "")
+        .replace(/\./g, "")
+        .trim()
+);
 
   const details = [];
 
@@ -332,7 +419,13 @@ async function saveSales() {
 
       harga_jual: row.querySelector(".harga_jual").value,
 
-      subtotal: row.querySelector(".subtotal").innerText,
+      subtotal: parseInt(
+        row.querySelector(".subtotal")
+           .innerText
+           .replace("Rp", "")
+           .replace(/\./g, "")
+           .trim()
+    )
     });
   });
 
@@ -345,12 +438,20 @@ async function saveSales() {
 
       harga_jasa: row.querySelector(".harga_jasa").value,
 
-      subtotal: row.querySelector(".service_subtotal").innerText,
+      subtotal: parseInt(
+        row.querySelector(".service_subtotal")
+           .innerText
+           .replace("Rp", "")
+           .replace(/\./g, "")
+           .trim()
+    )
     });
   });
 
   const data = {
     customer_id: customerId,
+
+    tanggal: tanggal,
 
     total: total,
 
@@ -360,6 +461,15 @@ async function saveSales() {
   };
 
   try {
+    Swal.fire({
+        title: "Menyimpan...",
+        text: "Mohon tunggu",
+        allowOutsideClick: false,
+        didOpen: () => {
+            Swal.showLoading();
+        }
+    });
+
     const response = await fetch("/sales/add", {
       method: "POST",
       headers: {
@@ -371,17 +481,31 @@ async function saveSales() {
     const result = await response.json();
 
     if (!response.ok) {
-      alert(result.message);
+
+      Swal.fire({
+          icon: "error",
+          title: "Gagal",
+          text: result.message
+      });
 
       return;
     }
+    Swal.fire({
+      icon: "success",
+      title: "Berhasil",
+      text: result.message,
+      confirmButtonText: "OK"
+    }).then(() => {
+      location.reload();
+    });
 
-    alert(result.message);
-
-    location.reload();
   } catch (error) {
     console.error(error);
 
-    alert("Terjadi kesalahan saat menyimpan data");
+    Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Terjadi kesalahan saat menyimpan data"
+    });
   }
 }

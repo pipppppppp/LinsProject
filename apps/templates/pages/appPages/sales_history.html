@@ -78,7 +78,15 @@
 
                 <tr>
                   <td>{{ loop.index }}</td>
-                  <td>{{ sale.customer.nama }}</td>
+                  <td>
+                    {% if sale.customer_id %}
+                        {{ sale.customer.nama }}
+                    {% else %}
+                        <span class="badge bg-secondary">
+                            Pelanggan Umum
+                        </span>
+                    {% endif %}
+                  </td>
                   <td>{{ sale.tanggal_format }}</td>
                   <td>{{ sale.total_format }}</td>
 

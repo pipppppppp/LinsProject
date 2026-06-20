@@ -48,6 +48,7 @@ def index():
         customers=customers,
         items=items,
         services=services,
+        current_date=datetime.now().strftime("%Y-%m-%d"),
         active_menu="sales"
     )
 
@@ -61,6 +62,13 @@ def addSales():
 
         # Customer yang dipilih
         customer_id = body['customer_id']
+
+        tanggal = int(
+            datetime.strptime(
+                body['tanggal'],
+                "%Y-%m-%d"
+            ).timestamp()
+        )
 
         # Total penjualan
         total = body['total']
@@ -76,7 +84,7 @@ def addSales():
 
             customer_id=customer_id,
 
-            tanggal=int(time.time()),
+            tanggal=tanggal,
 
             total=total,
 

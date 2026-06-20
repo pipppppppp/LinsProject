@@ -80,15 +80,17 @@
                   <td>{{ loop.index }}</td>
                   <td>{{ purchase.supplier.nama }}</td>
                   <td>{{ purchase.tanggal_format }}</td>
-                  <td>{{ purchase.total }}</td>
+                  <td>
+                    Rp {{ "{:,.0f}".format(purchase.total).replace(",", ".") }}
+                  </td>
 
                   <td>
-                     <a
-                        href="{{ url_for('purchase.detail', id=purchase.id) }}"
-                        class="btn btn-info btn-sm">
-                        Detail
-                 
-                     </a>
+                    <a
+                      href="{{ url_for('purchase.detail', id=purchase.id) }}"
+                      class="btn btn-info btn-sm"
+                    >
+                      Detail
+                    </a>
                   </td>
                 </tr>
 

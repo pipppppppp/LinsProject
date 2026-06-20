@@ -62,29 +62,33 @@
       <section class="section">
         <div class="card">
           <div class="card-header">
-            <h4>Penjualan Barang</h4>
+            <h4>Data Transaksi</h4>
           </div>
 
           <div class="card-body">
             <div class="row">
               <div class="col-md-6">
-                <label>Customer</label>
+                <label>Member (Opsional)</label>
 
                 <select id="customer_id" class="form-select">
-
-                  {% for customer in customers %}
-                  <option value="{{ customer.id }}">
-                      {{ customer.nama }}
+                  <option value="">
+                    Pelanggan Umum
                   </option>
+                  {% for customer in customers %}
+                  <option value="{{ customer.id }}">{{ customer.nama }}</option>
                   {% endfor %}
-              
-              </select>
+                </select>
               </div>
 
               <div class="col-md-6">
                 <label>Tanggal</label>
 
-                <input type="date" id="tanggal" class="form-control" />
+                <input
+                  type="date"
+                  id="tanggal"
+                  class="form-control"
+                  value="{{ current_date }}"
+                />
               </div>
             </div>
           </div>
@@ -95,7 +99,11 @@
       <!--! [Start] Card Detail Barang !-->
       <section class="section">
         <div class="card">
-          <div class="card-body pb-0">
+          <div class="card-header">
+            <h4>Detail Barang</h4>
+          </div>
+
+          <div class="card-body">
             <label class="form-label"> Cari Barang </label>
 
             <select id="search-item" class="form-select">
@@ -105,21 +113,17 @@
               <option value="{{ item.id }}">{{ item.nama_barang }}</option>
               {% endfor %}
             </select>
-          </div>
-          <div class="card-body pb-0">
-            <div class="form-label text-center">
-              <h4>Detail Barang</h4>
-            </div>
-          </div>
-          <div class="card-body">
-            <table class="table table-bordered">
+
+            <hr />
+
+            <table class="table table-bordered mt-3">
               <thead>
                 <tr>
                   <th>Barang</th>
-                  <th>Qty</th>
+                  <th width="120">Qty</th>
                   <th>Harga Jual</th>
                   <th>Subtotal</th>
-                  <th>Aksi</th>
+                  <th width="80">Aksi</th>
                 </tr>
               </thead>
 
@@ -138,6 +142,15 @@
           </div>
 
           <div class="card-body">
+            <label class="form-label"> Cari Jasa </label>
+            <select id="search-service" class="form-select">
+              <option value="">Cari Jasa...</option>
+
+              {% for service in services %}
+              <option value="{{ service.id }}">{{ service.nama_jasa }}</option>
+              {% endfor %}
+            </select>
+            <hr />
             <table class="table table-bordered">
               <thead>
                 <tr>
@@ -151,27 +164,21 @@
 
               <tbody id="service-items"></tbody>
             </table>
-
-            <button class="btn btn-info" onclick="addServiceRow()">
-              Tambah Jasa
-            </button>
           </div>
         </div>
       </section>
       <!--! [End] Card Detail Jasa !-->
 
       <!--! [Start] Card Total Pembelian !-->
-      <section class="section">
-        <div class="card">
-          <div class="card-body">
-            <h4>Total : Rp <span id="grand-total">0</span></h4>
+      <div class="d-flex justify-content-between align-items-center">
+        <h3 class="text-success mb-0">
+          Total : Rp<span id="grand-total"> 0 </span>
+        </h3>
 
-            <button class="btn btn-success" onclick="saveSales()">
-              Simpan Penjualan
-            </button>
-          </div>
-        </div>
-      </section>
+        <button class="btn btn-success" onclick="saveSales()">
+          Simpan Penjualan
+        </button>
+      </div>
       <!--! [End] Card Total Pembelian !-->
       <!--! =============================== PENJUALAN - END ================================= !-->
     </div>
@@ -214,6 +221,6 @@
   console.log(itemsData);
 </script>
 <script src="{{ url_for('static', filename='javascript/backend/sales.js') }}"></script>
-  
-<script src="{{ url_for('static', filename='javascript/backend/sales.js') }}"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 {% endblock %}

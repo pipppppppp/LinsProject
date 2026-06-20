@@ -84,9 +84,14 @@
 
                   <td>{{ detail.qty }}</td>
 
-                  <td>{{ detail.harga_jual }}</td>
+                  <td>
+                    Rp {{ "{:,.0f}".format(detail.harga_jual).replace(",", ".")
+                    }}
+                  </td>
 
-                  <td>{{ detail.subtotal }}</td>
+                  <td>
+                    Rp {{ "{:,.0f}".format(detail.subtotal).replace(",", ".") }}
+                  </td>
                 </tr>
 
                 {% endfor %}
@@ -128,9 +133,15 @@
 
                   <td>{{ service.qty }}</td>
 
-                  <td>{{ service.harga_jasa }}</td>
+                  <td>
+                    Rp {{ "{:,.0f}".format(service.harga_jasa).replace(",", ".")
+                    }}
+                  </td>
 
-                  <td>{{ service.subtotal }}</td>
+                  <td>
+                    Rp {{ "{:,.0f}".format(service.subtotal).replace(",", ".")
+                    }}
+                  </td>
                 </tr>
 
                 {% endfor %}
