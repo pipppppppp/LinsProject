@@ -53,7 +53,9 @@ def addCustomer():
 
     return {
         "status": True,
-        "message": "Data berhasil disimpan"
+        "message": "Data berhasil disimpan",
+        "customer_id": customer.id,
+        "nama": customer.nama
     }
 
 # UPDATE

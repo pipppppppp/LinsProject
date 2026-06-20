@@ -27,10 +27,34 @@ async function saveCustomer() {
         Swal.fire({
             icon: "success",
             title: "Berhasil",
-            text: "Member berhasil ditambahkan"
-        }).then(() => {
-            location.reload();
+            text: "Member berhasil ditambahkan",
+            timer: 1500,
+            showConfirmButton: false
         });
+
+        const option = new Option(
+            result.nama,
+            result.customer_id,
+            true,
+            true
+        );
+        
+        $("#customer_id")
+            .append(option)
+            .trigger("change");
+
+            const modal =
+            bootstrap.Modal.getInstance(
+                document.getElementById(
+                    "inlineForm"
+                )
+            );
+        
+        modal.hide();
+
+        document.getElementById("nama").value = "";
+        document.getElementById("alamat").value = "";
+        document.getElementById("telepon").value = "";
     
     } else {
         Swal.fire({
