@@ -61,6 +61,62 @@
       <!--! [Start] Header !-->
       <section class="section">
         <div class="card">
+          <!-- Filter Periode - Start -->
+          <div class="card mb-3">
+            <div class="card-body">
+              <form method="GET">
+                <div class="row">
+                  <div class="col-md-4">
+                    <label>Periode</label>
+
+                    <select name="periode" class="form-select">
+                      <option value="today"
+                          {% if periode == 'today' %}
+                          selected
+                          {% endif %}
+                          >
+                          Hari Ini
+                        </option>
+
+                        <option value="month"
+                          {% if periode == 'month' %}
+                          selected
+                          {% endif %}
+                          >
+                          Bulan Ini
+                        </option>
+
+                        <option value="year"
+                          {% if periode == 'year' %}
+                          selected
+                          {% endif %}
+                          >
+                          Tahun Ini
+                        </option>
+                    </select>
+                  </div>
+                  
+
+                  <div class="col-md-2 d-flex align-items-end">
+                    <button class="btn btn-primary">Tampilkan</button>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+          <!-- Filter Periode - End -->
+
+          <!-- Card Total Penjualan - Start -->
+          <div class="card">
+            <div class="card-body">
+              <h4 class="text-success">
+                Total Penjualan : Rp {{ "{:,.0f}".format( total_penjualan
+                ).replace(",", ".") }}
+              </h4>
+            </div>
+          </div>
+          <!-- Card Total Penjualan - End -->
+
           <!-- <div class="card-header">Simple Datatable</div> -->
           <div class="card-body">
             <table class="table table-striped" id="table1">
@@ -77,7 +133,15 @@
 
                 <tr>
                   <td>{{ loop.index }}</td>
-                  <td>{{ sale.customer.nama }}</td>
+                  <td>
+                    {% if sale.customer %}
+                        {{ sale.customer.nama }}
+                    {% else %}
+                        <span class="badge bg-secondary">
+                            Pelanggan Umum
+                        </span>
+                    {% endif %}
+                </td>
                   <td>{{ sale.tanggal_format }}</td>
                   <td>{{ sale.total_format }}</td>
                 </tr>

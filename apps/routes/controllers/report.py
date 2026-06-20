@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, session, redirect, url_for
+from flask import Blueprint, render_template, session, redirect, url_for, request
 from datetime import datetime
 
 from ...database.db_purchases import Purchases
@@ -57,9 +57,50 @@ def sales_report():
             url_for('auth.signin_page')
         )
 
-    sales = Sales.query.filter_by(
+    periode = request.args.get(
+        'periode',
+        'today'
+    )
+
+    query = Sales.query.filter_by(
         is_delete=0
-    ).all()
+    )
+
+    today = datetime.now().strftime(
+    "%Y-%m-%d"
+    )
+
+    if periode == "today":
+
+        query = query.filter(
+            Sales.tanggal == today
+        )
+
+    elif periode == "month":
+
+        bulan = datetime.now().strftime(
+            "%Y-%m"
+        )
+
+        query = query.filter(
+            Sales.tanggal.like(
+                f"{bulan}%"
+            )
+        )
+
+    elif periode == "year":
+
+        tahun = datetime.now().strftime(
+            "%Y"
+        )
+
+        query = query.filter(
+            Sales.tanggal.like(
+                f"{tahun}%"
+            )
+        )
+    
+    sales = query.all()
 
     for sale in sales:
 
@@ -75,10 +116,17 @@ def sales_report():
             f"Rp {sale.total:,}"
         ).replace(",", ".")
 
+    total_penjualan = sum(
+        sale.total
+        for sale in sales
+    )
+
     return render_template(
         template_name_or_list='report_sales.html',
         title='Laporan Penjualan',
         sales=sales,
+        total_penjualan=total_penjualan,
+        periode=periode,
         active_menu="sales_report"
     )
 
