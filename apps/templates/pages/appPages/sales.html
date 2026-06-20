@@ -67,17 +67,27 @@
 
           <div class="card-body">
             <div class="row">
-              <div class="col-md-6">
+              <div class="col-md-5">
                 <label>Member (Opsional)</label>
 
-                <select id="customer_id" class="form-select">
-                  <option value="">
-                    Pelanggan Umum
-                  </option>
+                <select id="customer_id" class="form-control">
+                  <option value="">Pelanggan Umum</option>
+
                   {% for customer in customers %}
                   <option value="{{ customer.id }}">{{ customer.nama }}</option>
                   {% endfor %}
                 </select>
+              </div>
+
+              <div class="col-md-1 d-flex align-items-end">
+                <button
+                  type="button"
+                  class="btn btn-primary w-100"
+                  data-bs-toggle="modal"
+                  data-bs-target="#inlineForm"
+                >
+                  +
+                </button>
               </div>
 
               <div class="col-md-6">
@@ -181,6 +191,51 @@
       </div>
       <!--! [End] Card Total Pembelian !-->
       <!--! =============================== PENJUALAN - END ================================= !-->
+
+      <!--! ================================================================ !-->
+      <!--! [Start] Form Add Customer/Member Modal !-->
+      <div class="modal fade text-left" id="inlineForm" tabindex="-1" role="dialog" aria-labelledby="myModalLabel33" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable" role="document">
+           <div class="modal-content">
+              <div class="modal-header">
+                 <h4 class="modal-title" id="myModalLabel33">Tambah Member</h4>
+                 <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                    <i data-feather="x"></i>
+                 </button>
+              </div>
+              <form action="#" method="post">
+                 <div class="modal-body">
+                    <label>Nama : </label>
+                    <div class="form-group">
+                       <input type="text" id="nama" class="form-control" placeholder="Nama">
+                    </div>
+                    <label>Alamat : </label>
+                    <div class="form-group">
+                       <input type="text" id="alamat" class="form-control mt-2" placeholder="Alamat">
+                    </div>
+                    <label>No.tlp : </label>
+                    <div class="form-group">
+                       <input type="text" id="telepon" class="form-control mt-2" placeholder="Telepon">
+                    </div>
+                 </div>
+                 <div class="modal-footer">
+                    <button type="button" class="btn btn-light-secondary" data-bs-dismiss="modal">
+                       <i class="bx bx-x d-block d-sm-none"></i>
+                       <span class="d-none d-sm-block">Tutup</span>
+                    </button>
+                    <button
+                       type="button"
+                       class="btn btn-primary"
+                       onclick="saveCustomer()">
+                       Simpan
+                    </button>
+                 </div>
+              </form>
+           </div>
+        </div>
+     </div>
+      <!--! [End] Form Add Customer/Member Modal !-->
+      <!--! ================================================================ !-->
     </div>
     <!--! ================================================================ !-->
     <!--! [End] Main Content !-->
@@ -221,6 +276,6 @@
   console.log(itemsData);
 </script>
 <script src="{{ url_for('static', filename='javascript/backend/sales.js') }}"></script>
-
+<script src="{{ url_for('static', filename='javascript/backend/customer.js') }}"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 {% endblock %}

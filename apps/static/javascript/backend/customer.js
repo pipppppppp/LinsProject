@@ -23,9 +23,21 @@ async function saveCustomer() {
     const result = await response.json();
 
     if (result.status) {
-        location.reload();
+
+        Swal.fire({
+            icon: "success",
+            title: "Berhasil",
+            text: "Member berhasil ditambahkan"
+        }).then(() => {
+            location.reload();
+        });
+    
     } else {
-        alert(result.message);
+        Swal.fire({
+            icon: "error",
+            title: "Gagal",
+            text: result.message
+        });
     }
 }
 // # ============================================================== 
