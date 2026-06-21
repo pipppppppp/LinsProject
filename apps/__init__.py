@@ -21,10 +21,6 @@ app.config.from_object(ConnectDB)
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 
-
-from .database import db_customer
-from .database import db_categories
-
 # JWT Section ==============================##
 jwt = JWTManager(app)
 
@@ -47,9 +43,9 @@ for x in list_folder:
 
 # ========================= DATABASE CONFIGURATION =========================
 from .database import db_admins
-# from .database import db_auth
-# from .database import db_item
-# from .database import db_item
+from .database import db_categories
+from .database import db_customer
+from .database import db_items
 # ====================== END - DATABASE CONFIGURATION ======================
 
 
@@ -69,11 +65,13 @@ from .routes.controllers.signin import auth
 from .routes.controllers.dashboard import dashboard
 from .routes.controllers.category import category
 from .routes.controllers.customer import customer
+from .routes.controllers.product import product
 
 # Register
 app.register_blueprint(auth)
 app.register_blueprint(dashboard)
 app.register_blueprint(category)
 app.register_blueprint(customer)
+app.register_blueprint(product)
 # End Blueprint Section ==========================##
 # ====================== END - ROUTE CONFIGURATION ======================

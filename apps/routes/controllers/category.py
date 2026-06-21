@@ -1,12 +1,9 @@
-from flask import Blueprint, request, redirect, url_for, render_template
-from flask import current_app as app
-from flask_jwt_extended import jwt_required
+from flask import Blueprint, request, render_template
+import time
 
-from ..models.signin import SigninModels
-from ...utilities.forms import SigninForm
 from ... import db
 from ...database.db_categories import Categories
-import time
+from ..models.category import add_category, edit_category, delete_category
 
 # BLUEPRINT ================================================== Begin
 category = Blueprint(
@@ -17,13 +14,13 @@ category = Blueprint(
 )
 # BLUEPRINT ================================================== End
 
+
 # CATEGORY PAGE ============================================================ Begin
 # GET https://127.0.0.1:5000/category/
 @category.get('/')
 def index():
     try:
         # Return Page ======================================== 
-        # return redirect(url_for('dashboard'))
         categories = Categories.query.filter_by(
             is_delete=0
         ).all()
@@ -36,7 +33,6 @@ def index():
         )
 
     except Exception as e:
-
         return render_template(
             title="Error $04 - Aplikasi e Hel",
             template_name_or_list='errorPages/404.html'
@@ -49,74 +45,78 @@ def index():
 @category.post('/add')
 def createCategory():
     try:
+        # Request Data ========================================
         body = request.json
 
-        data = Categories(
-            category=body['category'],
-            created_at=int(time.time()),
-            updated_at=int(time.time())
-        )
+        # Request Process ======================================== 
+        response = add_category(body)
 
-        db.session.add(data)
-        db.session.commit()
-
-        return {
-            "status": True,
-            "message": "Data berhasil ditambahkan"
-        }
+        # Request Data ======================================== 
+        return response
 
     except Exception as e:
         return render_template(
             title="Error $04 - Aplikasi e Hel",
             template_name_or_list='errorPages/404.html'
         )
-
 # ADD CATEGORY DATA ============================================================ End
 
-@category.put('/update/<int:id>')
-def updateCategory(id):
 
+# ADD CATEGORY DATA ============================================================ Begin
+# POST https://127.0.0.1:5000/category/add
+@category.post('/add')
+def getCategory():
     try:
+        # Request Process ======================================== 
+        response = CategoryModels.view_category()
 
-        body = request.json
-
-        data = Categories.query.get_or_404(id)
-
-        data.category = body['category']
-        data.updated_at = int(time.time())
-
-        db.session.commit()
-
-        return {
-            "status": True,
-            "message": "Kategori berhasil diupdate"
-        }
+        # Request Data ======================================== 
+        return response
 
     except Exception as e:
         return render_template(
             title="Error $04 - Aplikasi e Hel",
             template_name_or_list='errorPages/404.html'
         )
+# ADD CATEGORY DATA ============================================================ End
 
+
+# UPDATE CATEGORY DATA ============================================================ Begin
+# PUT https://127.0.0.1:5000/category/update
+@category.put('/update/<int:id>')
+def updateCategory(id):
+    try:
+        # Request Data ========================================
+        body = request.json
+
+        # Request Process ======================================== 
+        response = edit_category(body, id)
+
+        # Request Data ======================================== 
+        return response
+
+    except Exception as e:
+        return render_template(
+            title="Error $04 - Aplikasi e Hel",
+            template_name_or_list='errorPages/404.html'
+        )
+# UPDATE CATEGORY DATA ============================================================ End
+
+
+# DELETE CATEGORY DATA ============================================================ Begin
+# DELETE https://127.0.0.1:5000/category/update
 @category.delete('/delete/<int:id>')
 def deleteCategory(id):
-
     try:
+        # Request Process ======================================== 
+        response = delete_category(id)
 
-        data = Categories.query.get_or_404(id)
-
-        data.is_delete = 1
-        data.deleted_at = int(time.time())
-
-        db.session.commit()
-
-        return {
-            "status": True,
-            "message": "Kategori berhasil dihapus"
-        }
+        # Request Data ======================================== 
+        return response
         
     except Exception as e:
         return {
             "status": False,
             "message": str(e)
         }, 500
+# DELETE CATEGORY DATA ============================================================ End

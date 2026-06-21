@@ -6,14 +6,18 @@ from ...database.db_customer import Customers
 
 import time
 
+# BLUEPRINT ================================================== Begin
 customer = Blueprint(
     name='customer',
     import_name=__name__,
     template_folder="../../templates/pages/appPages",
     url_prefix='/customer',
 )
+# BLUEPRINT ================================================== End
 
-# TAMPIL HALAMAN
+
+# CUSTOMER PAGE ============================================================ Begin
+# [GET] https://127.0.0.1:5000/customer/
 @customer.get('/')
 def index():
 
@@ -26,9 +30,11 @@ def index():
         title='Data Pelanggan',
         customers=customers
     )
+# CUSTOMER PAGE ============================================================ End
 
 
-# TAMBAH DATA
+# ADD CUSTOMER DATA ============================================================ Begin
+# [POST] https://127.0.0.1:5000/customer/add
 @customer.post('/add')
 def addCustomer():
 
@@ -49,8 +55,11 @@ def addCustomer():
         "status": True,
         "message": "Data berhasil disimpan"
     }
+# ADD CUSTOMER DATA ============================================================ End
 
-# UPDATE
+
+# UPDATE CUSTOMER DATA ============================================================ Begin
+# [PUT] https://127.0.0.1:5000/customer/update/<id>
 @customer.put('/update/<int:id>')
 def updateCustomer(id):
     try:
@@ -75,9 +84,11 @@ def updateCustomer(id):
             "status": False,
             "message": str(e)
         }, 500
+# UPDATE CUSTOMER DATA ============================================================ End
 
 
-# DELETE
+# DELETE CUSTOMER DATA ============================================================ Begin
+# [DELETE] https://127.0.0.1:5000/customer/delete/<id>
 @customer.delete('/delete/<int:id>')
 def deleteCustomer(id):
 
@@ -92,3 +103,4 @@ def deleteCustomer(id):
         "status": True,
         "message": "Data berhasil dihapus"
     }
+# DELETE CUSTOMER DATA ============================================================ End

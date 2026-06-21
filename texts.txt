@@ -158,7 +158,6 @@ D. REQUEST BODY SETTING
 O> JSON Key Name
     nameapi_namekey -> template_id
 
-
 f"Admin dengan id {user_id} menambahkan template baru: {title}."
 
 
@@ -203,14 +202,14 @@ class BigFirstLetter():
 
 o> CONTROLLERS
 o>> IMPORT FORMAT
-from package import something
-from package import something
-from package import something
-
-from folder.file import function/class
-from folder.file import function/class
-
 import library
+from package import something
+from package import something
+from package import something
+
+from folder.file import function/class
+from folder.file import function/class
+
 
 o>> BLUEPRINT
 smallletter = Blueprint()
