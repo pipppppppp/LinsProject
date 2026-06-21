@@ -1,0 +1,173 @@
+{% extends 'layouts/dashboard_layout.html' %} {% block content %}
+
+<div id="app">
+  <!--! ================================================================ !-->
+  <!--! [Start] Navigation Section !-->
+  <!--! ================================================================ !-->
+  {% include 'components/nav_dashboard.html' %}
+  <!--! ================================================================ !-->
+  <!--! [End] Navigation Section !-->
+  <!--! ================================================================ !-->
+
+  <!--! ================================================================ !-->
+  <!--! [Start] Page Content !-->
+  <!--! ================================================================ !-->
+  <div id="main">
+    <!--! ================================================================ !-->
+    <!--! [Start] Burger Button !-->
+    <!--! ================================================================ !-->
+    <header class="mb-3">
+      <a href="#" class="burger-btn d-block d-xl-none">
+        <i class="bi bi-justify fs-3"></i>
+      </a>
+    </header>
+    <!--! ================================================================ !-->
+    <!--! [End] Burger Button !-->
+    <!--! ================================================================ !-->
+
+    <!--! ================================================================ !-->
+    <!--! [Start] Main Content !-->
+    <!--! ================================================================ !-->
+    <div class="page-heading">
+      <!--! ================================================================ !-->
+      <!--! [Start] Header !-->
+      <div class="page-title">
+        <div class="row">
+          <div class="col-12 col-md-6 order-md-1 order-last">
+            <h3>LAPORAN PENJUALAN</h3>
+            <!-- <p class="text-subtitle text-muted">The default layout</p> -->
+          </div>
+          <div class="col-12 col-md-6 order-md-2 order-first">
+            <nav
+              aria-label="breadcrumb"
+              class="breadcrumb-header float-start float-lg-end"
+            >
+              <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                  <a href="{{ url_for('dashboard.index') }}">Dashboard</a>
+                </li>
+                <li class="breadcrumb-item active" aria-current="page">
+                  Laporan Penjualan
+                </li>
+              </ol>
+            </nav>
+          </div>
+        </div>
+      </div>
+      <!--! [End] Header !-->
+      <!--! ================================================================ !-->
+
+      <!--! ================================================================ !-->
+      <!--! [Start] Header !-->
+      <section class="section">
+        <div class="card">
+          <!-- Filter Periode - Start -->
+          <div class="card mb-3">
+            <div class="card-body">
+              <form method="GET">
+                <div class="row">
+                  <div class="col-md-4">
+                    <label>Periode</label>
+
+                    <select name="periode" class="form-select">
+                      <option value="today"
+                          {% if periode == 'today' %}
+                          selected
+                          {% endif %}
+                          >
+                          Hari Ini
+                        </option>
+
+                        <option value="month"
+                          {% if periode == 'month' %}
+                          selected
+                          {% endif %}
+                          >
+                          Bulan Ini
+                        </option>
+
+                        <option value="year"
+                          {% if periode == 'year' %}
+                          selected
+                          {% endif %}
+                          >
+                          Tahun Ini
+                        </option>
+                    </select>
+                  </div>
+                  
+
+                  <div class="col-md-2 d-flex align-items-end">
+                    <button class="btn btn-primary">Tampilkan</button>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+          <!-- Filter Periode - End -->
+
+          <!-- Card Total Penjualan - Start -->
+          <div class="card">
+            <div class="card-body">
+              <h4 class="text-success">
+                Total Penjualan : Rp {{ "{:,.0f}".format( total_penjualan
+                ).replace(",", ".") }}
+              </h4>
+            </div>
+          </div>
+          <!-- Card Total Penjualan - End -->
+
+          <!-- <div class="card-header">Simple Datatable</div> -->
+          <div class="card-body">
+            <table class="table table-striped" id="table1">
+              <thead>
+                <tr>
+                  <th>No</th>
+                  <th>Customer</th>
+                  <th>Tanggal</th>
+                  <th>Total</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for sale in sales %}
+
+                <tr>
+                  <td>{{ loop.index }}</td>
+                  <td>
+                    {% if sale.customer %}
+                        {{ sale.customer.nama }}
+                    {% else %}
+                        <span class="badge bg-secondary">
+                            Pelanggan Umum
+                        </span>
+                    {% endif %}
+                </td>
+                  <td>{{ sale.tanggal_format }}</td>
+                  <td>{{ sale.total_format }}</td>
+                </tr>
+
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+      <!--! [End] Header !-->
+      <!--! ================================================================ !-->
+    </div>
+    <!--! ================================================================ !-->
+    <!--! [End] Main Content !-->
+    <!--! ================================================================ !-->
+
+    <!--! ================================================================ !-->
+    <!--! [Start] Footer !-->
+    {% include 'components/footer_dashboard.html' %}
+    <!--! [End] Footer !-->
+    <!--! ================================================================ !-->
+  </div>
+  <!--! ================================================================ !-->
+  <!--! [End] Page Content !-->
+  <!--! ================================================================ !-->
+</div>
+
+{% endblock %}

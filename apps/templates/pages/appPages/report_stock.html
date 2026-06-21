@@ -1,0 +1,319 @@
+{% extends 'layouts/dashboard_layout.html' %} {% block content %}
+
+<div id="app">
+  <!--! ================================================================ !-->
+  <!--! [Start] Navigation Section !-->
+  <!--! ================================================================ !-->
+  {% include 'components/nav_dashboard.html' %}
+  <!--! ================================================================ !-->
+  <!--! [End] Navigation Section !-->
+  <!--! ================================================================ !-->
+
+  <!--! ================================================================ !-->
+  <!--! [Start] Page Content !-->
+  <!--! ================================================================ !-->
+  <div id="main">
+    <!--! ================================================================ !-->
+    <!--! [Start] Burger Button !-->
+    <!--! ================================================================ !-->
+    <header class="mb-3">
+      <a href="#" class="burger-btn d-block d-xl-none">
+        <i class="bi bi-justify fs-3"></i>
+      </a>
+    </header>
+    <!--! ================================================================ !-->
+    <!--! [End] Burger Button !-->
+    <!--! ================================================================ !-->
+
+    <!--! ================================================================ !-->
+    <!--! [Start] Main Content !-->
+    <!--! ================================================================ !-->
+    <div class="page-heading">
+      <!--! ================================================================ !-->
+      <!--! [Start] Header !-->
+      <div class="page-title">
+        <div class="row">
+          <div class="col-12 col-md-6 order-md-1 order-last">
+            <h3>LAPORAN STOK BARANG</h3>
+            <!-- <p class="text-subtitle text-muted">The default layout</p> -->
+          </div>
+          <div class="col-12 col-md-6 order-md-2 order-first">
+            <nav
+              aria-label="breadcrumb"
+              class="breadcrumb-header float-start float-lg-end"
+            >
+              <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                  <a href="{{ url_for('dashboard.index') }}">Dashboard</a>
+                </li>
+                <li class="breadcrumb-item active" aria-current="page">
+                  Laporan Stok Barang
+                </li>
+              </ol>
+            </nav>
+          </div>
+        </div>
+      </div>
+      <!--! [End] Header !-->
+      <!--! ================================================================ !-->
+
+      <!--! ================================================================ !-->
+      <!--! [Start] Title !-->
+      <section class="section">
+        <div class="card">
+          <div class="card-body">
+            <div class="row">
+              <div class="col-sm-12 d-flex justify-content-end">
+                <a
+                  href="#"
+                  class="btn btn-outline-success"
+                  data-bs-toggle="modal"
+                  data-bs-target="#inlineForm"
+                >
+                  Tambah</a
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+      <!--! [End] Title !-->
+      <!--! ================================================================ !-->
+
+      <!--! ================================================================ !-->
+      <!--! [Start] Header !-->
+      <section class="section">
+        <div class="card">
+          <!-- <div class="card-header">Simple Datatable</div> -->
+          <div class="card-body">
+            <table class="table table-striped" id="table1">
+              <thead>
+                <tr>
+                  <th>No</th>
+                  <th>Nama Barang</th>
+                  <th>Kategori</th>
+                  <th>Stok</th>
+                  <th>Harga Beli</th>
+                  <th>Harga Jual</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                {% for item in items %}
+
+                <tr>
+                  <td>{{ loop.index }}</td>
+
+                  <td>{{ item.nama_barang }}</td>
+
+                  <td>{{ item.category.category }}</td>
+
+                  <td>{{ item.stok }}</td>
+
+                  <td>{{ item.harga_beli_format }}</td>
+                  
+                  <td>{{ item.harga_jual_format }}</td>
+                </tr>
+
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+      <!--! [End] Header !-->
+      <!--! ================================================================ !-->
+    </div>
+    <!--! ================================================================ !-->
+    <!--! [End] Main Content !-->
+    <!--! ================================================================ !-->
+
+    <!--! ================================================================ !-->
+    <!--! [Start] Footer !-->
+    {% include 'components/footer_dashboard.html' %}
+    <!--! [End] Footer !-->
+    <!--! ================================================================ !-->
+
+    <!--! ================================================================ !-->
+    <!--! [Start] Form Add Modal !-->
+    <div
+      class="modal fade text-left"
+      id="inlineForm"
+      tabindex="-1"
+      role="dialog"
+      aria-labelledby="myModalLabel33"
+      aria-hidden="true"
+    >
+      <div
+        class="modal-dialog modal-dialog-centered modal-dialog-scrollable"
+        role="document"
+      >
+        <div class="modal-content">
+          <div class="modal-header">
+            <h4 class="modal-title" id="myModalLabel33">Tambah Barang</h4>
+            <button
+              type="button"
+              class="close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            >
+              <i data-feather="x"></i>
+            </button>
+          </div>
+          <form action="#" method="post">
+            <div class="modal-body">
+              <label>Kategori</label>
+              <select id="category_id" class="form-control">
+                <option value="">Pilih Kategori</option>
+
+                {% for category in categories %}
+                <option value="{{ category.id }}">
+                  {{ category.category }}
+                </option>
+                {% endfor %}
+              </select>
+              <label>Nama Barang</label>
+              <input type="text" id="nama_barang" class="form-control" />
+              <label>Stok</label>
+              <input type="number" id="stok" class="form-control" />
+              <label>Harga Beli</label>
+              <input type="number" id="harga_beli" class="form-control" />
+              <label>Harga Jual</label>
+              <input type="number" id="harga_jual" class="form-control" />
+            </div>
+            <div class="modal-footer">
+              <button
+                type="button"
+                class="btn btn-light-secondary"
+                data-bs-dismiss="modal"
+              >
+                <i class="bx bx-x d-block d-sm-none"></i>
+                <span class="d-none d-sm-block">Tutup</span>
+              </button>
+              <button
+                type="button"
+                class="btn btn-primary"
+                onclick="saveItem()"
+              >
+                Simpan
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+    <!--! [End] Form Add Modal !-->
+    <!--! ================================================================ !-->
+
+    <!--! ================================================================ !-->
+    <!--! [Start] Form Update Modal !-->
+    <div
+      class="modal fade text-left"
+      id="editModal"
+      tabindex="-1"
+      role="dialog"
+      aria-labelledby="myModalLabel33"
+      aria-hidden="true"
+    >
+      <div
+        class="modal-dialog modal-dialog-centered modal-dialog-scrollable"
+        role="document"
+      >
+        <div class="modal-content">
+          <div class="modal-header">
+            <h4 class="modal-title" id="myModalLabel33">Edit Data Barang</h4>
+            <button
+              type="button"
+              class="close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            >
+              <i data-feather="x"></i>
+            </button>
+          </div>
+          <form action="#" method="put">
+            <div class="modal-body">
+              <input type="hidden" id="edit_id" />
+              <label>Kategori</label>
+              <div class="form-group">
+                <select id="edit_category_id" class="form-control">
+                  <option value="">Pilih Kategori</option>
+
+                  {% for category in categories %}
+                  <option value="{{ category.id }}">{{ category.nama }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+
+              <label>Nama Barang</label>
+              <div class="form-group">
+                <input
+                  type="text"
+                  id="edit_nama_barang"
+                  class="form-control"
+                  placeholder="Nama Barang"
+                />
+              </div>
+
+              <label>Stok</label>
+              <div class="form-group">
+                <input
+                  type="number"
+                  id="edit_stok"
+                  class="form-control"
+                  placeholder="Stok"
+                />
+              </div>
+
+              <label>Harga Beli</label>
+              <div class="form-group">
+                <input
+                  type="number"
+                  id="edit_harga_beli"
+                  class="form-control"
+                  placeholder="Harga Beli"
+                />
+              </div>
+
+              <label>Harga Jual</label>
+
+              <div class="form-group">
+                <input
+                  type="number"
+                  id="edit_harga_jual"
+                  class="form-control"
+                  placeholder="Harga Jual"
+                />
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button
+                type="button"
+                class="btn btn-light-secondary"
+                data-bs-dismiss="modal"
+              >
+                <i class="bx bx-x d-block d-sm-none"></i>
+                <span class="d-none d-sm-block">Tutup</span>
+              </button>
+              <button
+                type="button"
+                class="btn btn-primary"
+                onclick="updateItem()"
+              >
+                Simpan
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+    <!--! [End] Form Update Modal !-->
+    <!--! ================================================================ !-->
+  </div>
+  <!--! ================================================================ !-->
+  <!--! [End] Page Content !-->
+  <!--! ================================================================ !-->
+</div>
+
+<script src="{{ url_for('static', filename='javascript/backend/item.js') }}"></script>
+{% endblock %}

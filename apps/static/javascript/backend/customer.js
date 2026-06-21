@@ -23,9 +23,45 @@ async function saveCustomer() {
     const result = await response.json();
 
     if (result.status) {
-        location.reload();
+
+        Swal.fire({
+            icon: "success",
+            title: "Berhasil",
+            text: "Member berhasil ditambahkan",
+            timer: 1500,
+            showConfirmButton: false
+        });
+
+        const option = new Option(
+            result.nama,
+            result.customer_id,
+            true,
+            true
+        );
+        
+        $("#customer_id")
+            .append(option)
+            .trigger("change");
+
+            const modal =
+            bootstrap.Modal.getInstance(
+                document.getElementById(
+                    "inlineForm"
+                )
+            );
+        
+        modal.hide();
+
+        document.getElementById("nama").value = "";
+        document.getElementById("alamat").value = "";
+        document.getElementById("telepon").value = "";
+    
     } else {
-        alert(result.message);
+        Swal.fire({
+            icon: "error",
+            title: "Gagal",
+            text: result.message
+        });
     }
 }
 // # ============================================================== 

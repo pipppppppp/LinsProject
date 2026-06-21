@@ -1,4 +1,4 @@
-from flask import Blueprint, request, render_template
+from flask import Blueprint, request, render_template, session, redirect, url_for
 from flask import current_app as app
 
 from ... import db
@@ -21,12 +21,18 @@ customer = Blueprint(
 @customer.get('/')
 def index():
 
+    if 'user_id' not in session:
+        return redirect(
+            url_for('auth.signin_page')
+        )
+
     customers = Customers.query.filter_by(
         is_delete=0
     ).all()
 
     return render_template(
         template_name_or_list='customer.html',
+        active_menu="customer",
         title='Data Pelanggan',
         customers=customers
     )
@@ -53,7 +59,9 @@ def addCustomer():
 
     return {
         "status": True,
-        "message": "Data berhasil disimpan"
+        "message": "Data berhasil disimpan",
+        "customer_id": customer.id,
+        "nama": customer.nama
     }
 # ADD CUSTOMER DATA ============================================================ End
 
