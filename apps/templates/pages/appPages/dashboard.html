@@ -103,81 +103,117 @@
           </div>
         </div>
 
+        <div class="col-md-3">
+          <div class="card shadow-sm">
+            <div class="card-body">
+              <h6 class="text-muted">Penjualan Hari Ini</h6>
+
+              <h4>
+                Rp {{ "{:,.0f}".format( penjualan_hari_ini ).replace(",", ".")
+                }}
+              </h4>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-3">
+          <div class="card shadow-sm">
+            <div class="card-body">
+              <h6 class="text-muted">Pembelian Hari Ini</h6>
+
+              <h4>
+                Rp {{ "{:,.0f}".format( pembelian_hari_ini ).replace(",", ".")
+                }}
+              </h4>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-3">
+          <div class="card shadow-sm">
+            <div class="card-body">
+              <h6 class="text-muted">Omset Bulan Ini</h6>
+
+              <h4>
+                Rp {{ "{:,.0f}".format( omset_bulan ).replace(",", ".") }}
+              </h4>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-3">
+          <div class="card shadow-sm">
+            <div class="card-body">
+              <h6 class="text-muted">Laba Bulan Ini</h6>
+
+              <h4>Rp {{ "{:,.0f}".format( laba_bulan ).replace(",", ".") }}</h4>
+            </div>
+          </div>
+        </div>
+
         <div class="row">
-         <div class="col-md-8">
+          <div class="col-md-8">
             <div class="card shadow-sm">
               <div class="card-header">
                 <h4>Informasi Sistem</h4>
               </div>
-  
+
               <div class="card-body">
                 <p>
-                  Sistem Informasi Point Of Sale Bengkel Motor berbasis Flask dan
-                  MySQL.
+                  Sistem Informasi Point Of Sale Bengkel Motor berbasis Flask
+                  dan MySQL.
                 </p>
-  
+
                 <ul>
                   <li>Manajemen Barang</li>
-  
+
                   <li>Manajemen Supplier</li>
-  
+
                   <li>Manajemen Pelanggan</li>
-  
+
                   <li>Transaksi Pembelian</li>
-  
+
                   <li>Transaksi Penjualan</li>
-  
+
                   <li>Laporan Stok</li>
                 </ul>
               </div>
             </div>
           </div>
-  
+
           <div class="col-md-4">
             <div class="card shadow-sm">
+              <div class="card-header">
+                <h5>Informasi Akun</h5>
+              </div>
 
-               <div class="card-header">
-           
-                   <h5>Informasi Akun</h5>
-           
-               </div>
-           
-               <div class="card-body">
-           
-                   <p>
-           
-                       <strong>Administrator :</strong>
-           
-                       {{ username }}
-           
-                   </p>
-           
-                   <p>
-           
-                       <strong>Status :</strong>
-           
-                       Aktif
-           
-                   </p>
-           
-                   <p>
-           
-                       <strong>Akses :</strong>
-           
-                       Admin
-           
-                   </p>
-           
-                   <a
-                       href="{{ url_for('auth.logout') }}"
-                       class="btn btn-danger w-100"
-                   >
-                       Logout
-                   </a>
-           
-               </div>
-           
-           </div>
+              <div class="card-body">
+                <p>
+                  <strong>Administrator :</strong>
+
+                  {{ username }}
+                </p>
+
+                <p>
+                  <strong>Status :</strong>
+
+                  Aktif
+                </p>
+
+                <p>
+                  <strong>Akses :</strong>
+
+                  Admin
+                </p>
+
+                <a
+                  href="{{ url_for('auth.logout') }}"
+                  class="btn btn-danger w-100"
+                >
+                  Logout
+                </a>
+              </div>
+            </div>
           </div>
         </div>
 
