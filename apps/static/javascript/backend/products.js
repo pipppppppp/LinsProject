@@ -147,7 +147,9 @@ document.querySelector(".btn-save").addEventListener("click", saveProduct);
 // **************************************************************
 // UPDATE & DELETE PRODUCT | START 
 // **************************************************************
-document.getElementById("productTable").addEventListener("click", function (e) {
+document.getElementById("productTable").addEventListener("click", handleTableClick);
+
+async function handleTableClick(e) {
    const id = Number(e.target.dataset.id);
    if (e.target.classList.contains("btn-edit")) {
       // proses edit
@@ -175,7 +177,7 @@ document.getElementById("productTable").addEventListener("click", function (e) {
          alert(result.message);
       }
    }
-});
+}
 // **************************************************************
 // UPDATE & DELETE PRODUCT | END 
 // **************************************************************

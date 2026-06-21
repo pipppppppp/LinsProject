@@ -64,7 +64,7 @@ def createCategory():
 
 # ADD CATEGORY DATA ============================================================ Begin
 # POST https://127.0.0.1:5000/category/add
-@category.post('/add')
+@category.post('/view')
 def getCategory():
     try:
         # Request Process ======================================== 

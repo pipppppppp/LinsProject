@@ -69,31 +69,65 @@
                   <div class="col-md-4">
                     <label>Periode</label>
 
-                    <select name="periode" class="form-select">
+                    <select id="periode" name="periode" class="form-select">
                       <option value="today"
                           {% if periode == 'today' %}
                           selected
                           {% endif %}
                           >
                           Hari Ini
-                        </option>
+                      </option>
 
-                        <option value="month"
+                      <option value="month"
                           {% if periode == 'month' %}
                           selected
                           {% endif %}
                           >
                           Bulan Ini
-                        </option>
+                      </option>
 
-                        <option value="year"
+                      <option value="year"
                           {% if periode == 'year' %}
                           selected
                           {% endif %}
                           >
                           Tahun Ini
-                        </option>
+                      </option>
+
+                      <option value="week">
+                          Minggu ini
+                      </option>
+                      <option value="custom"
+                        {% if periode == 'custom' %}
+                        selected
+                        {% endif %}
+                        >
+                            Custom Range
+                      </option>
                     </select>
+                    <div class="col-md-3">
+                      <label>Tanggal Awal</label>
+                  
+                      <input
+                          type="date"
+                          id="start_date"
+                          type="date"
+                          name="start_date"
+                          class="form-control"
+                          value="{{ start_date }}">
+                    </div>
+                  
+                    <div class="col-md-3">
+                        <label>Tanggal Akhir</label>
+                    
+                        <input
+                            type="date"
+                            id="end_date"
+                            type="date"
+                            name="end_date"
+                            class="form-control"
+                            value="{{ end_date }}">
+                    </div>
                   </div>
                   
 
@@ -169,5 +203,59 @@
   <!--! [End] Page Content !-->
   <!--! ================================================================ !-->
 </div>
+<script>
 
+  function toggleCustomDate() {
+  
+      const periode =
+          document.getElementById(
+              "periode"
+          ).value;
+  
+      const startDate =
+          document.getElementById(
+              "start_date"
+          );
+  
+      const endDate =
+          document.getElementById(
+              "end_date"
+          );
+  
+      if (periode === "custom") {
+  
+          startDate.disabled = false;
+  
+          endDate.disabled = false;
+  
+      } else {
+  
+          startDate.disabled = true;
+  
+          endDate.disabled = true;
+  
+          startDate.value = "";
+  
+          endDate.value = "";
+      }
+  }
+  
+  document.addEventListener(
+      "DOMContentLoaded",
+      function() {
+  
+          toggleCustomDate();
+  
+          document
+              .getElementById(
+                  "periode"
+              )
+              .addEventListener(
+                  "change",
+                  toggleCustomDate
+              );
+      }
+  );
+  
+</script>
 {% endblock %}

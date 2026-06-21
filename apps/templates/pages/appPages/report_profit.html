@@ -1,0 +1,248 @@
+{% extends 'layouts/dashboard_layout.html' %} {% block content %}
+
+<div id="app">
+  <!--! ================================================================ !-->
+  <!--! [Start] Navigation Section !-->
+  <!--! ================================================================ !-->
+  {% include 'components/nav_dashboard.html' %}
+  <!--! ================================================================ !-->
+  <!--! [End] Navigation Section !-->
+  <!--! ================================================================ !-->
+
+  <!--! ================================================================ !-->
+  <!--! [Start] Page Content !-->
+  <!--! ================================================================ !-->
+  <div id="main">
+    <!--! ================================================================ !-->
+    <!--! [Start] Burger Button !-->
+    <!--! ================================================================ !-->
+    <header class="mb-3">
+      <a href="#" class="burger-btn d-block d-xl-none">
+        <i class="bi bi-justify fs-3"></i>
+      </a>
+    </header>
+    <!--! ================================================================ !-->
+    <!--! [End] Burger Button !-->
+    <!--! ================================================================ !-->
+
+    <!--! ================================================================ !-->
+    <!--! [Start] Main Content !-->
+    <!--! ================================================================ !-->
+    <div class="page-heading">
+      <!--! ================================================================ !-->
+      <!--! [Start] Header !-->
+      <div class="page-title">
+        <div class="row">
+          <div class="col-12 col-md-6 order-md-1 order-last">
+            <h3>LAPORAN KEUNTUNGAN</h3>
+            <!-- <p class="text-subtitle text-muted">The default layout</p> -->
+          </div>
+          <div class="col-12 col-md-6 order-md-2 order-first">
+            <nav
+              aria-label="breadcrumb"
+              class="breadcrumb-header float-start float-lg-end"
+            >
+              <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                  <a href="{{ url_for('dashboard.index') }}">Dashboard</a>
+                </li>
+                <li class="breadcrumb-item active" aria-current="page">
+                  Laporan Keuntungan
+                </li>
+              </ol>
+            </nav>
+          </div>
+        </div>
+      </div>
+      <!--! [End] Header !-->
+      <!--! ================================================================ !-->
+
+      <!--! ================================================================ !-->
+      <!--! [Start] Header !-->
+      <select id="periode" name="periode" class="form-select">
+        <option value="today"
+            {% if periode == 'today' %}
+            selected
+            {% endif %}
+            >
+            Hari Ini
+        </option>
+
+        <option value="month"
+            {% if periode == 'month' %}
+            selected
+            {% endif %}
+            >
+            Bulan Ini
+        </option>
+
+        <option value="year"
+            {% if periode == 'year' %}
+            selected
+            {% endif %}
+            >
+            Tahun Ini
+        </option>
+
+        <option value="week">
+            Minggu ini
+        </option>
+        <option value="custom"
+          {% if periode == 'custom' %}
+          selected
+          {% endif %}
+          >
+              Custom Range
+        </option>
+      </select>
+      <div class="col-md-3">
+        <label>Tanggal Awal</label>
+    
+        <input
+            type="date"
+            id="start_date"
+            type="date"
+            name="start_date"
+            class="form-control"
+            value="{{ start_date }}">
+      </div>
+    
+      <div class="col-md-3">
+          <label>Tanggal Akhir</label>
+      
+          <input
+              type="date"
+              id="end_date"
+              type="date"
+              name="end_date"
+              class="form-control"
+              value="{{ end_date }}">
+      </div>
+      <button
+          class="btn btn-primary"
+          onclick="loadProfit()">
+
+          Tampilkan
+
+      </button>
+      <button
+          type="button"
+          class="btn btn-danger"
+          onclick="exportPDF()">
+
+          Export PDF
+
+      </button>
+      <section class="section">
+        <div class="card">
+          <div class="row">
+            <div class="col-md-3">
+              <div class="card">
+                <div class="card-body text-center">
+                  <h6>Omset</h6>
+
+                  <h3 id="omset" class="text-primary">Rp 0</h3>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-md-3">
+              <div class="card">
+                <div class="card-body text-center">
+                  <h6>Laba Barang</h6>
+
+                  <h3 id="laba-barang" class="text-success">Rp 0</h3>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-md-3">
+              <div class="card">
+                <div class="card-body text-center">
+                  <h6>Laba Jasa</h6>
+
+                  <h3 id="laba-jasa" class="text-info">Rp 0</h3>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-md-3">
+              <div class="card">
+                <div class="card-body text-center">
+                  <h6>Laba Bersih</h6>
+
+                  <h3 id="laba-bersih" class="text-danger">Rp 0</h3>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+
+          <div class="card-header">
+      
+              <h4>
+                  Grafik Keuntungan Bulanan
+              </h4>
+      
+          </div>
+      
+          <div class="card-body">
+      
+              <div id="profit-chart"></div>
+      
+          </div>
+      
+      </div>
+      </section>
+      <!--! [End] Header !-->
+      <!--! ================================================================ !-->
+    </div>
+    <!--! ================================================================ !-->
+    <!--! [End] Main Content !-->
+    <!--! ================================================================ !-->
+
+    <!--! ================================================================ !-->
+    <!--! [Start] Footer !-->
+    {% include 'components/footer_dashboard.html' %}
+    <!--! [End] Footer !-->
+    <!--! ================================================================ !-->
+  </div>
+  <!--! ================================================================ !-->
+  <!--! [End] Page Content !-->
+  <!--! ================================================================ !-->
+</div>
+<script>
+  function toggleCustomDate() {
+    const periode = document.getElementById("periode").value;
+
+    const startDate = document.getElementById("start_date");
+
+    const endDate = document.getElementById("end_date");
+
+    if (periode === "custom") {
+      startDate.disabled = false;
+
+      endDate.disabled = false;
+    } else {
+      startDate.disabled = true;
+
+      endDate.disabled = true;
+
+      startDate.value = "";
+
+      endDate.value = "";
+    }
+  }
+
+  document.addEventListener("DOMContentLoaded", function () {
+    toggleCustomDate();
+
+    document
+      .getElementById("periode")
+      .addEventListener("change", toggleCustomDate);
+  });
+</script>
+<script src="{{ url_for('static',filename='javascript/backend/report_profit.js') }}"></script>
+<script src="/static/vendors/apexcharts/apexcharts.js"></script>
+{% endblock %}
