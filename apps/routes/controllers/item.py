@@ -26,7 +26,10 @@ def index():
     items = Items.query.filter_by(
         is_delete=0
     ).all()
-
+    for item in items:
+        item.category = Categories.query.get(
+            item.category_id
+        )
     # Ambil data category
     categories = Categories.query.filter_by(
         is_delete=0

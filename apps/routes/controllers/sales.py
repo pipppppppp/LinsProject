@@ -247,6 +247,16 @@ def detail(id):
             detail.item_id
         )
 
+    sale = Sales.query.get_or_404(id)
+
+    customer = Customers.query.get(
+        sale.customer_id
+    )
+
+    sale.tanggal_format = datetime.fromtimestamp(
+        sale.tanggal
+    ).strftime("%d-%m-%Y %H:%M")
+
     # Ambil detail penjualan jasa
     service_details = SaleServiceDetails.query.filter_by(
         sale_id=id
@@ -262,6 +272,8 @@ def detail(id):
     return render_template(
         template_name_or_list='sales_detail.html',
         title='Detail Penjualan',
+        sale=sale,
+        customer=customer,
         details=details,
         service_details=service_details
     )
@@ -315,7 +327,7 @@ def cancel_sale(id):
             "status": False,
             "message": "Transaksi tidak ditemukan"
         }, 404
-        
+
     if sale.is_delete == 1:
         
         return {

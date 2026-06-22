@@ -63,6 +63,29 @@
         <div class="card">
           <!-- <div class="card-header">Simple Datatable</div> -->
           <div class="card-body">
+            <div class="card mb-3">
+              <div class="card-body">
+
+                <p>No Transaksi : {{ sale.id }}</p>
+
+                <p>Tanggal : {{ sale.tanggal_format }}</p>
+
+                <p>Pelanggan : {{ customer.nama if customer else 'Umum' }}</p>
+
+                <p>
+                  Total : Rp {{ "{:,}".format(sale.total).replace(",", ".") }}
+                </p>
+
+                <p>
+                  Bayar : Rp {{ "{:,}".format(sale.bayar).replace(",", ".") }}
+                </p>
+
+                <p>
+                  Kembalian : Rp {{ "{:,}".format(sale.kembalian).replace(",",
+                  ".") }}
+                </p>
+              </div>
+            </div>
             <table class="table table-striped" id="table1">
               <thead>
                 <tr>
