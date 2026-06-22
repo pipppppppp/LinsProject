@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Nota Penjualan</title>
+  </head>
+
+  <body>
+    <h2>POS Bengkel</h2>
+
+    <hr />
+
+    <p>No Transaksi : {{ sale.id }}</p>
+
+    <p>Pelanggan : 
+        {% if customer %}
+            {{ customer.nama}}
+        {% else %}
+            Umum
+        {% endif %}
+    </p>
+
+    <p>Tanggal : {{ sale.tanggal_format }}</p>
+
+    <hr />
+
+    <table border="1" width="100%">
+      <tr>
+        <th>Barang</th>
+
+        <th>Qty</th>
+
+        <th>Subtotal</th>
+      </tr>
+
+      {% for detail in details %}
+
+      <tr>
+        <td>{{ detail.item.nama_barang }}</td>
+
+        <td>{{ detail.qty }}</td>
+
+        <td>Rp {{ detail.subtotal }}</td>
+      </tr>
+
+      {% endfor %}
+    </table>
+
+    <table border="1" width="100%">
+        <tr>
+          <th>Jasa</th>
+  
+          <th>Qty</th>
+  
+          <th>Subtotal</th>
+        </tr>
+  
+        {% for services in services %}
+  
+        <tr>
+          <td>{{ services.jasa.nama_jasa }}</td>
+  
+          <td>{{ services.qty }}</td>
+  
+          <td>Rp {{ services.subtotal }}</td>
+        </tr>
+  
+        {% endfor %}
+      </table>
+  
+
+    <hr />
+
+    <h3>Total : Rp {{ sale.total }}</h3>
+
+    <h3>Bayar : Rp {{ sale.bayar }}</h3>
+
+    <h3>Kembalian : Rp {{ sale.kembalian }}</h3>
+
+    <script>
+      window.onload = () => {
+        window.print();
+      };
+    </script>
+  </body>
+</html>

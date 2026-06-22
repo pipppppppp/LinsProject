@@ -37,8 +37,6 @@ def index():
             return redirect(
                 url_for('auth.signin_page')
             )
-            
-        print("DASHBOARD MASUK")
 
         # Total data
         total_items = Items.query.filter_by(
@@ -99,7 +97,7 @@ def index():
         ).all()
 
         pembelian_hari_ini = sum(
-            purchase.total_pembelian
+            purchase.total
             for purchase in purchases_today
         )
 
@@ -181,9 +179,12 @@ def index():
     except Exception as e:
         # return bad_request(str(e))
         # return "gagal boss! Durung dadi:)"
-        return render_template(
-            title="Error $04 - Aplikasi e Hel",
-            template_name_or_list='errorPages/404.html'
-        )
+        # return render_template(
+        #     title="Error $04 - Aplikasi e Hel",
+        #     template_name_or_list='errorPages/404.html'
+        # )
+        
+        print("ERROR DASHBOARD =", e)
+        raise e
 
 # SIGNIN PAGE ============================================================ End

@@ -64,14 +64,13 @@ def addSales():
         customer_id = body['customer_id']
 
         tanggal = int(
-            datetime.strptime(
-                body['tanggal'],
-                "%Y-%m-%d"
-            ).timestamp()
+            int(time.time())
         )
 
         # Total penjualan
         total = body['total']
+        bayar = body['bayar']
+        kembalian = body['kembalian']
 
         # Detail barang
         details = body['details']
@@ -88,6 +87,10 @@ def addSales():
 
             total=total,
 
+            bayar=bayar,
+
+            kembalian=kembalian,
+
             created_at=int(time.time()),
 
             updated_at=int(time.time())
@@ -96,8 +99,13 @@ def addSales():
 
         db.session.add(sale)
 
-        # Buat ID sale tanpa commit
         db.session.flush()
+
+        if bayar < total:
+            return {
+                "status": False,
+                "message": "Pembayaran kurang"
+            }, 400
 
         # Validasi stok terlebih dahulu
         for item in details:
@@ -171,6 +179,7 @@ def addSales():
 
         return {
             "status": True,
+            "sale_id": sale.id,
             "message": "Penjualan berhasil disimpan"
         }
 
@@ -256,3 +265,79 @@ def detail(id):
         details=details,
         service_details=service_details
     )
+
+@sales.get('/invoice/<int:sale_id>')
+def invoice(sale_id):
+
+    sale = Sales.query.get_or_404(
+        sale_id
+    )
+    sale.tanggal_format = datetime.fromtimestamp(
+        sale.tanggal
+    ).strftime("%d-%m-%Y %H:%M")
+
+    customer = Customers.query.get(
+        sale.customer_id
+    )
+
+    details = SaleDetails.query.filter_by(
+        sale_id=sale_id
+    ).all()
+    for detail in details:
+        detail.item = Items.query.get(
+            detail.item_id
+        )
+
+    services = SaleServiceDetails.query.filter_by(
+        sale_id=sale_id
+    ).all()
+    for service in services:
+    
+        service.jasa = Services.query.get(
+            service.service_id
+        )
+
+    return render_template(
+        'invoice.html',
+        sale=sale,
+        customer=customer,
+        details=details,
+        services=services
+    )
+
+@sales.put('/cancel/<int:id>')
+def cancel_sale(id):
+    sale = Sales.query.get(id)
+
+    if not sale:
+
+        return {
+            "status": False,
+            "message": "Transaksi tidak ditemukan"
+        }, 404
+        
+    if sale.is_delete == 1:
+        
+        return {
+            "status": False,
+            "message":
+                "Transaksi sudah dibatalkan"
+        }, 400
+        
+    details = SaleDetails.query.filter_by(
+        sale_id=id
+    ).all()
+    for detail in details:
+    
+        item = Items.query.get(
+            detail.item_id
+        )
+
+        item.stok += detail.qty
+
+    sale.is_delete = 1
+    db.session.commit()
+    return{
+        "status": True,
+        "message": "Transaksi Berhasil Dibatalkan"
+    }
