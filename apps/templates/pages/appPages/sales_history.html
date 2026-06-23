@@ -79,12 +79,9 @@
                 <tr>
                   <td>{{ loop.index }}</td>
                   <td>
-                    {% if sale.customer_id %}
-                        {{ sale.customer.nama }}
-                    {% else %}
-                        <span class="badge bg-secondary">
-                            Pelanggan Umum
-                        </span>
+                    {% if sale.customer_id %} {{ sale.customer.nama }} {% else
+                    %}
+                    <span class="badge bg-secondary"> Pelanggan Umum </span>
                     {% endif %}
                   </td>
                   <td>{{ sale.tanggal_format }}</td>
@@ -97,6 +94,12 @@
                     >
                       Detail
                     </a>
+                    <button
+                      class="btn btn-danger btn-sm"
+                      onclick="cancelSale({{ sale.id }})"
+                    >
+                      Batalkan
+                    </button>
                   </td>
                 </tr>
 
@@ -123,5 +126,9 @@
   <!--! [End] Page Content !-->
   <!--! ================================================================ !-->
 </div>
+
+<script src="{{ url_for('static', filename='javascript/backend/sales.js') }}"></script>
+<script src="{{ url_for('static', filename='javascript/backend/customer.js') }}"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 {% endblock %}

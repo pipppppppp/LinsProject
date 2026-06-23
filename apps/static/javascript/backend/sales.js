@@ -378,6 +378,40 @@ function calculateGrandTotal() {
 
   document.getElementById("grand-total").innerText =
     formatRupiah(total);
+
+  hitungKembalian();
+}
+
+function hitungKembalian(){
+
+  const total = parseInt(
+      document.getElementById(
+          "grand-total"
+      ).innerText
+      .replace(/\./g,"")
+      .trim()
+      || 0
+  );
+
+  const bayar = parseInt(
+      document.getElementById(
+          "bayar"
+      ).value
+      || 0
+  );
+
+  const kembalian =
+      bayar - total;
+
+  document.getElementById(
+      "kembalian"
+  ).value =
+      "Rp " +
+      formatRupiah(
+          kembalian > 0
+          ? kembalian
+          : 0
+      );
 }
 
 // ======================================================
@@ -404,8 +438,25 @@ async function saveSales() {
         .replace("Rp", "")
         .replace(/\./g, "")
         .trim()
-);
+  );
+  
+  const bayar = parseInt(
+      document.getElementById(
+          "bayar"
+      ).value || 0
+  );
 
+  if (bayar < total) {
+
+      Swal.fire({
+          icon: "warning",
+          title: "Pembayaran Kurang",
+          text:
+              "Uang pembayaran lebih kecil dari total transaksi"
+      });
+
+      return;
+  }
   const details = [];
 
   const service_details = [];
@@ -455,6 +506,10 @@ async function saveSales() {
 
     total: total,
 
+    bayar:bayar,
+
+    kembalian: bayar-total,
+
     details: details,
 
     service_details: service_details,
@@ -496,7 +551,10 @@ async function saveSales() {
       text: result.message,
       confirmButtonText: "OK"
     }).then(() => {
-      location.reload();
+      window.open(
+        `/sales/invoice/${result.sale_id}`,
+        "_blank"
+      );
     });
 
   } catch (error) {
@@ -508,4 +566,62 @@ async function saveSales() {
         text: "Terjadi kesalahan saat menyimpan data"
     });
   }
+}
+
+// ======================================================
+// BATALKAN PENJUALAN
+// ======================================================
+
+async function cancelSale(id){
+
+  const confirm = await Swal.fire({
+
+      title: "Batalkan Transaksi?",
+
+      text: "Stok barang akan dikembalikan",
+
+      icon: "warning",
+
+      showCancelButton: true
+
+  });
+
+  if(!confirm.isConfirmed){
+      return;
+  }
+
+  const response = await fetch(
+
+      `/sales/cancel/${id}`,
+
+      {
+          method: "PUT"
+      }
+
+  );
+
+  const result = await response.json();
+  console.log(result);
+  
+  if(result.status){
+
+      Swal.fire(
+          "Berhasil",
+          result.message,
+          "success"
+      ).then(()=>{
+
+          location.reload();
+
+      });
+
+  }else{
+
+      Swal.fire(
+          "Gagal",
+          result.message,
+          "error"
+      );
+
+  } 
 }

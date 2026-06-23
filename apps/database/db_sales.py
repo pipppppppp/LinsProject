@@ -23,6 +23,18 @@ class Sales(db.Model):
         nullable=False
     )
 
+    bayar = db.Column(
+        db.BigInteger,
+        nullable=False,
+        default=0
+    )
+
+    kembalian = db.Column(
+        db.BigInteger,
+        nullable=False,
+        default=0
+    )
+
     created_at = db.Column(
         db.BigInteger,
         nullable=False
