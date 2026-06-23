@@ -43,40 +43,40 @@ class ProductModels():
             products = Items.query.filter_by(is_delete=0).all()
             categories = Categories.query.filter_by(is_delete=0).all()
             # Get Data ---------------------------------------- Finish
-                
-            # Join Data ---------------------------------------- Start
-            for item in products:
-                for item2 in categories:
-                    if item.category_id == item2.id:
-                        item.category_id = item2.category
-            # Join Data ---------------------------------------- Finish
             
             # Response Data ---------------------------------------- Start
             response = []
             for item in products:
                 data = {
                     "product_id" : item.id,
-                    "product_name" : item.name,
-                    "product_category" : item.category_id,
-                    # "created_at": item.created_at
+                    "product_name" : item.nama_barang,
+                    "product_ctg_id" : [cat.id for cat in categories if cat.id == item.category_id],
+                    "product_category" : [cat.category for cat in categories if cat.id == item.category_id],
+                    "product_stock" : item.stok,
+                    "product_purchase" : item.harga_jual,
+                    "product_price" : item.harga_beli,
                 }
                 response.append(data)
             # Response Data ---------------------------------------- Finish
-            
+
             # Return Response ======================================== 
             return response
         
         except Exception as e:
-            return "bad_request(str(e))"
+            return bad_request(str(e))
     # GET ALL PRODUCT ============================================================ End
 
     # UPDATE PRODUCT ============================================================ Begin
-    def edit_product(datas, user_id):
+    def edit_product(datas, id):
         try:
             # Update Data ---------------------------------------- Start
-            data = Categories.query.get_or_404(user_id)
+            data = Items.query.get_or_404(id)
 
-            data.category = datas['category']
+            data.category_id = datas['product_category']
+            data.nama_barang = datas['product_name']
+            data.stok = datas['product_stock']
+            data.harga_beli = datas['product_purchase']
+            data.harga_jual = datas['product_price']
             data.updated_at = int(time.time())
 
             db.session.commit()
@@ -86,18 +86,18 @@ class ProductModels():
             # return success(message="Updated!")
             return {
                 "status": True,
-                "message": "Kategori berhasil diupdate"
+                "message": "Produk berhasil diupdate"
             }
             
         except Exception as e:
-            return "bad_request(str(e))"
+            return bad_request(str(e))
     # UPDATE PRODUCT ============================================================ End
 
     # DELETE PRODUCT ============================================================ Begin
-    def delete_product(user_id):
+    def delete_product(id):
         try:
             # Delete Data ---------------------------------------- Start
-            data = Categories.query.get_or_404(user_id)
+            data = Items.query.get_or_404(id)
 
             data.is_delete = 1
             data.deleted_at = int(time.time())
@@ -109,11 +109,11 @@ class ProductModels():
             # return success(message="Deleted!")
             return {
                 "status": True,
-                "message": "Kategori berhasil dihapus"
+                "message": "Produk berhasil dihapus"
             }
             
         except Exception as e:
-            return "bad_request(str(e))"
+            return bad_request(str(e))
     # DELETE PRODUCT ============================================================ End
 
     # GET DETAIL PRODUCT ============================================================ Begin

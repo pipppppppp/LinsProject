@@ -89,21 +89,21 @@ function renderTable() {
       html += `
             <tr>
                 <td>${index+1}</td>
-                <td>${product.name}</td>
-                <td>${product.category}</td>
-                <td>${product.stock}</td>
-                <td>${product.purchase}</td>
-                <td>${product.price}</td>
+                <td>${product.product_name}</td>
+                <td>${product.product_category}</td>
+                <td>${product.product_stock}</td>
+                <td>${product.product_purchase}</td>
+                <td>${product.product_price}</td>
                 <td>
                     <button
                         class="btn btn-warning btn-sm btn-edit" 
                         data-bs-toggle="modal" 
                         data-bs-target="#product_modal"
-                        data-id="${product.id}"> Edit
+                        data-id="${product.product_id}"> Edit
                     </button>
                     <button
                         class="btn btn-danger btn-sm btn-delete"
-                        data-id="${product.id}"> Hapus
+                        data-id="${product.product_id}"> Hapus
                     </button>
                 </td>
             </tr>
@@ -179,15 +179,15 @@ async function handleTableClick(e) {
    const id = Number(e.target.dataset.id);
    if (e.target.classList.contains("btn-edit")) {
       // proses edit
-      const product = productsData.find((p) => p.id === id);
+      const product = productsData.find((p) => p.product_id === id);
 
       form.title.textContent = "Ubah Produk";
-      form.id.value = product.id;
-      form.name.value = product.name;
-      form.category.value = product.category;
-      form.stock.value = product.stock;
-      form.purchase.value = product.purchase;
-      form.price.value = product.price;
+      form.id.value = product.product_id;
+      form.name.value = product.product_name;
+      form.category.value = product.product_ctg_id;
+      form.stock.value = product.product_stock;
+      form.purchase.value = product.product_purchase;
+      form.price.value = product.product_price;
    } else if (e.target.classList.contains("btn-delete")) {
       // proses delete
       if (!confirm("Yakin hapus data?")) {

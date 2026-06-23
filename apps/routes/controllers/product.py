@@ -58,7 +58,6 @@ def getProduct():
     try:
         # Request Process ======================================== 
         response = ProductModels.view_product()
-        # categories = view_category()
 
         # Return Page ======================================== 
         return response
@@ -88,7 +87,7 @@ def updateProduct(id):
 
 
 # DELETE PRODUCT DATA ============================================================ Begin
-# DELETE https://127.0.0.1:5000/product/update
+# DELETE https://127.0.0.1:5000/product/delete
 @product.delete('/delete/<int:id>')
 def deleteProduct(id):
     try:

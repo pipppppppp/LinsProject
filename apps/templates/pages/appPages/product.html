@@ -117,7 +117,7 @@
                      <i data-feather="x"></i>
                   </button>
                </div>
-               <form action="#" method="post">
+               <form action="#">
                   <div class="modal-body">
                      <input type="hidden" id="product_id">
                      <label>Kategori</label>
@@ -134,7 +134,7 @@
                      <input type="number" id="product_price" class="form-control" />
                   </div>
                   <div class="modal-footer">
-                     <button type="button" class="btn btn-light-secondary btn-save" data-bs-dismiss="modal">
+                     <button type="button" class="btn btn-light-secondary" data-bs-dismiss="modal">
                         <i class="bx bx-x d-block d-sm-none"></i>
                         <span class="d-none d-sm-block">Tutup</span>
                      </button>
@@ -152,5 +152,5 @@
    <!--! ================================================================ !-->
 </div>
 
-<script src="{{ url_for('static', filename='javascript/backend/products.js') }}"></script>
+<script src="{{ url_for('static', filename='javascript/api/products.js') }}"></script>
 {% endblock %}
