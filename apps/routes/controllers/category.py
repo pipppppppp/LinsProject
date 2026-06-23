@@ -1,9 +1,6 @@
 from flask import Blueprint, request, render_template
-import time
 
-from ... import db
-from ...database.db_categories import Categories
-from ..models.category import add_category, edit_category, delete_category
+from ..models.category import CategoryModels
 
 # BLUEPRINT ================================================== Begin
 category = Blueprint(
@@ -21,20 +18,15 @@ category = Blueprint(
 def index():
     try:
         # Return Page ======================================== 
-        categories = Categories.query.filter_by(
-            is_delete=0
-        ).all()
-
         return render_template(
-            title='TITLE_DASHBD',
+            title='Kategori - POS Bengkel',
             template_name_or_list='category.html',
             active_menu="category",
-            categories=categories
         )
 
     except Exception as e:
         return render_template(
-            title="Error $04 - Aplikasi e Hel",
+            title="Error 404 - POS Bengkel",
             template_name_or_list='errorPages/404.html'
         )
 # CATEGORY PAGE ============================================================ End
@@ -49,7 +41,7 @@ def createCategory():
         body = request.json
 
         # Request Process ======================================== 
-        response = add_category(body)
+        response = CategoryModels.add_category(body)
 
         # Request Data ======================================== 
         return response
@@ -63,8 +55,8 @@ def createCategory():
 
 
 # ADD CATEGORY DATA ============================================================ Begin
-# POST https://127.0.0.1:5000/category/add
-@category.post('/add')
+# POST https://127.0.0.1:5000/category/view
+@category.get('/view')
 def getCategory():
     try:
         # Request Process ======================================== 
@@ -82,15 +74,15 @@ def getCategory():
 
 
 # UPDATE CATEGORY DATA ============================================================ Begin
-# PUT https://127.0.0.1:5000/category/update
-@category.put('/update/<int:id>')
+# PUT https://127.0.0.1:5000/category/edit
+@category.put('/edit/<int:id>')
 def updateCategory(id):
     try:
         # Request Data ========================================
         body = request.json
 
         # Request Process ======================================== 
-        response = edit_category(body, id)
+        response = CategoryModels.edit_category(body, id)
 
         # Request Data ======================================== 
         return response
@@ -104,12 +96,12 @@ def updateCategory(id):
 
 
 # DELETE CATEGORY DATA ============================================================ Begin
-# DELETE https://127.0.0.1:5000/category/update
+# DELETE https://127.0.0.1:5000/category/delete
 @category.delete('/delete/<int:id>')
 def deleteCategory(id):
     try:
         # Request Process ======================================== 
-        response = delete_category(id)
+        response = CategoryModels.delete_category(id)
 
         # Request Data ======================================== 
         return response

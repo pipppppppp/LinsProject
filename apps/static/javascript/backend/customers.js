@@ -3,7 +3,7 @@
 // **************************************************************
 document.addEventListener("DOMContentLoaded", init);
 async function init() {
-   await loadCategories();
+   await loadCustomers();
 
    renderTable();
 }
@@ -11,8 +11,10 @@ async function init() {
 // Form ID Setup
 const form = {
    title: document.getElementById("modal_label"),
-   id: document.getElementById("category_id"),
-   name: document.getElementById("category_name"),
+   id: document.getElementById("customer_id"),
+   name: document.getElementById("customer_name"),
+   address: document.getElementById("customer_address"),
+   phone: document.getElementById("customer_phone"),
 };
 // **************************************************************
 // BASE INISIALIZATION | END
@@ -22,111 +24,143 @@ const form = {
 // RENDER DATA TABLES | START
 // **************************************************************
 // Variable Setup -------------------------------------------------
-let categoriesData = [];
+let customersData = [];
 
 // Get Data -------------------------------------------------
-async function loadCategories() {
-   const response = await fetch("/category/view", {
-      method: "GET",
-      headers: {
-         "Content-Type": "application/json",
-      },
-   });
-   categoriesData = await response.json();
+async function loadCustomers() {
+   const response = await fetch("/customer/view");
+   customersData = await response.json();
 }
 
 // Load Data -------------------------------------------------
 function renderTable() {
    let html = "";
 
-   categoriesData.forEach((category, index) => {
+   customersData.forEach((customer, index) => {
       html += `
             <tr>
                 <td>${index + 1}</td>
-                <td>${category.ctg_name}</td>
+                <td>${customer.name}</td>
+                <td>${customer.address}</td>
+                <td>${customer.phone}</td>
+                <td>
+                    <span class="badge bg-success"> Aktif </span>
+                </td>
                 <td>
                     <button
                         class="btn btn-warning btn-sm btn-edit" 
                         data-bs-toggle="modal" 
-                        data-bs-target="#category_modal"
-                        data-id="${category.ctg_id}"> Edit
+                        data-bs-target="customer_modal"
+                        data-id="${customer.id}"> Edit
                     </button>
                     <button
                         class="btn btn-danger btn-sm btn-delete"
-                        data-id="${category.ctg_id}"> Hapus
+                        data-id="${customer.id}"> Hapus
                     </button>
                 </td>
             </tr>
         `;
    });
 
-   document.getElementById("category_table").innerHTML = html;
+   document.getElementById("customer_table").innerHTML = html;
 }
 // **************************************************************
 // RENDER DATA TABLES | END
 // **************************************************************
 
 // **************************************************************
-// SAVE CATEGORY | START
+// SAVE CUSTOMER | START
 // **************************************************************
-async function saveCategory() {
-   const category_id = form.id.value;
-   const category = form.name.value;
+async function saveCustomer() {
+   const customer_id = form.id.value;
+   const customer_name = form.name.value;
+   const customer_address = form.address.value;
+   const customer_phone = form.phone.value;
 
    let response;
-   if (!category_id) {
-      response = await fetch("/category/add", {
+   if (!customer_id) {
+      response = await fetch("/customer/add", {
          method: "POST",
          headers: {
             "Content-Type": "application/json",
          },
          body: JSON.stringify({
-            category: category,
+            customer_name: customer_name,
+            customer_address: customer_address,
+            customer_phone: customer_phone,
          }),
       });
    } else {
-      response = await fetch(`/category/edit/${category_id}`, {
+      response = await fetch(`/customer/update/${customer_id}`, {
          method: "PUT",
          headers: {
             "Content-Type": "application/json",
          },
          body: JSON.stringify({
-            category: category,
+            customer_name: customer_name,
+            customer_address: customer_address,
+            customer_phone: customer_phone,
          }),
       });
    }
 
    const result = await response.json();
    if (result.status) {
-      alert(result.message);
-      location.reload();
+      Swal.fire({
+         icon: "success",
+         title: "Berhasil",
+         text: "Member berhasil ditambahkan",
+         timer: 1500,
+         showConfirmButton: false,
+      });
+
+      const option = new Option(result.nama, result.customer_id, true, true);
+
+      $("#customer_id").append(option).trigger("change");
+
+      const modal = bootstrap.Modal.getInstance(document.getElementById("inlineForm"));
+
+      modal.hide();
+
+      document.getElementById("nama").value = "";
+      document.getElementById("alamat").value = "";
+      document.getElementById("telepon").value = "";
+   } else {
+      Swal.fire({
+         icon: "error",
+         title: "Gagal",
+         text: result.message,
+      });
    }
 }
-document.querySelector(".btn-save").addEventListener("click", saveCategory);
+document.querySelector(".btn-save").addEventListener("click", saveCustomer);
 // **************************************************************
-// SAVE CATEGORY | END
+// SAVE CUSTOMER | END
 // **************************************************************
 
+
 // **************************************************************
-// UPDATE & DELETE CATEGORY | START
+// UPDATE & DELETE CUSTOMER | START 
 // **************************************************************
-document.getElementById("category_table").addEventListener("click", handleTableClick);
+document.getElementById("customer_table").addEventListener("click", handleTableClick);
 async function handleTableClick(e) {
    const id = Number(e.target.dataset.id);
    if (e.target.classList.contains("btn-edit")) {
       // proses edit
-      const category = categoriesData.find((p) => p.ctg_id === id);
+      const customer = customersData.find((p) => p.id === id);
 
-      form.title.textContent = "Ubah Kategori";
-      form.id.value = category.ctg_id;
-      form.name.value = category.ctg_name;
+      form.title.textContent = "Ubah Pelanggan";
+      form.id.value = customer.id;
+      form.name.value = customer.name;
+      form.address.value = customer.address;
+      form.phone.value = customer.phone;
    } else if (e.target.classList.contains("btn-delete")) {
       // proses delete
       if (!confirm("Yakin hapus data?")) {
          return;
       }
 
-      const response = await fetch(`/category/delete/${id}`, {
+      const response = await fetch(`/customer/delete/${id}`, {
          method: "DELETE",
       });
 
@@ -140,5 +174,5 @@ async function handleTableClick(e) {
    }
 }
 // **************************************************************
-// UPDATE & DELETE CATEGORY | END
+// UPDATE & DELETE CUSTOMER | END 
 // **************************************************************
