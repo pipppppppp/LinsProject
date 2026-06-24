@@ -24,6 +24,11 @@ def index():
         return redirect(
             url_for('auth.signin_page')
         )
+    # Protrksi role
+    if session.get('role') != 'admin':
+        return redirect(
+            url_for('dashboard.index')
+        )
 
     suppliers = Suppliers.query.filter_by(
         is_delete=0
@@ -109,7 +114,10 @@ def addPurchase():
 
         # SIMPAN DATA KE TABEL PURCHASES
         purchase = Purchases(
-
+            admin_id=session.get(
+                'user_id'
+            ),
+            
             supplier_id=supplier_id,
 
             tanggal=tanggal,

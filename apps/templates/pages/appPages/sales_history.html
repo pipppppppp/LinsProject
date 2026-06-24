@@ -67,6 +67,7 @@
               <thead>
                 <tr>
                   <th>No</th>
+                  <th>Kasir</th>
                   <th>Customer</th>
                   <th>Tanggal</th>
                   <th>Total</th>
@@ -78,6 +79,9 @@
 
                 <tr>
                   <td>{{ loop.index }}</td>
+                  <td>
+                    {{ sale.admin.username }}
+                  </td>
                   <td>
                     {% if sale.customer_id %} {{ sale.customer.nama }} {% else
                     %}
@@ -94,12 +98,17 @@
                     >
                       Detail
                     </a>
-                    <button
+                    <!-- <button
                       class="btn btn-danger btn-sm"
                       onclick="cancelSale({{ sale.id }})"
                     >
                       Batalkan
-                    </button>
+                    </button> -->
+                    <!-- <a href="/sales/invoice/{{ sale.id }}"
+                      target="_blank"
+                      class="btn btn-success btn-sm">
+                        Cetak Nota
+                    </a> -->
                   </td>
                 </tr>
 

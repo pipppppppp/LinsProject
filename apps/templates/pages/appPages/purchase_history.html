@@ -69,6 +69,7 @@
                   <th>No</th>
                   <th>Supplier</th>
                   <th>Tanggal</th>
+                  <th>Admin</th>
                   <th>Total</th>
                   <th>Aksi</th>
                 </tr>
@@ -80,6 +81,13 @@
                   <td>{{ loop.index }}</td>
                   <td>{{ purchase.supplier.nama }}</td>
                   <td>{{ purchase.tanggal_format }}</td>
+                  <td>
+                    {% if purchase.admin %}
+                        {{ purchase.admin.username }}
+                    {% else %}
+                        -
+                    {% endif %}
+                  </td>
                   <td>
                     Rp {{ "{:,.0f}".format(purchase.total).replace(",", ".") }}
                   </td>

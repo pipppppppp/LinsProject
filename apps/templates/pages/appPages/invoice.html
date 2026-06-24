@@ -1,85 +1,241 @@
 <!DOCTYPE html>
 <html>
-  <head>
+<head>
     <title>Nota Penjualan</title>
-  </head>
 
-  <body>
-    <h2>POS Bengkel</h2>
+    <style>
 
-    <hr />
+        body{
+            font-family: Arial, sans-serif;
+            padding:40px;
+            color:#000;
+        }
 
-    <p>No Transaksi : {{ sale.id }}</p>
+        .invoice{
+            max-width:700px;
+            margin:auto;
+        }
 
-    <p>Pelanggan : 
-        {% if customer %}
-            {{ customer.nama}}
-        {% else %}
-            Umum
-        {% endif %}
-    </p>
+        .text-center{
+            text-align:center;
+        }
 
-    <p>Tanggal : {{ sale.tanggal_format }}</p>
+        .line{
+            border-top:1px dashed #000;
+            margin:15px 0;
+        }
 
-    <hr />
+        table{
+            width:100%;
+            border-collapse:collapse;
+        }
 
-    <table border="1" width="100%">
-      <tr>
-        <th>Barang</th>
+        th{
+            text-align:left;
+            padding:8px 0;
+            border-bottom:1px solid #000;
+        }
 
-        <th>Qty</th>
+        td{
+            padding:8px 0;
+        }
 
-        <th>Subtotal</th>
-      </tr>
+        .text-right{
+            text-align:right;
+        }
 
-      {% for detail in details %}
+        .summary td{
+            padding:10px 0;
+        }
 
-      <tr>
-        <td>{{ detail.item.nama_barang }}</td>
+        @media print{
 
-        <td>{{ detail.qty }}</td>
+            body{
+                margin:0;
+            }
 
-        <td>Rp {{ detail.subtotal }}</td>
-      </tr>
+        }
 
-      {% endfor %}
+    </style>
+
+</head>
+<body onload="window.print()">
+
+<div class="invoice">
+
+    <h1 class="text-center">
+        POS BENGKEL
+    </h1>
+
+    <div class="text-center">
+        Jl. Bengkel Motor No. 123<br>
+        Telp : 08123456789
+    </div>
+
+    <div class="line"></div>
+
+    <table>
+
+        <tr>
+            <td width="150">No Transaksi</td>
+            <td>: {{ sale.id }}</td>
+        </tr>
+
+        <tr>
+            <td>Pelanggan</td>
+            <td>:
+                {% if customer %}
+                    {{ customer.nama }}
+                {% else %}
+                    Umum
+                {% endif %}
+            </td>
+        </tr>
+
+        <tr>
+            <td>Tanggal</td>
+            <td>:
+                {{ sale.tanggal_format }}
+            </td>
+        </tr>
+
     </table>
 
-    <table border="1" width="100%">
+    <div class="line"></div>
+
+    {% if details|length > 0 %}
+
+    <h3>
+        RINCIAN BARANG
+    </h3>
+
+    <table>
+
+        <thead>
+            <tr>
+                <th>Barang</th>
+                <th width="80">Qty</th>
+                <th width="120">Harga</th>
+                <th width="150">Subtotal</th>
+            </tr>
+        </thead>
+
+        <tbody>
+
+            {% for detail in details %}
+            <tr>
+
+                <td>
+                    {{ detail.item.nama_barang }}
+                </td>
+
+                <td>
+                    {{ detail.qty }}
+                </td>
+
+                <td>
+                  Rp {{ "{:,.0f}".format(detail.item.harga_jual).replace(",", ".") }}
+              </td>
+
+                <td>
+                    Rp {{ "{:,.0f}".format(detail.subtotal).replace(",", ".") }}
+                </td>
+
+            </tr>
+            {% endfor %}
+
+        </tbody>
+
+    </table>
+    {% endif %}
+    <br>
+    {% if services|length > 0 %}
+    <h3>
+        RINCIAN JASA
+    </h3>
+
+    <table>
+
+        <thead>
+            <tr>
+                <th>Jasa</th>
+                <th width="80">Qty</th>
+                <th width="120">Harga</th>
+                <th width="150">Subtotal</th>
+            </tr>
+        </thead>
+
+        <tbody>
+
+            {% for services in services %}
+            <tr>
+
+                <td>
+                    {{ services.jasa.nama_jasa }}
+                </td>
+
+                <td>
+                    {{ services.qty }}
+                </td>
+
+                <td>
+                  Rp {{ "{:,.0f}".format(services.jasa.biaya_jasa).replace(",", ".") }}
+                </td>
+                <td>
+                    Rp {{ "{:,.0f}".format(services.subtotal).replace(",", ".") }}
+                </td>
+
+            </tr>
+            {% endfor %}
+
+        </tbody>
+
+    </table>
+    
+    {% endif %}
+
+    <div class="line"></div>
+
+    <table class="summary">
+
         <tr>
-          <th>Jasa</th>
-  
-          <th>Qty</th>
-  
-          <th>Subtotal</th>
+            <td><b>TOTAL</b></td>
+            <td class="text-right">
+                <b>
+                    Rp {{ "{:,.0f}".format(sale.total).replace(",", ".") }}
+                </b>
+            </td>
         </tr>
-  
-        {% for services in services %}
-  
+
         <tr>
-          <td>{{ services.jasa.nama_jasa }}</td>
-  
-          <td>{{ services.qty }}</td>
-  
-          <td>Rp {{ services.subtotal }}</td>
+            <td>BAYAR</td>
+            <td class="text-right">
+                Rp {{ "{:,.0f}".format(sale.bayar).replace(",", ".") }}
+            </td>
         </tr>
-  
-        {% endfor %}
-      </table>
-  
 
-    <hr />
+        <tr>
+            <td><b>KEMBALIAN</b></td>
+            <td class="text-right">
+                <b>
+                    Rp {{ "{:,.0f}".format(sale.kembalian).replace(",", ".") }}
+                </b>
+            </td>
+        </tr>
 
-    <h3>Total : Rp {{ sale.total }}</h3>
+    </table>
 
-    <h3>Bayar : Rp {{ sale.bayar }}</h3>
+    <div class="line"></div>
 
-    <h3>Kembalian : Rp {{ sale.kembalian }}</h3>
+    <div class="text-center">
 
-    <script>
-      window.onload = () => {
-        window.print();
-      };
-    </script>
-  </body>
+        Terima kasih atas kunjungan Anda<br>
+        Semoga perjalanan Anda aman dan nyaman<br>
+        <b>-Barang yang sudah dibeli tidak dapat dikembalikan-</b>
+
+    </div>
+
+</div>
+
+</body>
 </html>

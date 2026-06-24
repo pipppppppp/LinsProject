@@ -122,13 +122,14 @@
                     >
                       Edit
                     </button>
-
+                    {% if session.get('role') == 'admin' %}
                     <button
                       class="btn btn-danger btn-sm"
                       onclick="deleteItem('{{ item.id }}')"
                     >
                       Hapus
                     </button>
+                    {% endif %}
                   </td>
                 </tr>
                 {% endfor %}

@@ -30,7 +30,7 @@
             <h3>Dashboard POS Bengkel</h3>
           </div>
         </div>
-
+        
         <div class="col-md-3">
           <div class="card shadow-sm">
             <div class="card-body">
@@ -202,8 +202,7 @@
 
                 <p>
                   <strong>Akses :</strong>
-
-                  Admin
+                    {{ session.get('role') }}
                 </p>
 
                 <a

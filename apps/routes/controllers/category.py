@@ -1,4 +1,4 @@
-from flask import Blueprint, request, render_template
+from flask import Blueprint, request, render_template, session, redirect, url_for
 import time
 
 from ... import db
@@ -19,24 +19,28 @@ category = Blueprint(
 # GET https://127.0.0.1:5000/category/
 @category.get('/')
 def index():
-    try:
-        # Return Page ======================================== 
-        categories = Categories.query.filter_by(
-            is_delete=0
-        ).all()
-
-        return render_template(
-            title='TITLE_DASHBD',
-            template_name_or_list='category.html',
-            active_menu="category",
-            categories=categories
+    if 'user_id' not in session:
+        return redirect(
+            url_for('auth.signin_page')
+            )
+    # Protrksi role
+    if session.get('role') != 'admin':
+        return redirect(
+           url_for('dashboard.index')
         )
+    # Return Page ======================================== 
+    categories = Categories.query.filter_by(
+        is_delete=0
+    ).all()
 
-    except Exception as e:
-        return render_template(
-            title="Error $04 - Aplikasi e Hel",
-            template_name_or_list='errorPages/404.html'
-        )
+    return render_template(
+        title='category',
+        template_name_or_list='category.html',
+        active_menu="category",
+        categories=categories
+    )
+
+
 # CATEGORY PAGE ============================================================ End
 
 

@@ -21,6 +21,15 @@ product = Blueprint(
 @product.get('/')
 def index():
     try:
+        if 'user_id' not in session:
+            return redirect(
+            url_for('auth.signin_page')
+        )
+        # Protrksi role
+        if session.get('role') != 'admin':
+            return redirect(
+                url_for('dashboard.index')
+            )
         # Request Process ======================================== 
         products = view_product()
         categories = view_category()

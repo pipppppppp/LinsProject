@@ -21,7 +21,12 @@ def index():
         return redirect(
             url_for('auth.signin_page')
         )
-
+    # Protrksi role
+    if session.get('role') != 'admin':
+        return redirect(
+            url_for('dashboard.index')
+        )
+        
     suppliers = Suppliers.query.filter_by(
         is_delete=0
     ).all()
@@ -86,6 +91,12 @@ def updateSupplier(id):
 # DELETE
 @supplier.delete('/delete/<int:id>')
 def deleteSupplier(id):
+    
+    # if session.get('role') != 'admin':
+    #         return {
+    #         "status": False,
+    #         "message": "Akses ditolak"
+    #     }, 403
 
     data = Suppliers.query.get_or_404(id)
 

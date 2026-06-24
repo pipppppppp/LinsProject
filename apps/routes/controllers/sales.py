@@ -80,7 +80,10 @@ def addSales():
 
         # Simpan header penjualan
         sale = Sales(
-
+            admin_id=session.get(
+                'user_id'
+            ),
+            
             customer_id=customer_id,
 
             tanggal=tanggal,

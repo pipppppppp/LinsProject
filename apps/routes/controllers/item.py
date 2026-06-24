@@ -22,6 +22,11 @@ def index():
         return redirect(
             url_for('auth.signin_page')
         )
+    # Protrksi role
+    if session.get('role') != 'admin':
+        return redirect(
+            url_for('dashboard.index')
+        )
 
     items = Items.query.filter_by(
         is_delete=0
@@ -100,6 +105,12 @@ def updateItem(id):
 # DELETE
 @item.delete('/delete/<int:id>')
 def deleteItem(id):
+
+    if session.get('role') != 'admin':
+            return {
+            "status": False,
+            "message": "Akses ditolak"
+        }, 403
 
     data = Items.query.get_or_404(id)
 

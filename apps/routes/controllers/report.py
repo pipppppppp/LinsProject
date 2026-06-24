@@ -232,6 +232,11 @@ def purchase_report():
         return redirect(
             url_for('auth.signin_page')
         )
+    # Protrksi role
+    if session.get('role') != 'admin':
+        return redirect(
+            url_for('dashboard.index')
+        )
 
     purchases = Purchases.query.filter_by(
         is_delete=0
@@ -370,7 +375,7 @@ def profit_page():
 
 @report.get('/profit/data')
 def profit_data():
-
+   
     try:
 
         periode = request.args.get(
@@ -428,56 +433,77 @@ def profit_data():
 @report.get('/profit/chart')
 def profit_chart():
 
-    data = []
+    periode = request.args.get(
+        'periode',
+        'today'
+    )
 
-    tahun = datetime.now().year
+    start_date = request.args.get(
+        'start_date'
+    )
 
-    for bulan in range(1, 13):
+    end_date = request.args.get(
+        'end_date'
+    )
 
-        start = datetime(
-            tahun,
-            bulan,
-            1
+    sales_query = Sales.query.filter_by(
+        is_delete=0
+    )
+
+    sales_query = filter_sales_by_periode(
+        sales_query,
+        periode,
+        start_date,
+        end_date
+    )
+
+    sales = sales_query.all()
+
+    data = {}
+
+    for sale in sales:
+
+        tanggal = datetime.fromtimestamp(
+            sale.tanggal
         )
 
-        if bulan == 12:
+        if periode == "today":
 
-            end = datetime(
-                tahun + 1,
-                1,
-                1
-            )
+            label = tanggal.strftime("%H:00")
+
+        elif periode == "week":
+
+            label = tanggal.strftime("%a")
+
+        elif periode in ["month", "custom"]:
+
+            label = tanggal.strftime("%d-%m")
 
         else:
 
-            end = datetime(
-                tahun,
-                bulan + 1,
-                1
-            )
+            label = tanggal.strftime("%b")
 
-        sales = Sales.query.filter(
-            Sales.is_delete == 0,
-            Sales.tanggal.between(
-                int(start.timestamp()),
-                int(end.timestamp())
-            )
-        ).all()
+        if label not in data:
 
-        sale_ids = [
+            data[label] = {
+                "sale_ids": []
+            }
+
+        data[label]["sale_ids"].append(
             sale.id
-            for sale in sales
-        ]
-
-        result = calculate_profit(
-            sale_ids
         )
 
-        data.append({
-            
-            "bulan": start.strftime(
-                "%b"
-            ),
+    result_chart = []
+
+    for label, value in data.items():
+
+        result = calculate_profit(
+            value["sale_ids"]
+        )
+
+        result_chart.append({
+
+            "label": label,
 
             "laba_barang": result[
                 "laba_barang"
@@ -486,6 +512,7 @@ def profit_chart():
             "laba_jasa": result[
                 "laba_jasa"
             ],
+
             "laba": result[
                 "laba_kotor"
             ]
@@ -494,8 +521,76 @@ def profit_chart():
 
     return {
         "status": True,
-        "data": data
+        "data": result_chart
     }
+    # data = []
+
+    # tahun = datetime.now().year
+
+    # for bulan in range(1, 13):
+
+    #     start = datetime(
+    #         tahun,
+    #         bulan,
+    #         1
+    #     )
+
+    #     if bulan == 12:
+
+    #         end = datetime(
+    #             tahun + 1,
+    #             1,
+    #             1
+    #         )
+
+    #     else:
+
+    #         end = datetime(
+    #             tahun,
+    #             bulan + 1,
+    #             1
+    #         )
+
+    #     sales = Sales.query.filter(
+    #         Sales.is_delete == 0,
+    #         Sales.tanggal.between(
+    #             int(start.timestamp()),
+    #             int(end.timestamp())
+    #         )
+    #     ).all()
+
+    #     sale_ids = [
+    #         sale.id
+    #         for sale in sales
+    #     ]
+
+    #     result = calculate_profit(
+    #         sale_ids
+    #     )
+
+    #     data.append({
+            
+    #         "bulan": start.strftime(
+    #             "%b"
+    #         ),
+
+    #         "laba_barang": result[
+    #             "laba_barang"
+    #         ],
+
+    #         "laba_jasa": result[
+    #             "laba_jasa"
+    #         ],
+    #         "laba": result[
+    #             "laba_kotor"
+    #         ]
+
+    #     })
+
+    # return {
+    #     "status": True,
+    #     "data": data
+    # }
 
 @report.get('/profit/pdf')
 def export_profit_pdf():

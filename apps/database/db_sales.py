@@ -1,4 +1,5 @@
 from .. import db
+from .db_admins import Admins
 
 class Sales(db.Model):
 
@@ -11,6 +12,18 @@ class Sales(db.Model):
     customer_id = db.Column(
         db.Integer,
         nullable=False
+    )
+
+    admin_id = db.Column(
+        db.Integer,
+        nullable=False
+    )
+
+    admin = db.relationship(
+        "Admins",
+        primaryjoin="Sales.admin_id == Admins.id",
+        foreign_keys=[admin_id],
+        uselist=False
     )
 
     tanggal = db.Column(

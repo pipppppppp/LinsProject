@@ -226,6 +226,24 @@ function formatRupiah(number) {
   return new Intl.NumberFormat("id-ID").format(number);
 }
 
+function formatBayar(){
+
+  const input = document.getElementById(
+    "bayar"
+  );
+
+  let value = input.value.replace(
+    /\D/g,
+    ""
+  );
+
+  input.value = formatRupiah(
+    value
+  );
+
+  hitungKembalian();
+}
+
 function calculateRow(element) {
   const row = element.closest("tr");
 
@@ -397,6 +415,8 @@ function hitungKembalian(){
       document.getElementById(
           "bayar"
       ).value
+      .replace(/\./g, "")
+      .trim()
       || 0
   );
 
@@ -441,9 +461,15 @@ async function saveSales() {
   );
   
   const bayar = parseInt(
+
       document.getElementById(
           "bayar"
-      ).value || 0
+      ).value
+      .replace(/\./g,"")
+      .trim()
+
+      || 0
+
   );
 
   if (bayar < total) {
@@ -549,12 +575,17 @@ async function saveSales() {
       icon: "success",
       title: "Berhasil",
       text: result.message,
-      confirmButtonText: "OK"
-    }).then(() => {
-      window.open(
-        `/sales/invoice/${result.sale_id}`,
-        "_blank"
-      );
+      showCancelButton: true,
+      confirmButtonText: "Cetak Nota",
+      cancelButtonText: "Tutup"
+    }).then((res) => {
+      if(res.isConfirmed){
+        window.open(
+          `/sales/invoice/${result.sale_id}`,
+          "_blank"
+        );
+      }
+      location.reload();
     });
 
   } catch (error) {

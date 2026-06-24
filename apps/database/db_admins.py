@@ -5,6 +5,7 @@ class Admins(db.Model):
     username = db.Column(db.String(100), nullable=False)
     email = db.Column(db.String(50), nullable=False)
     password = db.Column(db.Text, nullable=False)
+    role = db.Column(db.String(20), nullable=False, default="kasir")
     is_active = db.Column(db.Integer, nullable=False, server_default='0')
     created_at = db.Column(db.BigInteger, nullable=False)
     updated_at = db.Column(db.BigInteger, nullable=False)

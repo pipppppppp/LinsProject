@@ -17,8 +17,8 @@
     </div>
     <div class="sidebar-menu">
       <ul class="menu">
+        {% if session.get('role') in ['admin', 'kasir'] %}
         <li class="sidebar-title">Menu</li>
-
         <li
           class="sidebar-item {% if active_menu == 'dashboard' %}active{% endif %}"
         >
@@ -27,8 +27,9 @@
             <span>Dashboard</span>
           </a>
         </li>
-
+        {% endif %}
         <li class="sidebar-title">MASTER DATA</li>
+        {% if session.get('role') in ['admin', 'kasir'] %}
         <li
           class="sidebar-item {% if active_menu == 'customer' %}active{% endif %}"
         >
@@ -37,7 +38,8 @@
             <span>Data Pelanggan</span>
           </a>
         </li>
-
+        {% endif %}
+        {% if session.get('role') == 'admin' %}
         <li
           class="sidebar-item {% if active_menu == 'supplier' %}active{% endif %}"
         >
@@ -46,7 +48,8 @@
             <span>Data Supplier</span>
           </a>
         </li>
-
+        
+        
         <li
           class="sidebar-item {% if active_menu == 'services' %}active{% endif %}"
         >
@@ -56,7 +59,9 @@
             <span>Jasa Servis</span>
           </a>
         </li>
-
+       
+        {% endif %}
+        {% if session.get('role') == 'admin' %}
         <li
           class="sidebar-item has-sub {% if active_menu in ['category','item'] %}active{% endif %}"
         >
@@ -81,7 +86,8 @@
             </li>
           </ul>
         </li>
-
+        {% endif %}
+        
         <li class="sidebar-title">TRANSAKSI</li>
         <li
           class="sidebar-item has-sub {% if active_menu in ['purchase','purchase_history','sales','sales_history'] %}active{% endif %}"
@@ -90,10 +96,11 @@
             <i class="bi bi-cart-check"></i>
             <span>Transaksi</span>
           </a>
-
+          
           <ul
             class="submenu {% if active_menu in ['purchase','purchase_history','sales','sales_history'] %}active{% endif %}"
           >
+            {% if session.get('role') == 'admin' %}
             <li
               class="submenu-item {% if active_menu == 'purchase' %}active{% endif %}"
             >
@@ -107,7 +114,8 @@
                 Riwayat Pembelian
               </a>
             </li>
-
+            {% endif %}
+            {% if session.get('role') in ['admin', 'kasir'] %}
             <li
               class="submenu-item {% if active_menu == 'sales' %}active{% endif %}"
             >
@@ -119,9 +127,11 @@
             >
               <a href="{{ url_for('sales.history') }}"> Riwayat Penjualan </a>
             </li>
+            {% endif %}
           </ul>
-        </li>
 
+        </li>
+        {% if session.get('role') == 'admin' %}
         <li class="sidebar-title">LAPORAN</li>
         <li
           class="sidebar-item has-sub {% if active_menu in ['purchase_report','sales_report','profit_report','stock_report'] %}active{% endif %}"
@@ -165,7 +175,9 @@
               </a>
             </li>
           </ul>
+          
         </li>
+        {% endif %}
       </ul>
     </div>
     <button class="sidebar-toggler btn x"><i data-feather="x"></i></button>

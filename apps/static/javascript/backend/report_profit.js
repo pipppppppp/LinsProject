@@ -83,18 +83,31 @@ function formatRupiah(
 // loadProfit();
 
 async function loadProfitChart() {
-
+    const periode =
+        document.getElementById(
+            "periode"
+        ).value;
+    const startDate =
+        document.getElementById(
+            "start_date"
+        ).value;
+    
+    const endDate =
+        document.getElementById(
+            "end_date"
+        ).value;
+    
     const response =
         await fetch(
-            "/report/profit/chart"
+            `/report/profit/chart?periode=${periode}&start_date=${startDate}&end_date=${endDate}`
         );
-
+    
     const result =
         await response.json();
 
-    const bulan =
+    const label =
         result.data.map(
-            item => item.bulan
+            item => item.label
         );
     
     const labaBarang =
@@ -113,15 +126,15 @@ async function loadProfitChart() {
         );
 
     renderChart(
-        bulan,
+        label,
+        laba,
         labaBarang,
-        labaJasa,
-        laba
+        labaJasa
     );
 }
 
 function renderChart(
-    bulan,
+    label,
     laba,
     laba_barang,
     laba_jasa
@@ -152,7 +165,7 @@ function renderChart(
         ],
 
         xaxis: {
-            categories: bulan
+            categories: label
         }
 
     };
@@ -199,7 +212,10 @@ function exportPDF() {
 
 }
 
-loadProfit();
+function showChartReport(){
+    loadProfit();
 
-loadProfitChart();
+    loadProfitChart();
+}
+
 

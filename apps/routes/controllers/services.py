@@ -21,6 +21,11 @@ def index():
         return redirect(
             url_for('auth.signin_page')
         )
+    # Protrksi role
+    if session.get('role') != 'admin':
+        return redirect(
+            url_for('dashboard.index')
+        )
 
     services_data = Services.query.filter_by(
         is_delete=0
@@ -81,6 +86,12 @@ def updateService(id):
 # DELETE
 @services.delete('/delete/<int:id>')
 def deleteService(id):
+    
+    if session.get('role') != 'admin':
+            return {
+            "status": False,
+            "message": "Akses ditolak"
+        }, 403
 
     data = Services.query.get_or_404(id)
 

@@ -48,11 +48,12 @@ def signin_process():
 
             session['user_id'] = admin.id
             session['username'] = admin.username
-            session['email'] = admin.email
-
+            session['role'] = admin.role
+        
             return redirect(
                 url_for('dashboard.index')
-        )
+            )
+        
 
         return render_template(
            'authPages/signin-page.html'
