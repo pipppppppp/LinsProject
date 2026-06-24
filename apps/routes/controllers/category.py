@@ -1,4 +1,6 @@
 from flask import Blueprint, request, render_template, session, redirect, url_for
+from flask_jwt_extended import jwt_required, get_jwt
+
 import time
 
 from ..models.category import CategoryModels
@@ -19,8 +21,12 @@ category = Blueprint(
 @jwt_required()
 def index():
     try:
+        # Access User ======================================== 
+        id = str(get_jwt()["id"])
+        role = str(get_jwt()["role"])
+
         # Role Validation ======================================== 
-        if session.get('role') != 'admin':
+        if role != 'admin':
             return redirect(url_for('dashboard.index'))
 
         # Return Page ======================================== 
