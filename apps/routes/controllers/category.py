@@ -1,9 +1,7 @@
 from flask import Blueprint, request, render_template, session, redirect, url_for
 import time
 
-from ... import db
-from ...database.db_categories import Categories
-from ..models.category import add_category, edit_category, delete_category
+from ..models.category import CategoryModels
 
 # BLUEPRINT ================================================== Begin
 category = Blueprint(
@@ -18,29 +16,25 @@ category = Blueprint(
 # CATEGORY PAGE ============================================================ Begin
 # GET https://127.0.0.1:5000/category/
 @category.get('/')
+@jwt_required()
 def index():
-    if 'user_id' not in session:
-        return redirect(
-            url_for('auth.signin_page')
-            )
-    # Protrksi role
-    if session.get('role') != 'admin':
-        return redirect(
-           url_for('dashboard.index')
+    try:
+        # Role Validation ======================================== 
+        if session.get('role') != 'admin':
+            return redirect(url_for('dashboard.index'))
+
+        # Return Page ======================================== 
+        return render_template(
+            title='Kategori - POS Bengkel',
+            template_name_or_list='category.html',
+            active_menu="category",
         )
-    # Return Page ======================================== 
-    categories = Categories.query.filter_by(
-        is_delete=0
-    ).all()
 
-    return render_template(
-        title='category',
-        template_name_or_list='category.html',
-        active_menu="category",
-        categories=categories
-    )
-
-
+    except Exception as e:
+        return render_template(
+            title="Error 404 - POS Bengkel",
+            template_name_or_list='errorPages/404.html'
+        )
 # CATEGORY PAGE ============================================================ End
 
 
@@ -53,7 +47,7 @@ def createCategory():
         body = request.json
 
         # Request Process ======================================== 
-        response = add_category(body)
+        response = CategoryModels.add_category(body)
 
         # Request Data ======================================== 
         return response
@@ -67,8 +61,8 @@ def createCategory():
 
 
 # ADD CATEGORY DATA ============================================================ Begin
-# POST https://127.0.0.1:5000/category/add
-@category.post('/view')
+# POST https://127.0.0.1:5000/category/view
+@category.get('/view')
 def getCategory():
     try:
         # Request Process ======================================== 
@@ -86,15 +80,15 @@ def getCategory():
 
 
 # UPDATE CATEGORY DATA ============================================================ Begin
-# PUT https://127.0.0.1:5000/category/update
-@category.put('/update/<int:id>')
+# PUT https://127.0.0.1:5000/category/edit
+@category.put('/edit/<int:id>')
 def updateCategory(id):
     try:
         # Request Data ========================================
         body = request.json
 
         # Request Process ======================================== 
-        response = edit_category(body, id)
+        response = CategoryModels.edit_category(body, id)
 
         # Request Data ======================================== 
         return response
@@ -108,12 +102,12 @@ def updateCategory(id):
 
 
 # DELETE CATEGORY DATA ============================================================ Begin
-# DELETE https://127.0.0.1:5000/category/update
+# DELETE https://127.0.0.1:5000/category/delete
 @category.delete('/delete/<int:id>')
 def deleteCategory(id):
     try:
         # Request Process ======================================== 
-        response = delete_category(id)
+        response = CategoryModels.delete_category(id)
 
         # Request Data ======================================== 
         return response

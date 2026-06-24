@@ -57,7 +57,7 @@
                <div class="card-body">
                   <div class="row">
                      <div class="col-sm-12 d-flex justify-content-end">
-                        <a href="#" class="btn btn-outline-success" data-bs-toggle="modal" data-bs-target="#inlineForm"> Tambah</a>
+                        <a href="#" class="btn btn-outline-success" data-bs-toggle="modal" data-bs-target="#category_modal"> Tambah</a>
                      </div>
                   </div>
                </div>
@@ -80,32 +80,8 @@
                            <th>Action</th>
                         </tr>
                      </thead>
-                     <tbody>
-                        {% for category in categories %}
-                        <tr>
-                           <td>{{ category.id }}</td>
-                           <td>{{ category.category }}</td>
-                           <td>
-                              <button
-                                  class="btn btn-warning btn-sm"
-                                  onclick="openEditModal(
-                                      '{{ category.id }}',
-                                      '{{ category.category }}'
-                                  )">
-                                  Edit
-                              </button>
-                              {% if session.get('role') == 'admin' %}
-                              <button
-                                 class="btn btn-danger btn-sm"
-                                 onclick="deleteCategory(
-                                    '{{ category.id }}'
-                                 )">
-                                 Hapus
-                              </button>
-                              {% endif %}
-                          </td>
-                        </tr>
-                        {% endfor %}
+                     <tbody id="category_table">
+                        <!-- row table set at javascript -->
                      </tbody>
                   </table>
                </div>
@@ -125,21 +101,22 @@
       <!--! ================================================================ !-->
 
       <!--! ================================================================ !-->
-      <!--! [Start] Form Add Modal !-->
-      <div class="modal fade text-left" id="inlineForm" tabindex="-1" role="dialog" aria-labelledby="myModalLabel33" aria-hidden="true">
+      <!--! [Start] Modal Form !-->
+      <div class="modal fade text-left" id="category_modal" tabindex="-1" role="dialog" aria-labelledby="modal_label" aria-hidden="true">
          <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable" role="document">
             <div class="modal-content">
                <div class="modal-header">
-                  <h4 class="modal-title" id="myModalLabel33">Tambah Kategori</h4>
+                  <h4 class="modal-title" id="modal_label">Tambah Kategori</h4>
                   <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
                      <i data-feather="x"></i>
                   </button>
                </div>
                <form action="#" id="addCategoryForm">
                   <div class="modal-body">
+                     <input type="hidden" id="category_id" />
                      <label>Nama Kategori: </label>
                      <div class="form-group">
-                        <input type="text" id="category" placeholder="Kategori" class="form-control" />
+                        <input type="text" id="category_name" placeholder="Kategori" class="form-control" />
                      </div>
                   </div>
                   <div class="modal-footer">
@@ -147,63 +124,19 @@
                         <i class="bx bx-x d-block d-sm-none"></i>
                         <span class="d-none d-sm-block">Tutup</span>
                      </button>
-                     <button
-                        type="button"
-                        class="btn btn-primary"
-                        onclick="saveCategory()">
-                        Simpan
-                     </button>
+                     <button type="button" class="btn btn-primary btn-save">Simpan</button>
                   </div>
                </form>
             </div>
          </div>
       </div>
-      <!--! [End] Form Add Modal !-->
+      <!--! [End] Modal Form !-->
       <!--! ================================================================ !-->
-
-      <!--! ================================================================ !-->
-      <!--! [Start] Form Update Modal !-->
-      <div class="modal fade text-left" id="editModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel33" aria-hidden="true">
-         <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable" role="document">
-            <div class="modal-content">
-               <div class="modal-header">
-                  <h4 class="modal-title" id="myModalLabel33">Edit Kategori</h4>
-                  <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-                     <i data-feather="x"></i>
-                  </button>
-               </div>
-               <form action="#" method="put">
-                  <div class="modal-body">
-                     <input type="hidden" id="edit_id">
-                     <label>Kategori : </label>
-                     <div class="form-group">
-                        <input type="text" id="edit_category" class="form-control" placeholder="kategori">
-                     </div>
-                  </div>
-                  <div class="modal-footer">
-                     <button type="button" class="btn btn-light-secondary" data-bs-dismiss="modal">
-                        <i class="bx bx-x d-block d-sm-none"></i>
-                        <span class="d-none d-sm-block">Tutup</span>
-                     </button>
-                     <button
-                        type="button"
-                        class="btn btn-primary"
-                        onclick="updateCategory()">
-                        Simpan
-                     </button>
-                  </div>
-               </form>
-            </div>
-         </div>
-      </div>
-      <!--! [End] Form Update Modal !-->
-      <!--! ================================================================ !-->
-
    </div>
    <!--! ================================================================ !-->
    <!--! [End] Page Content !-->
    <!--! ================================================================ !-->
 </div>
 
-<script src="{{ url_for('static', filename='javascript/backend/categories.js') }}"></script>
+<script src="{{ url_for('static', filename='javascript/api/categories.js') }}"></script>
 {% endblock %}

@@ -22,21 +22,6 @@ app.config.from_object(ConnectDB)
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 
-# ========================= DATABASE CONFIGURATION =========================
-from .database import db_admins
-from .database import db_customer
-from .database import db_categories
-from .database import db_suppliers
-from .database import db_items
-from .database import db_purchases
-from .database import db_purchase_details
-from .database import db_sales
-from .database import db_sale_details
-from .database import db_services
-from .database import db_sale_service_details
-
-# ====================== END - DATABASE CONFIGURATION ======================
-
 # JWT Section ==============================##
 jwt = JWTManager(app)
 
@@ -56,6 +41,20 @@ for x in list_folder:
 # End Folder Section ==========================##
 # ====================== END - APPS CONFIGURATION =======================
 
+# ========================= DATABASE CONFIGURATION =========================
+from .database import db_admins
+from .database import db_customer
+from .database import db_categories
+from .database import db_suppliers
+from .database import db_items
+from .database import db_purchases
+from .database import db_purchase_details
+from .database import db_sales
+from .database import db_sale_details
+from .database import db_services
+from .database import db_sale_service_details
+# ====================== END - DATABASE CONFIGURATION ======================
+
 # ========================= ROUTE CONFIGURATION =========================
 # Route Base Section ==============================##
 @app.route("/")
@@ -74,7 +73,6 @@ from .routes.controllers.category import category
 from .routes.controllers.customer import customer
 from .routes.controllers.product import product
 from .routes.controllers.supplier import supplier
-from .routes.controllers.item import item
 from .routes.controllers.purchase import purchase
 from .routes.controllers.sales import sales
 from .routes.controllers.report import report
@@ -87,7 +85,6 @@ app.register_blueprint(category)
 app.register_blueprint(customer)
 app.register_blueprint(product)
 app.register_blueprint(supplier)
-app.register_blueprint(item)
 app.register_blueprint(purchase)
 app.register_blueprint(sales)
 app.register_blueprint(report)

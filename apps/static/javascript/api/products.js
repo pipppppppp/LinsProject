@@ -1,5 +1,5 @@
 // **************************************************************
-// RENDERING DOCUMENT | START 
+// BASE INISIALIZATION | START 
 // **************************************************************
 document.addEventListener("DOMContentLoaded", init);
 async function init() {
@@ -9,32 +9,47 @@ async function init() {
 
    renderTable();
 }
+
+// Form ID Setup
+const form = {
+   title: document.getElementById("modal_label"),
+   id: document.getElementById("product_id"),
+   name: document.getElementById("product_name"),
+   category: document.getElementById("product_category"),
+   stock: document.getElementById("product_stock"),
+   purchase: document.getElementById("product_purchase"), // harga beli
+   price: document.getElementById("product_price"), //harga jual
+};
 // **************************************************************
-// RENDERING DOCUMENT | END 
+// BASE INISIALIZATION | END 
 // **************************************************************
 
 
 // **************************************************************
 // GET PRODUCT | START 
 // **************************************************************
-// Initialization -------------------------------------------------
+// Variable Setup -------------------------------------------------
 let productsData = [];
 let categoriesData = [];
-const form = {
-   title: document.getElementById("modal_label"),
-   id: document.getElementById("product_id"),
-   name: document.getElementById("product_name"),
-   category: document.getElementById("product_category"),
-};
 
 // Load Data -------------------------------------------------
 async function loadProducts() {
-   const response = await fetch("/product/view");
+   const response = await fetch("/product/view", {
+      method: "GET",
+      headers: {
+         "Content-Type": "application/json",
+      },
+   });
    productsData = await response.json();
 }
 
 async function loadCategories() {
-   const response = await fetch("/category/view");
+   const response = await fetch("/category/view", {
+      method: "GET",
+      headers: {
+         "Content-Type": "application/json",
+      },
+   });
    categoriesData = await response.json();
 
    renderCategoryOptions();
@@ -59,8 +74,8 @@ function renderCategoryOptions() {
 
    categoriesData.forEach((category) => {
       const option = document.createElement("option");
-      option.value = category.id;
-      option.textContent = category.category;
+      option.value = category.ctg_id;
+      option.textContent = category.ctg_name;
 
       select.appendChild(option);
    });
@@ -70,29 +85,32 @@ function renderCategoryOptions() {
 function renderTable() {
    let html = "";
 
-   productsData.forEach((product) => {
+   productsData.forEach((product, index) => {
       html += `
             <tr>
-                <td>${product.id}</td>
-                <td>${product.name}</td>
-                <td>${product.category}</td>
+                <td>${index+1}</td>
+                <td>${product.product_name}</td>
+                <td>${product.product_category}</td>
+                <td>${product.product_stock}</td>
+                <td>${product.product_purchase}</td>
+                <td>${product.product_price}</td>
                 <td>
                     <button
                         class="btn btn-warning btn-sm btn-edit" 
                         data-bs-toggle="modal" 
-                        data-bs-target="product_modal"
-                        data-id="${product.id}"> Edit
+                        data-bs-target="#product_modal"
+                        data-id="${product.product_id}"> Edit
                     </button>
                     <button
                         class="btn btn-danger btn-sm btn-delete"
-                        data-id="${product.id}"> Hapus
+                        data-id="${product.product_id}"> Hapus
                     </button>
                 </td>
             </tr>
         `;
    });
 
-   document.getElementById("productTable").innerHTML = html;
+   document.getElementById("product_table").innerHTML = html;
 }
 // **************************************************************
 // RENDER DATA | END 
@@ -106,6 +124,9 @@ async function saveProduct() {
    const product_id = form.id.value;
    const product_name = form.name.value;
    const product_category = form.category.value;
+   const product_stock = form.stock.value;
+   const product_price = form.price.value;
+   const product_purchase = form.purchase.value;
 
    let response;
    if (!product_id) {
@@ -117,6 +138,9 @@ async function saveProduct() {
          body: JSON.stringify({
             product_name: product_name,
             product_category: product_category,
+            product_stock: product_stock,
+            product_purchase: product_purchase,
+            product_price: product_price,
          }),
       });
    } else {
@@ -128,11 +152,14 @@ async function saveProduct() {
          body: JSON.stringify({
             product_name: product_name,
             product_category: product_category,
+            product_stock: product_stock,
+            product_purchase: product_purchase,
+            product_price: product_price,
          }),
       });
    }
-   const result = await response.json();
 
+   const result = await response.json();
    if (result.status) {
       alert(result.message);
       location.reload();
@@ -147,18 +174,20 @@ document.querySelector(".btn-save").addEventListener("click", saveProduct);
 // **************************************************************
 // UPDATE & DELETE PRODUCT | START 
 // **************************************************************
-document.getElementById("productTable").addEventListener("click", handleTableClick);
-
+document.getElementById("product_table").addEventListener("click", handleTableClick);
 async function handleTableClick(e) {
    const id = Number(e.target.dataset.id);
    if (e.target.classList.contains("btn-edit")) {
       // proses edit
-      const product = productsData.find((p) => p.id === id);
+      const product = productsData.find((p) => p.product_id === id);
 
       form.title.textContent = "Ubah Produk";
-      form.id.value = product.id;
-      form.name.value = product.name;
-      form.category.value = product.category;
+      form.id.value = product.product_id;
+      form.name.value = product.product_name;
+      form.category.value = product.product_ctg_id;
+      form.stock.value = product.product_stock;
+      form.purchase.value = product.product_purchase;
+      form.price.value = product.product_price;
    } else if (e.target.classList.contains("btn-delete")) {
       // proses delete
       if (!confirm("Yakin hapus data?")) {
