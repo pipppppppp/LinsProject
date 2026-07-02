@@ -43,13 +43,13 @@ for x in list_folder:
 
 # ========================= DATABASE CONFIGURATION =========================
 from .database import db_admins
-from .database import db_customer
+from .database import db_customers
 from .database import db_categories
 from .database import db_suppliers
-from .database import db_items
+from .database import db_products
 from .database import db_purchases
 from .database import db_purchase_details
-from .database import db_sales
+from .database import db_payment
 from .database import db_sale_details
 from .database import db_services
 from .database import db_sale_service_details

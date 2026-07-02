@@ -43,23 +43,22 @@ function renderTable() {
       html += `
             <tr>
                 <td>${index + 1}</td>
-                <td>${category.ctg_name}</td>
+                <td>${category.category_name}</td>
                 <td>
                     <button
                         class="btn btn-warning btn-sm btn-edit" 
                         data-bs-toggle="modal" 
                         data-bs-target="#category_modal"
-                        data-id="${category.ctg_id}"> Edit
+                        data-id="${category.category_id}"> Edit
                     </button>
                     <button
                         class="btn btn-danger btn-sm btn-delete"
-                        data-id="${category.ctg_id}"> Hapus
+                        data-id="${category.category_id}"> Hapus
                     </button>
                 </td>
             </tr>
         `;
    });
-
    document.getElementById("category_table").innerHTML = html;
 }
 // **************************************************************
@@ -115,11 +114,11 @@ async function handleTableClick(e) {
    const id = Number(e.target.dataset.id);
    if (e.target.classList.contains("btn-edit")) {
       // proses edit
-      const category = categoriesData.find((p) => p.ctg_id === id);
+      const category = categoriesData.find((p) => p.category_id === id);
 
       form.title.textContent = "Ubah Kategori";
-      form.id.value = category.ctg_id;
-      form.name.value = category.ctg_name;
+      form.id.value = category.category_id;
+      form.name.value = category.category_name;
    } else if (e.target.classList.contains("btn-delete")) {
       // proses delete
       if (!confirm("Yakin hapus data?")) {

@@ -2,7 +2,7 @@ from flask import Blueprint, request, render_template, session, redirect, url_fo
 from flask import current_app as app
 
 from ... import db
-from ...database.db_customer import Customers
+from ...database.db_customers import Customers
 
 import time
 

@@ -2,7 +2,7 @@ from flask import Blueprint, request, render_template, session, redirect, url_fo
 from flask import current_app as app
 
 from ... import db
-from ...database.db_items import Items
+from ...database.db_products import Items
 from ...database.db_categories import Categories
 
 import time

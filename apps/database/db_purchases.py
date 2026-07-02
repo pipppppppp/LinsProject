@@ -1,5 +1,4 @@
 from .. import db
-from .db_admins import Admins
 
 class Purchases(db.Model):
 

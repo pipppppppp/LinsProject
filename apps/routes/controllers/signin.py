@@ -37,9 +37,7 @@ def signin_page():
 # GET https://127.0.0.1:5000/auth/signin/account
 @auth.post('/signin/account')
 def signin_process():
-    
     try:
-
         datas = SigninForm()
 
         admin = SigninModels.signin(datas)
@@ -53,7 +51,6 @@ def signin_process():
             return redirect(
                 url_for('dashboard.index')
             )
-        
 
         return render_template(
            'authPages/signin-page.html'
@@ -72,7 +69,7 @@ def signin_process():
         # return bad_request(str(e))
         # return "gagal boss! Durung dadi:)"
         return render_template(
-            title="Error $04 - Aplikasi e Hel",
+            title="Error 404 - POS Bengkel",
             template_name_or_list='errorPages/404.html'
         )
 # SIGNIN PROCESS ============================================================ End

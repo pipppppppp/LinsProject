@@ -9,11 +9,11 @@ from datetime import datetime, timedelta
 from ...database.db_sale_details import SaleDetails
 from ...database.db_sale_service_details import SaleServiceDetails
 
-from ...database.db_items import Items
-from ...database.db_customer import Customers
+from ...database.db_products import Items
+from ...database.db_customers import Customers
 from ...database.db_suppliers import Suppliers
 from ...database.db_purchases import Purchases
-from ...database.db_sales import Sales
+from ...database.db_payment import Sales
 from ...routes.controllers.report import calculate_profit
 
 # BLUEPRINT ================================================== Begin

@@ -44,8 +44,8 @@ class CategoryModels():
             response = []
             for rsl in category:
                 data = {
-                    "ctg_id" : rsl.id,
-                    "ctg_name" : rsl.category,
+                    "category_id" : rsl.id,
+                    "category_name" : rsl.category,
                 }
                 response.append(data)
             # Response Data ---------------------------------------- Finish
@@ -58,10 +58,10 @@ class CategoryModels():
     # GET ALL CATEGORY ============================================================ End
 
     # UPDATE CATEGORY ============================================================ Begin
-    def edit_category(datas, user_id):
+    def edit_category(datas, id):
         try:
             # Update Data ---------------------------------------- Start
-            data = Categories.query.get_or_404(user_id)
+            data = Categories.query.get_or_404(id)
 
             data.category = datas['category']
             data.updated_at = int(time.time())
@@ -81,11 +81,10 @@ class CategoryModels():
     # UPDATE CATEGORY ============================================================ End
 
     # DELETE CATEGORY ============================================================ Begin
-    def delete_category(user_id):
+    def delete_category(id):
         try:
             # Delete Data ---------------------------------------- Start
-            data = Categories.query.get_or_404(user_id)
-
+            data = Categories.query.get_or_404(id)
             data.is_delete = 1
             data.deleted_at = int(time.time())
 
