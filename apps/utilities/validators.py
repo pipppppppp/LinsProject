@@ -2,6 +2,7 @@ from datetime import datetime, timedelta
 
 import json
 
+from apps.database.db_categories import Categories
 from apps.database.db_users import Users
 from apps.database.db_workshops import Workshops
 from apps.utilities.utilities import *
@@ -87,11 +88,9 @@ def signin_validator(usermail, password):
     
     # Check Data in Database ---------------------------------------- Finish
     # Get data
-    result_data = Users.query.filter_by(email=usermail).first()
+    result_data = Users.query.filter_by(email=usermail, is_delete=0).first()
     if not result_data:
-        print("wae?")
-        result_data = Users.query.filter_by(username=usermail).first()
-    print(result_data)
+        result_data = Users.query.filter_by(username=usermail, is_delete=0).first()
     
     # Check data ready or not
     stts = 200
@@ -285,8 +284,8 @@ def workshop_validator(user_id, name, address, phone, is_create=True):
 
     # Check Duplicated Data ---------------------------------------- Start
     if is_create:
-        query = Workshops.query.filter_by(workshop_name=name, owner_id=user_id, is_delete=0).first()
-        if query:
+        result = Workshops.query.filter_by(workshop_name=name, owner_id=user_id, is_delete=0).first()
+        if result:
             checker_result.append("Bengkel sudah terdaftar")
     # Check Duplicated Data ---------------------------------------- Finish
 
@@ -294,46 +293,33 @@ def workshop_validator(user_id, name, address, phone, is_create=True):
 # WORKSHOP VALIDATION ============================================================ End
 
 # CATEGORY VALIDATION ============================================================ Begin
-def vld_category(category, format_data, is_create=True):
-    checkResult = []
+def category_validator(category, is_create=True):
+    check_result = []
 
     # Check Null Value ---------------------------------------- Start
     if category == "":
-        checkResult.append("Kategori tidak boleh kosong")
-    if type(format_data) != dict:
-        checkResult.append("Format data tidak valid")
-    # if format_data is None or len(format_data) < 1:
-    #     checkResult.append("Format data undangan tidak boleh kosong")
+        check_result.append("Kategori tidak boleh kosong.")
     # Check Null Value ---------------------------------------- Finish
 
     # Sanitize Category ---------------------------------------- Start
-    sanitCtgr, charCtgr = sanitize_all_char(category)
-    if sanitCtgr:
-        checkResult.append(f"Kategori tidak boleh mengandung karakter {charCtgr}")
+    sanitize_category, char_category = sanitize_all_char(category)
+    if sanitize_category:
+        check_result.append(f"Kategori tidak boleh mengandung karakter {char_category}")
     # Sanitize Category ---------------------------------------- Finish
     
     # Check String Value ---------------------------------------- Start
     if string_checker(category):
-        checkResult.append("Kategori tidak valid")
+        check_result.append("Kategori tidak valid")
     # Check String Value ---------------------------------------- Finish
 
     # Check Duplicate Category ---------------------------------------- Start
-    # mandatory = ["name", "date", "time", "location"]
-    # for default in mandatory:
-    #     if default not in format_data:
-    #         checkResult.append(f"Minimal tambahkan format {default}")
-    # Check Duplicate Category ---------------------------------------- Finish
-
-    # Check Duplicate Category ---------------------------------------- Start
     if is_create:
-        query = CTGR_CHK_QUERY
-        values = (category,)
-        result = DBHelper().get_count_filter_data(query, values)
-        if result > 0:
-            checkResult.append("Kategori sudah terdaftar")
+        result = Categories.query.filter_by(category=category).first()
+        if result:
+            check_result.append("Kategori sudah terdaftar")
     # Check Duplicate Category ---------------------------------------- Finish
 
-    return checkResult
+    return check_result
 # CATEGORY VALIDATION ============================================================ End
 
 # GUEST VALIDATION ============================================================ Begin

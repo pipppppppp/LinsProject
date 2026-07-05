@@ -75,7 +75,7 @@ def index():
 # Import
 from .routes.controllers.auth import auth
 from .routes.controllers.dashboard import dashboard
-# from .routes.controllers.category import category
+from .routes.controllers.category import category
 # from .routes.controllers.customer import customer
 # from .routes.controllers.product import product
 # from .routes.controllers.supplier import supplier
@@ -87,7 +87,7 @@ from .routes.controllers.dashboard import dashboard
 # Register
 app.register_blueprint(auth)
 app.register_blueprint(dashboard)
-# app.register_blueprint(category)
+app.register_blueprint(category)
 # app.register_blueprint(customer)
 # app.register_blueprint(product)
 # app.register_blueprint(supplier)

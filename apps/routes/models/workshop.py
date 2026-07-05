@@ -1,7 +1,6 @@
-import time, json
+import time
 
 from apps import db
-from apps.database.db_users import Users
 from apps.database.db_workshops import Workshops
 from apps.utilities.responseHelpers import *
 from apps.utilities.validators import role_validator, workshop_validator
@@ -25,7 +24,7 @@ class WorkshopModels():
             required_data = ["workshop_name", "workshop_address", "workshop_phone"]
             for req in required_data:
                 if req not in datas:
-                    return parameter_error(f"Missing {req} in Request Body.")
+                    return parameter_error(f"Missing {req} in request body.")
             # Checking Request Body ---------------------------------------- Finish
             
             # Data Validation ---------------------------------------- Start
@@ -38,14 +37,18 @@ class WorkshopModels():
             # Data Validation ---------------------------------------- Finish
             
             # Insert Data ---------------------------------------- Start
+            # Initialize
             timestamp = int(round(time.time()*1000))
             data = Workshops(
                 workshop_name=workshop_name,
+                owner_id=user_id,
                 workshop_address=workshop_address,
                 workshop_phone=workshop_phone,
                 created_at=timestamp,
                 updated_at=timestamp
             )
+
+            # Save Data
             try:
                 db.session.add(data)
                 db.session.commit()

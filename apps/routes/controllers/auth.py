@@ -9,7 +9,7 @@ from apps.utilities.responseHelpers import bad_request
 auth = Blueprint(
     name='auth',
     import_name=__name__,
-    template_folder="../../templates/pages",
+    template_folder="../../templates/pages/authPages",
     url_prefix='/auth',
 )
 # BLUEPRINT ================================================== End
@@ -23,7 +23,7 @@ def signup_page():
         # Return Page ======================================== 
         return render_template(
             title='Sign Up - POS Bengkel',
-            template_name_or_list='authPages/signup.html',
+            template_name_or_list='signup.html',
         )
 
     except Exception as e:
@@ -39,7 +39,7 @@ def signin_page():
         # Return Page ======================================== 
         return render_template(
             title='Sign In - POS Bengkel',
-            template_name_or_list='authPages/signin.html',
+            template_name_or_list='signin.html',
         )
 
     except Exception as e:

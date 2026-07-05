@@ -3,6 +3,7 @@ import time
 
 from apps import db
 from apps.database.db_users import Users
+from apps.database.db_workshops import Workshops
 from apps.routes.models.workshop import WorkshopModels
 from apps.utilities.responseHelpers import *
 from apps.utilities.utilities import hash_password
@@ -21,7 +22,7 @@ class AuthModels():
             required_data = ["username", "email", "password", "retype_password"]
             for req in required_data:
                 if req not in datas:
-                    return parameter_error(f"Missing {req} in Request Body.")
+                    return parameter_error(f"Missing {req} in request body.")
             # Validation Request Body ---------------------------------------- Finish
             
             # Initialize Data Input ---------------------------------------- Start
@@ -38,6 +39,7 @@ class AuthModels():
             # Data Validation ---------------------------------------- Finish
             
             # Insert Data ---------------------------------------- Start
+            # Initialize
             password_encrypt = hash_password(password)
             timestamp = int(round(time.time()*1000))
             data = Users(
@@ -48,6 +50,8 @@ class AuthModels():
                 created_at=timestamp,
                 updated_at=timestamp
             )
+
+            # Save Data
             try:
                 db.session.add(data)
                 db.session.commit()
@@ -58,21 +62,22 @@ class AuthModels():
 
             # Insert Workshop ---------------------------------------- Start
             user_data = Users.query.filter_by(email=email, is_delete=0).first()
-            workshop_data = WorkshopModels.create_workshop(user_data.id, user_data.role, datas)
-            if workshop_data.status_code != 200:
+            workshop = WorkshopModels.create_workshop(user_data.id, user_data.role, datas)
+            if workshop.status_code != 200:
                 user_data.is_delete = '1'
                 user_data.deleted_at = int(time.time())
-
                 db.session.commit()
-                return workshop_data
+                return workshop
             # Insert Workshop ---------------------------------------- Finish
 
             # Data Payload ---------------------------------------- Start
+            workshop_data = Workshops.query.filter_by(owner_id=user_data.id, is_delete=0).first()
             jwt_payload = {
                 "id" : user_data.id,
                 "email" : user_data.email,
                 "username" : user_data.username,
-                "role" : user_data.role
+                "role" : user_data.role,
+                "ws_id" : workshop_data.id
             }
             # Data Payload ---------------------------------------- Finish
             
@@ -103,7 +108,7 @@ class AuthModels():
             requiredData = ["usermail", "password"]
             for req in requiredData:
                 if req not in datas:
-                    return parameter_error(f"Missing {req} in Request Body.")
+                    return parameter_error(f"Missing {req} in request body.")
             # Checking Request Body ---------------------------------------- Finish
             
             # Initialize Data Input ---------------------------------------- Start
@@ -112,10 +117,9 @@ class AuthModels():
             # Initialize Data Input ---------------------------------------- Finish
             
             # Data Validation ---------------------------------------- Start
-            checkResult, result, stts = signin_validator(usermail, password)
-            if len(checkResult) > 0:
-                return defined_error(checkResult, "Bad Request", statusCode=stts)
-            print("Check here!")
+            checker_result, result, stts = signin_validator(usermail, password)
+            if len(checker_result) > 0:
+                return defined_error(checker_result, "Bad Request", statusCode=stts)
             # Data Validation ---------------------------------------- Finish
 
             # Update Data Last Active ---------------------------------------- Start
@@ -128,11 +132,13 @@ class AuthModels():
             # Generate File URL ---------------------------------------- Finish
             
             # Data Payload ---------------------------------------- Start
+            workshop_data = Workshops.query.filter_by(owner_id=result.id, is_delete=0).first()
             jwt_payload = {
                 "id" : result.id,
                 "email" : result.email,
                 "name" : result.username,
-                "role" : result.role
+                "role" : result.role,
+                "ws_id" : workshop_data.id
             }
             # Data Payload ---------------------------------------- Finish
 
@@ -142,7 +148,7 @@ class AuthModels():
             # Data Response ---------------------------------------- Start
             response = {
                 "access_token" : access_token,
-                "role" : "USER"
+                "role" : result.role
             }
             # Data Response ---------------------------------------- Finish
 

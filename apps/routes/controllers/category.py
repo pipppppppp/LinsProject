@@ -3,6 +3,8 @@ from flask_jwt_extended import jwt_required, get_jwt
 
 import time
 
+from apps.utilities.responseHelpers import bad_request
+
 from ..models.category import CategoryModels
 
 # BLUEPRINT ================================================== Begin
@@ -21,13 +23,13 @@ category = Blueprint(
 @jwt_required()
 def index():
     try:
-        # Access User ======================================== 
-        id = str(get_jwt()["id"])
-        role = str(get_jwt()["role"])
+        # # Access User ======================================== 
+        # id = str(get_jwt()["id"])
+        # role = str(get_jwt()["role"])
 
-        # Role Validation ======================================== 
-        if role != 'admin':
-            return redirect(url_for('dashboard.index'))
+        # # Role Validation ======================================== 
+        # if role != 'admin':
+        #     return redirect(url_for('dashboard.index'))
 
         # Return Page ======================================== 
         return render_template(
@@ -45,82 +47,86 @@ def index():
 
 
 # ADD CATEGORY DATA ============================================================ Begin
-# POST https://127.0.0.1:5000/category/add
+# POST https://127.0.0.1:5000/category/add [Done]
 @category.post('/add')
-def createCategory():
+@jwt_required()
+def create_category():
     try:
-        # Request Data ========================================
-        body = request.json
+        # Access User ======================================== 
+        id = str(get_jwt()["id"])
+        role = str(get_jwt()["role"])
+
+        # Request Data ======================================== 
+        data = request.json
 
         # Request Process ======================================== 
-        response = CategoryModels.add_category(body)
+        response = CategoryModels.create_category(id, role, data)
 
         # Request Data ======================================== 
         return response
 
     except Exception as e:
-        return render_template(
-            title="Error $04 - Aplikasi e Hel",
-            template_name_or_list='errorPages/404.html'
-        )
+        return bad_request(str(e))
 # ADD CATEGORY DATA ============================================================ End
 
 
-# ADD CATEGORY DATA ============================================================ Begin
-# POST https://127.0.0.1:5000/category/view
+# VIEW CATEGORY DATA ============================================================ Begin
+# POST https://127.0.0.1:5000/category/view [Done]
 @category.get('/view')
-def getCategory():
+@jwt_required()
+def get_category():
     try:
+        # Access User ======================================== 
+        id = str(get_jwt()["id"])
+        workshop_id = str(get_jwt()["ws_id"])
+
         # Request Process ======================================== 
-        response = CategoryModels.view_category()
+        response = CategoryModels.get_category(id, workshop_id)
 
         # Request Data ======================================== 
         return response
 
     except Exception as e:
-        return render_template(
-            title="Error $04 - Aplikasi e Hel",
-            template_name_or_list='errorPages/404.html'
-        )
-# ADD CATEGORY DATA ============================================================ End
+        return bad_request(str(e))
+# VIEW CATEGORY DATA ============================================================ End
 
 
-# UPDATE CATEGORY DATA ============================================================ Begin
-# PUT https://127.0.0.1:5000/category/edit
-@category.put('/edit/<int:id>')
-def updateCategory(id):
-    try:
-        # Request Data ========================================
-        body = request.json
+# # UPDATE CATEGORY DATA ============================================================ Begin
+# # PUT https://127.0.0.1:5000/category/edit
+# @category.put('/edit/<int:id>')
+# def updateCategory(id):
+#     try:
+#         # Request Data ========================================
+#         body = request.json
 
-        # Request Process ======================================== 
-        response = CategoryModels.edit_category(body, id)
+#         # Request Process ======================================== 
+#         response = CategoryModels.edit_category(body, id)
 
-        # Request Data ======================================== 
-        return response
+#         # Request Data ======================================== 
+#         return response
 
-    except Exception as e:
-        return render_template(
-            title="Error $04 - Aplikasi e Hel",
-            template_name_or_list='errorPages/404.html'
-        )
-# UPDATE CATEGORY DATA ============================================================ End
+#     except Exception as e:
+#         return render_template(
+#             title="Error $04 - Aplikasi e Hel",
+#             template_name_or_list='errorPages/404.html'
+#         )
+# # UPDATE CATEGORY DATA ============================================================ End
 
 
-# DELETE CATEGORY DATA ============================================================ Begin
-# DELETE https://127.0.0.1:5000/category/delete
-@category.delete('/delete/<int:id>')
-def deleteCategory(id):
-    try:
-        # Request Process ======================================== 
-        response = CategoryModels.delete_category(id)
+# # DELETE CATEGORY DATA ============================================================ Begin
+# # DELETE https://127.0.0.1:5000/category/delete
+# @category.delete('/delete/<int:id>')
+# def deleteCategory(id):
+#     try:
+#         # Request Process ======================================== 
+#         response = CategoryModels.delete_category(id)
 
-        # Request Data ======================================== 
-        return response
+#         # Request Data ======================================== 
+#         return response
         
-    except Exception as e:
-        return {
-            "status": False,
-            "message": str(e)
-        }, 500
-# DELETE CATEGORY DATA ============================================================ End
+#     except Exception as e:
+#         return {
+#             "status": False,
+#             "message": str(e)
+#         }, 500
+# # DELETE CATEGORY DATA ============================================================ End
