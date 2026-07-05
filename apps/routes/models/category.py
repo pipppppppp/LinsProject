@@ -1,6 +1,6 @@
 from ... import db
 from ...database.db_categories import Categories
-from ...utilities.responseHelper import bad_request
+from ...utilities.responseHelpers import bad_request
 
 import time
 

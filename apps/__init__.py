@@ -1,5 +1,5 @@
 # flask library
-from flask import Flask, Blueprint, render_template, url_for
+from flask import Flask, render_template, url_for
 from flask_jwt_extended import JWTManager
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
@@ -42,7 +42,8 @@ for x in list_folder:
 # ====================== END - APPS CONFIGURATION =======================
 
 # ========================= DATABASE CONFIGURATION =========================
-from .database import db_admins
+from .database import db_users
+from .database import db_workshops
 from .database import db_customers
 from .database import db_categories
 from .database import db_suppliers
@@ -53,6 +54,11 @@ from .database import db_payment
 from .database import db_sale_details
 from .database import db_services
 from .database import db_sale_service_details
+# Database Seed
+from .database import seed
+with app.app_context():
+    seed.seed_users()
+    print("Seed created!")
 # ====================== END - DATABASE CONFIGURATION ======================
 
 # ========================= ROUTE CONFIGURATION =========================
@@ -67,27 +73,27 @@ def index():
 
 # Blueprint Section ==============================##
 # Import
-from .routes.controllers.signin import auth
+from .routes.controllers.auth import auth
 from .routes.controllers.dashboard import dashboard
-from .routes.controllers.category import category
-from .routes.controllers.customer import customer
-from .routes.controllers.product import product
-from .routes.controllers.supplier import supplier
-from .routes.controllers.purchase import purchase
-from .routes.controllers.sales import sales
-from .routes.controllers.report import report
-from .routes.controllers.services import services
+# from .routes.controllers.category import category
+# from .routes.controllers.customer import customer
+# from .routes.controllers.product import product
+# from .routes.controllers.supplier import supplier
+# from .routes.controllers.purchase import purchase
+# from .routes.controllers.sales import sales
+# from .routes.controllers.report import report
+# from .routes.controllers.services import services
 
 # Register
 app.register_blueprint(auth)
 app.register_blueprint(dashboard)
-app.register_blueprint(category)
-app.register_blueprint(customer)
-app.register_blueprint(product)
-app.register_blueprint(supplier)
-app.register_blueprint(purchase)
-app.register_blueprint(sales)
-app.register_blueprint(report)
-app.register_blueprint(services)
+# app.register_blueprint(category)
+# app.register_blueprint(customer)
+# app.register_blueprint(product)
+# app.register_blueprint(supplier)
+# app.register_blueprint(purchase)
+# app.register_blueprint(sales)
+# app.register_blueprint(report)
+# app.register_blueprint(services)
 # End Blueprint Section ==========================##
 # ====================== END - ROUTE CONFIGURATION ======================

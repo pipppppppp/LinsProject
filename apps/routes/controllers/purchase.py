@@ -6,7 +6,7 @@ import pandas as pd
 from ...database.db_purchases import Purchases
 from ...database.db_purchase_details import PurchaseDetails
 from ...database.db_suppliers import Suppliers
-from ...database.db_products import Items
+from ...database.db_products import Products
 
 import time
 

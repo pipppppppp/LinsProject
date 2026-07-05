@@ -1,7 +1,7 @@
 from flask import Blueprint, request, render_template
 
 from ..models.product import ProductModels
-from ...utilities.responseHelper import bad_request
+from ...utilities.responseHelpers import bad_request
 
 # BLUEPRINT ================================================== Begin
 product = Blueprint(

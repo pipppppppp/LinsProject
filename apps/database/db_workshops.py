@@ -5,6 +5,8 @@ class Workshops(db.Model):
     owner_id = db.Column(db.Integer, db.ForeignKey("users.id"))
     parent_id = db.Column(db.Integer, nullable=False, server_default='0', comment="0=Parent, others=Branch")
     workshop_name = db.Column(db.String(100), nullable=False)
+    workshop_phone = db.Column(db.String(100), nullable=False)
+    workshop_address = db.Column(db.Text, nullable=False)
     is_active = db.Column(db.Integer, nullable=False, server_default='0')
     created_at = db.Column(db.BigInteger, nullable=False)
     updated_at = db.Column(db.BigInteger, nullable=False)

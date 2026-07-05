@@ -1,13 +1,13 @@
 from flask import current_app as app
 from email.mime.text import MIMEText
-from google.auth.transport.requests import Request
-from google.oauth2.credentials import Credentials
-from google_auth_oauthlib.flow import InstalledAppFlow
-from googleapiclient.discovery import build
+# from google.auth.transport.requests import Request
+# from google.oauth2.credentials import Credentials
+# from google_auth_oauthlib.flow import InstalledAppFlow
+# from googleapiclient.discovery import build
 from email.mime.multipart import MIMEMultipart
-from .responseHelper import *
+from .responseHelpers import *
 
-import string, random, hashlib, uuid, re, hashlib, os, cv2, base64, numpy as np
+import string, random, hashlib, uuid, re, hashlib, os, base64, numpy as np
 
 
 ##########################################################################################################
@@ -62,6 +62,7 @@ def auth_token():
         auth_token()
 
     return token
+
 
 ##########################################################################################################
 # SANITIZING STRING
@@ -176,7 +177,7 @@ def password_compare(hashedText, password):
     _hashedText, salt = hashedText.split(':')
     return _hashedText == hashlib.sha256(salt.encode() + password.encode()).hexdigest()
 
-def hashPassword(password):
+def hash_password(password):
     """fungsi untuk hashing password menggunakan salt"""
     salt = uuid.uuid4().hex
     return hashlib.sha256(salt.encode() + password.encode()).hexdigest() + ':' + salt

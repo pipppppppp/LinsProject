@@ -1,7 +1,7 @@
 from flask import jsonify, make_response
 from flask_jwt_extended import create_access_token
 from flask import request
-from ...database.db_admins import Admins
+from ...database.db_users import Users
 
 import time
 

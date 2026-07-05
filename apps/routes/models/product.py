@@ -1,7 +1,7 @@
 from ... import db
-from ...database.db_products import Items
+from ...database.db_products import Products
 from ...database.db_categories import Categories
-from ...utilities.responseHelper import success, bad_request
+from ...utilities.responseHelpers import success, bad_request
 
 import time
 
