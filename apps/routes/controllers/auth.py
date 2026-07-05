@@ -67,11 +67,11 @@ def signup_process():
 
 
 # SIGNIN PROCESS ============================================================ Begin
-# POST https://127.0.0.1:5000/auth/signin/account
+# POST https://127.0.0.1:5000/auth/signin/account [Done]
 @auth.post('/signin/account')
 def signin_process():
     try:
-        # Request Data ========================================
+        # Request Data ======================================== 
         body = request.json
 
         # Request Process ======================================== 
@@ -81,24 +81,21 @@ def signin_process():
         return response
 
     except Exception as e:
-        # return bad_request(str(e))
-        # return "gagal boss! Durung dadi:)"
-        return render_template(
-            title="Error 404 - POS Bengkel",
-            template_name_or_list='errorPages/404.html'
-        )
+        return bad_request(str(e))
 # SIGNIN PROCESS ============================================================ End
 
 
 # LOGOUT ============================================================ Begin
-# POST https://127.0.0.1:5000/auth/logout
-@auth.get('/logout')
+# POST https://127.0.0.1:5000/auth/signout [Done]
+@auth.get('/signout')
 @jwt_required
-def logout():
+def signout():
+    try:
+        session.clear()
 
-    session.clear()
-
-    return redirect(
-        url_for('auth.signin_page')
-    )
+        return redirect(
+            url_for('auth.signin_page')
+        )
+    except Exception as e:
+        return bad_request(str(e))
 # LOGOUT ============================================================ End

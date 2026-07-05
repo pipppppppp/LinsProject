@@ -6,12 +6,12 @@ from apps.database.db_users import Users
 from apps.routes.models.workshop import WorkshopModels
 from apps.utilities.responseHelpers import *
 from apps.utilities.utilities import hash_password
-from apps.utilities.validators import signup_validator
+from apps.utilities.validators import signin_validator, signup_validator
 
 
-# USER MODELS ============================================================ Begin
+# AUTH MODELS ============================================================ Begin
 class AuthModels():
-    # CREATE USER ============================================================ Begin
+    # SIGB UP ============================================================ Begin
     def signup(datas):
         try:
             # Validation Request Body ---------------------------------------- Start
@@ -25,7 +25,7 @@ class AuthModels():
             # Validation Request Body ---------------------------------------- Finish
             
             # Initialize Data Input ---------------------------------------- Start
-            username = datas["username"]
+            username = datas["username"].strip()
             email = datas["email"].strip()
             password = datas["password"]
             retype_password = datas["retype_password"]
@@ -91,7 +91,7 @@ class AuthModels():
 
         except Exception as e:
             return bad_request(str(e))
-    # CREATE USER ============================================================ End
+    # SIGB UP ============================================================ End
 
     # SIGN IN ============================================================ Begin
     def signin(datas):
@@ -106,72 +106,54 @@ class AuthModels():
                     return parameter_error(f"Missing {req} in Request Body.")
             # Checking Request Body ---------------------------------------- Finish
             
-            # # Initialize Data Input ---------------------------------------- Start
-            # email = datas["email"].strip().lower()
-            # password = datas["password"].strip()
-            # # Initialize Data Input ---------------------------------------- Finish
+            # Initialize Data Input ---------------------------------------- Start
+            usermail = datas["usermail"].strip().lower()
+            password = datas["password"].strip()
+            # Initialize Data Input ---------------------------------------- Finish
             
-            # # Data Validation ---------------------------------------- Start
-            # level = 2
-            # checkResult, result, stts = vld_signin(email, password, level)
-            # if len(checkResult) > 0:
-            #     return defined_error(checkResult, "Bad Request", statusCode=stts)
-            # # Data Validation ---------------------------------------- Finish
+            # Data Validation ---------------------------------------- Start
+            checkResult, result, stts = signin_validator(usermail, password)
+            if len(checkResult) > 0:
+                return defined_error(checkResult, "Bad Request", statusCode=stts)
+            print("Check here!")
+            # Data Validation ---------------------------------------- Finish
 
-            # # Update Data Last Active ---------------------------------------- Start
-            # timestamp = int(round(time.time()*1000))
-            # query = USR_UPDATE_ACTIVE_QUERY
-            # values = (timestamp, result[0]["id"])
-            # DBHelper().save_data(query, values)
-            # # Update Data Last Active ---------------------------------------- Finish
+            # Update Data Last Active ---------------------------------------- Start
+            # Update Data Last Active ---------------------------------------- Finish
             
-            # # Log Activity Record ---------------------------------------- Start
-            # activity = f"User dengan id {result[0]['id']} telah berhasil log in."
-            # query = LOG_ADD_QUERY
-            # values = (result[0]["id"], level, activity, timestamp, )
-            # DBHelper().save_data(query, values)
-            # # Log Activity Record ---------------------------------------- Finish
+            # Log Activity Record ---------------------------------------- Start
+            # Log Activity Record ---------------------------------------- Finish
 
-            # # Generate File URL ---------------------------------------- Start
-            # if len(result) >= 1:
-            #     detailRequestURL = str(request.url).find('?')
-            #     if detailRequestURL != -1:
-            #         index = detailRequestURL
-            #         request.url = request.url[:index]
-            # for item in result:
-            #     item["photos"] = f"{request.url_root}user/media/{item['photos']}"
-            # # Generate File URL ---------------------------------------- Finish
+            # Generate File URL ---------------------------------------- Start
+            # Generate File URL ---------------------------------------- Finish
             
-            # # Data Payload ---------------------------------------- Start
-            # jwt_payload = {
-            #     "id" : result[0]["id"],
-            #     "email" : email,
-            #     "name" : result[0]["username"],
-            #     "photos" : result[0]["photos"],
-            #     "role" : "USER"
-            # }
-            # # Data Payload ---------------------------------------- Finish
+            # Data Payload ---------------------------------------- Start
+            jwt_payload = {
+                "id" : result.id,
+                "email" : result.email,
+                "name" : result.username,
+                "role" : result.role
+            }
+            # Data Payload ---------------------------------------- Finish
 
-            # # Access Token by Email ======================================== 
-            # access_token = create_access_token(email, additional_claims=jwt_payload)
+            # Access Token by Email ======================================== 
+            access_token = create_access_token(result.email, additional_claims=jwt_payload)
 
-            # # Data Response ---------------------------------------- Start
-            # response = {
-            #     "access_token" : access_token,
-            #     "role" : "USER"
-            # }
-            # # Data Response ---------------------------------------- Finish
+            # Data Response ---------------------------------------- Start
+            response = {
+                "access_token" : access_token,
+                "role" : "USER"
+            }
+            # Data Response ---------------------------------------- Finish
 
             # Return Response ======================================== 
-            # return success_data(response)
-            return success()
+            return success_data(response)
 
         except Exception as e:
             return bad_request(str(e))
     # SIGN IN ============================================================ End
     
 #     # GET ALL USER ============================================================ Begin
-#     # Clear
 #     def view_user(user_id, user_role):
 #         try:
 #             # Access Validation ---------------------------------------- Start
@@ -340,7 +322,6 @@ class AuthModels():
 #     # DELETE USER ============================================================ End
     
 #     # GET ROW-COUNT USER ============================================================ Begin
-#     # Clear
 #     def get_count_user():
 #         try:
 #             # Checking Data ---------------------------------------- Start
@@ -362,4 +343,4 @@ class AuthModels():
 #         except Exception as e:
 #             return bad_request(str(e))
 #     # GET ROW-COUNT USER ============================================================ End
-# # USER MODELS ============================================================ End
+# AUTH MODELS ============================================================ End

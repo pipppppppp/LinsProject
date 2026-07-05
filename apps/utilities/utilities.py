@@ -172,7 +172,7 @@ def password_checker(password):
 
 ##########################################################################################################
 # TRANSFORM DATA
-def password_compare(hashedText, password):
+def password_comparison(hashedText, password):
     """fungsi untuk komparasi password yang sudah di hash dengan password dari user"""
     _hashedText, salt = hashedText.split(':')
     return _hashedText == hashlib.sha256(salt.encode() + password.encode()).hexdigest()

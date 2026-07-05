@@ -12,48 +12,51 @@ from apps.utilities.utilities import *
 
 # AUTH VALIDATION ============================================================ Begin
 def signup_validator(username, email, password, repassword):
-    checkerResult = []
+    checker_result = []
 
+    # Check Null Value ---------------------------------------- Start
     if username == "":
-        checkerResult.append(f"Nama tidak boleh kosong")
+        checker_result.append(f"Nama tidak boleh kosong")
     if email == "":
-        checkerResult.append(f"Email tidak boleh kosong")
+        checker_result.append(f"Email tidak boleh kosong")
     if password == "":
-        checkerResult.append(f"Password tidak boleh kosong")
+        checker_result.append(f"Password tidak boleh kosong")
     if repassword == "":
-        checkerResult.append(f"Password tidak boleh kosong")
+        checker_result.append(f"Password tidak boleh kosong")
+    # Check Null Value ---------------------------------------- Finish
 
-
+    # Sanitize String Content ---------------------------------------- Start
     sanitizeName, charName = sanitize_all_char(username)
     if sanitizeName:
-        checkerResult.append(f"Nama tidak boleh mengandung karakter {charName}")
+        checker_result.append(f"Nama tidak boleh mengandung karakter {charName}")
     sanitizeEmail, charEmail = sanitize_email_char(email)
     if sanitizeEmail:
-        checkerResult.append(f"Email tidak boleh mengandung karakter {charEmail}")
+        checker_result.append(f"Email tidak boleh mengandung karakter {charEmail}")
     sanitizePass, charPass = sanitize_passwd_char(password)
     if sanitizePass:
-        checkerResult.append(f"Password tidak boleh mengandung karakter {charPass}")
+        checker_result.append(f"Password tidak boleh mengandung karakter {charPass}")
     sanitizeRepass, charRepass = sanitize_passwd_char(repassword)
     if sanitizeRepass:
-        checkerResult.append(f"Password tidak boleh mengandung karakter {charRepass}")
+        checker_result.append(f"Password tidak boleh mengandung karakter {charRepass}")
+    # Sanitize String Content ---------------------------------------- Finish
 
 
     if password != repassword:
-        checkerResult.append(f"Password tidak sama.")
+        checker_result.append(f"Password tidak sama.")
     
 
     if email_checker(email):
-        checkerResult.append(f"Email tidak valid.")
+        checker_result.append(f"Email tidak valid.")
     passwordCheck, message = password_checker(password)
     if passwordCheck:
-        checkerResult.append(message)
+        checker_result.append(message)
 
 
     datas = Users.query.filter_by(email=email, is_delete=0).first()
     if datas:
-        checkerResult.append(f"Email sudah terdaftar sebagai owner.")
+        checker_result.append(f"Email sudah terdaftar sebagai owner.")
 
-    return checkerResult 
+    return checker_result 
 
 def role_validator(role):
     access = False
@@ -63,67 +66,69 @@ def role_validator(role):
 
     return access
 
-# def vld_auth(email):
-#     checkResult = []
+def signin_validator(usermail, password):
+    checker_result = []
+
+    # Check Null Value ---------------------------------------- Start
+    if usermail == "":
+        checker_result.append("Username atau email tidak boleh kosong.")
+    if password == "":
+        checker_result.append("Password tidak boleh kosong.")
+    # Check Null Value ---------------------------------------- Finish
+
+    # Sanitize String Content ---------------------------------------- Start
+    sanitMail, charMail = sanitize_email_char(usermail)
+    if sanitMail:
+        checker_result.append(f"Email tidak boleh mengandung karakter {charMail}.")
+    sanitPass, charPass = sanitize_passwd_char(password)
+    if sanitPass:
+        checker_result.append(f"Password tidak boleh mengandung karakter {charPass}.")
+    # Sanitize String Content ---------------------------------------- Finish
     
-#     if email_checker(email):
-#         checkResult.append(f"Email tidak valid.")
-
-#     token = auth_token()
-
-#     return checkResult, token
-
-# def vld_signin(email, password, level):
-#     checkResult = []
-
-#     if email == "":
-#         checkResult.append("Email tidak boleh kosong.")
-#     if password == "":
-#         checkResult.append("Password tidak boleh kosong.")
-
-#     sanitMail, charMail = sanitize_email_char(email)
-#     if sanitMail:
-#         checkResult.append(f"Email tidak boleh mengandung karakter {charMail}.")
-#     sanitPass, charPass = sanitize_passwd_char(password)
-#     if sanitPass:
-#         checkResult.append(f"Password tidak boleh mengandung karakter {charPass}.")
+    # Check Data in Database ---------------------------------------- Finish
+    # Get data
+    result_data = Users.query.filter_by(email=usermail).first()
+    if not result_data:
+        print("wae?")
+        result_data = Users.query.filter_by(username=usermail).first()
+    print(result_data)
     
-#     if email_checker(email):
-#         checkResult.append("Email tidak valid.")
-    
-#     # Cek Role
-#     values = (email,)
-#     query = ADM_CHK_EMAIL_QUERY if level == 1 else USR_CHK_EMAIL_QUERY
-#     result = DBHelper().get_data(query, values)
-    
-#     # Cek data email ready or not
-#     stts = 200
-#     if len(result) < 1:
-#         stts = 404
-#         checkResult.append("Email belum terdaftar.")
+    # Check data ready or not
+    stts = 200
+    if not result_data:
+        stts = 404
+        checker_result.append("Email belum terdaftar.")
+    # Check Data in Database ---------------------------------------- Finish
 
-#     # Cek password
-#     if len(result) != 0:
-#         # Cek activated
-#         if result[0]['is_active'] == 0:
-#             stts = 400
-#             checkResult.append("Akun belum diaktivasi. Silahkan verifikasi terlebih dahulu.")
-#             return checkResult, result, stts
+    # Password Validation ---------------------------------------- Start
+    # Check password
+    if result_data:
+        # Check activated
+        if result_data.is_active == 0:
+            stts = 400
+            checker_result.append("Your account has not been activated. Please verify it first.")
+            return checker_result, result_data, stts
         
-#         # Cek password
-#         savedPassword = result[0]['password']
-#         validatePass = password_compare(savedPassword, password)
-#         if not validatePass:
-#             stts = 400
-#             checkResult.append("Akun tidak valid.")
+        # Cek password
+        passwd_compare = password_comparison(result_data.password, password)
+        if not passwd_compare:
+            stts = 400
+            checker_result.append("Invalid account.")
+    # Password Validation ---------------------------------------- Finish
 
-#     # Get photo profile
-#     query = PROF_GET_BY_ID_QUERY
-#     values = (result[0]['id'], level)
-#     profile = DBHelper().get_data(query, values)
-#     result[0]['photos'] = profile[0]['photos']
+    # Get photo profile
     
-#     return checkResult, result, stts
+    return checker_result, result_data, stts
+
+# def vld_auth(email):
+    checkResult = []
+    
+    if email_checker(email):
+        checkResult.append(f"Email tidak valid.")
+
+    token = auth_token()
+
+    return checkResult, token
 
 # def vld_profile(userId, userLevel, fName, mName, lName, phone):
 #     checkResult = []
