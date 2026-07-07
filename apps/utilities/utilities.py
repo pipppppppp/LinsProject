@@ -1,13 +1,13 @@
 from flask import current_app as app
 from email.mime.text import MIMEText
-# from google.auth.transport.requests import Request
-# from google.oauth2.credentials import Credentials
-# from google_auth_oauthlib.flow import InstalledAppFlow
-# from googleapiclient.discovery import build
+from google.auth.transport.requests import Request
+from google.oauth2.credentials import Credentials
+from google_auth_oauthlib.flow import InstalledAppFlow
+from googleapiclient.discovery import build
 from email.mime.multipart import MIMEMultipart
-from .responseHelpers import *
+from .responseHelper import *
 
-import string, random, hashlib, uuid, re, hashlib, os, base64, numpy as np
+import string, random, hashlib, uuid, re, hashlib, os, cv2, base64, numpy as np
 
 
 ##########################################################################################################
@@ -62,7 +62,6 @@ def auth_token():
         auth_token()
 
     return token
-
 
 ##########################################################################################################
 # SANITIZING STRING
@@ -124,6 +123,25 @@ def sanitize_phone_char(number):
             return True, i
     return False, ""
 
+# SANITIZE PLATE NUMBER ============================================================ Begin
+def sanitize_plate_char(plate_number):
+    """
+    Mengembalikan:
+    (False, "")  -> jika plat nomor valid
+    (True, char) -> jika ditemukan karakter yang tidak diizinkan
+    """
+
+    allowed_pattern = r'^[A-Za-z0-9\s-]+$'
+
+    if re.match(allowed_pattern, plate_number):
+        return False, ""
+
+    for char in plate_number:
+        if not re.match(r'[A-Za-z0-9\s-]', char):
+            return True, char
+
+    return False, ""
+# SANITIZE PLATE NUMBER ============================================================ End
 
 ##########################################################################################################
 # CHECKER
@@ -169,15 +187,28 @@ def password_checker(password):
         message += "Password harus memiliki setidaknya satu huruf kecil."
     return error, message
 
+def plate_checker(plate_number):
+    error = True
 
+    plate_number = plate_number.strip().upper()
+
+    if (
+        len(plate_number) >= 5 and
+        len(plate_number) <= 15 and
+        all(char.isalnum() or char == " " for char in plate_number)
+    ):
+        error = False
+
+    return error
+    
 ##########################################################################################################
 # TRANSFORM DATA
-def password_comparison(hashedText, password):
+def password_compare(hashedText, password):
     """fungsi untuk komparasi password yang sudah di hash dengan password dari user"""
     _hashedText, salt = hashedText.split(':')
     return _hashedText == hashlib.sha256(salt.encode() + password.encode()).hexdigest()
 
-def hash_password(password):
+def hashPassword(password):
     """fungsi untuk hashing password menggunakan salt"""
     salt = uuid.uuid4().hex
     return hashlib.sha256(salt.encode() + password.encode()).hexdigest() + ':' + salt

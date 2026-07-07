@@ -1,148 +1,156 @@
-// # ============================================================== 
-// # FUNGSION SAVE CUSTOMERS - START
-// # ============================================================== 
+// **************************************************************
+// BASE INISIALIZATION | START
+// **************************************************************
+document.addEventListener("DOMContentLoaded", init);
+async function init() {
+  await loadCustomers();
+  renderTable();
+}
 
+// Form ID Setup
+const form = {
+  title: document.getElementById("modal_label"),
+  id: document.getElementById("customer_id"),
+  name: document.getElementById("customer_name"),
+  address: document.getElementById("customer_address"),
+  phone: document.getElementById("customer_phone"),
+};
+// **************************************************************
+// BASE INISIALIZATION | END
+// **************************************************************
+
+// **************************************************************
+// GET SPPLIER | START
+// **************************************************************
+// Variable Setup -------------------------------------------------
+let customersData = [];
+
+// Load Data -------------------------------------------------
+async function loadCustomers() {
+  customersData = await getRequest("/customer/view");
+}
+// **************************************************************
+// GET CUSTOMER | END
+// **************************************************************
+
+// **************************************************************
+// RENDER DATA | START
+// **************************************************************
+function renderTable() {
+  let html = "";
+
+  customersData.forEach((customer, index) => {
+    html += `
+            <tr>
+                <td>${index + 1}</td>
+                <td>${customer.customer_name}</td>
+                <td>${customer.customer_address}</td>
+                <td>${customer.customer_phone}</td>
+                <td>
+                    <button
+                        class="btn btn-warning btn-sm btn-edit"
+                        data-bs-toggle="modal"
+                        data-bs-target="#customer_modal"
+                        data-id="${customer.customer_id}">
+                        Edit
+                    </button>
+
+                    <button
+                        class="btn btn-danger btn-sm btn-delete"
+                        data-id="${customer.customer_id}">
+                        Hapus
+                    </button>
+                </td>
+            </tr>
+        `;
+  });
+
+  document.getElementById("customer_table").innerHTML = html;
+}
+// **************************************************************
+// RENDER DATA | END
+// **************************************************************
+
+// **************************************************************
+// SAVE CUSTOMER | START
+// **************************************************************
 async function saveCustomer() {
+  const customer = {
+    customer_id: form.id.value,
+    customer_name: formatTitle(form.name.value),
+    customer_address: form.address.value.trim(),
+    customer_phone: formatPhone(form.phone.value),
+  };
 
-    const nama = document.getElementById("nama").value;
-    const alamat = document.getElementById("alamat").value;
-    const telepon = document.getElementById("telepon").value;
+  // VALIDATION ==================================================
+  if (!validateCustomer(customer)) return;
 
-    const response = await fetch("/customer/add", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-            nama,
-            alamat,
-            telepon
-        })
-    });
+  swalLoading();
 
-    const result = await response.json();
+  let result;
+
+  try {
+    swalLoading();
+
+    if (!customer.customer_id) {
+      result = await postRequest("/customer/add", customer);
+    } else {
+      result = await putRequest(`/customer/edit/${customer.customer_id}`, customer);
+    }
+  } finally {
+    swalClose();
+  }
+
+
+  if (result.status) {
+    await swalSuccess(result.message);
+
+    closeModal("customer_modal");
+    clearValue(form.id, form.name, form.address, form.phone);
+    await reloadTable(loadCustomers, renderTable);
+  } else {
+    await swalError(result.message);
+  }
+}
+document.querySelector(".btn-save").addEventListener("click", saveCustomer);
+// **************************************************************
+// SAVE PRODUCT | END
+// **************************************************************
+
+// **************************************************************
+// UPDATE & DELETE CUSTOMER | START
+// **************************************************************
+document.getElementById("customer_table").addEventListener("click", handleTableClick);
+async function handleTableClick(e) {
+  const id = Number(e.target.dataset.id);
+  if (e.target.classList.contains("btn-edit")) {
+    // proses edit
+    const customer = customersData.find((s) => s.customer_id === id);
+
+    form.title.textContent = "Ubah Customer";
+    form.id.value = customer.customer_id;
+    form.name.value = customer.customer_name;
+    form.address.value = customer.customer_address;
+    form.phone.value = customer.customer_phone;
+  } else if (e.target.classList.contains("btn-delete")) {
+    // proses delete
+    const confirmDelete = await swalDelete();
+    if (!confirmDelete.isConfirmed) {
+      return;
+    }
+    swalLoading();
+    const result = await deleteRequest(`/customer/delete/${id}`);
+    swalClose();
 
     if (result.status) {
+      await swalSuccess(result.message);
 
-        Swal.fire({
-            icon: "success",
-            title: "Berhasil",
-            text: "Member berhasil ditambahkan",
-            timer: 1500,
-            showConfirmButton: false
-        });
-
-        const option = new Option(
-            result.nama,
-            result.customer_id,
-            true,
-            true
-        );
-        
-        $("#customer_id")
-            .append(option)
-            .trigger("change");
-
-            const modal =
-            bootstrap.Modal.getInstance(
-                document.getElementById(
-                    "inlineForm"
-                )
-            );
-        
-        modal.hide();
-
-        document.getElementById("nama").value = "";
-        document.getElementById("alamat").value = "";
-        document.getElementById("telepon").value = "";
-    
+      await reloadTable(loadCustomers, renderTable);
     } else {
-        Swal.fire({
-            icon: "error",
-            title: "Gagal",
-            text: result.message
-        });
+      await swalError(result.message);
     }
+  }
 }
-// # ============================================================== 
-// # FUNGSION SAVE CUSTOMERS - END
-// # ============================================================== 
-
-// # ============================================================== 
-// # FUNGSION UPDATE CUSTOMERS - START
-// # ============================================================== 
-
-function openEditModal(id, nama, alamat, telepon) {
-
-    document.getElementById("edit_id").value = id;
-    document.getElementById("edit_nama").value = nama;
-    document.getElementById("edit_alamat").value = alamat;
-    document.getElementById("edit_telepon").value = telepon;
-
-    let modal = new bootstrap.Modal(
-        document.getElementById("editModal")
-    );
-
-    modal.show();
-}
-
-async function updateCustomer() {
-
-    const id = document.getElementById("edit_id").value;
-
-    const nama = document.getElementById("edit_nama").value;
-    const alamat = document.getElementById("edit_alamat").value;
-    const telepon = document.getElementById("edit_telepon").value;
-
-    console.log("UPDATE ID =", id);
-
-    const response = await fetch(`/customer/update/${id}`, {
-        method: "PUT",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-            nama,
-            alamat,
-            telepon
-        })
-    });
-
-    const result = await response.json();
-
-    if(result.status){
-        alert("Data berhasil diupdate");
-        location.reload();
-    }else{
-        alert(result.message);
-    }
-}
-// # ============================================================== 
-// # FUNGSION UPDATE CUSTOMERS - END
-// # ============================================================== 
-
-// # ============================================================== 
-// # FUNGSION DELETE CUSTOMERS - START
-// # ============================================================== 
-
-async function deleteCustomer(id){
-
-    if(!confirm("Yakin hapus data?")){
-        return;
-    }
-
-    const response = await fetch(`/customer/delete/${id}`, {
-        method: "DELETE"
-    });
-
-    const result = await response.json();
-
-    if(result.status){
-        location.reload();
-    }else{
-        alert(result.message);
-    }
-}
-// # ============================================================== 
-// # FUNGSION DELETE CUSTOMERS - END
-// # ============================================================== 
+// **************************************************************
+// UPDATE & DELETE CUSTOMER | END
+// **************************************************************

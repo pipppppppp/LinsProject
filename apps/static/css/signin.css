@@ -1,0 +1,197 @@
+body{
+  overflow:hidden;
+}
+
+.hero-content{
+
+  max-width:520px;
+
+  width:100%;
+
+  text-align:center;
+
+}
+
+#auth{
+  height:100vh;
+}
+
+#auth-left{
+  height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  background:radial-gradient(circle at top left,#ffffff 0%,#f5f7ff 45%,#eef2ff 100%);
+}
+
+#auth-right{
+  height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  text-align: center;
+  background:linear-gradient(
+    135deg,
+    #435ebe,
+    #3049c4,
+    #25389d
+  );
+}
+
+.login-card{
+  width:500px;
+  border:none;
+  border-radius:24px;
+  padding: 15px;
+  background: #fff;
+  box-shadow:0 15px 40px rgba(0,0,0,.08);
+  transition: .3s;
+}
+
+.login-card:hover{
+  transform: translateY(-3px);
+}
+
+.login-logo{
+  width:90px;
+}
+
+.login-link{
+
+  text-decoration:none;
+
+  font-weight:600;
+
+  color:#435ebe;
+
+}
+
+.login-link:hover{
+
+  text-decoration:underline;
+
+}
+
+.logo-right{
+
+  width:240px;
+
+  margin-bottom:25px;
+
+  animation:float 4s ease infinite;
+
+}
+
+@keyframes float{
+
+  0%{
+      transform:translateY(0);
+  }
+
+  50%{
+      transform:translateY(-10px);
+  }
+
+  100%{
+      transform:translateY(0);
+  }
+
+}
+
+.btn-primary{
+  transition:.25s ease;
+}
+
+.btn-primary:hover{
+  transform:translateY(-2px);
+  box-shadow:0 10px 25px rgba(67,94,190,.25);
+}
+
+.form-control{
+
+  height:58px;
+
+  border-radius:14px;
+
+  border:1px solid #d9d9d9;
+
+  transition:.25s;
+
+}
+
+.form-control:focus{
+
+  border-color:#435ebe;
+
+  box-shadow:
+  0 0 0 .15rem rgba(67,94,190,.18);
+
+}
+
+.btn-login{
+
+  height:55px;
+
+  border-radius:14px;
+
+  font-weight:700;
+
+  transition:.25s;
+
+}
+
+.btn-login:hover{
+
+  transform:translateY(-2px);
+
+  box-shadow:
+  0 12px 25px rgba(67,94,190,.30);
+
+}
+
+.login-title{
+
+  font-size:38px;
+
+  font-weight:700;
+
+}
+
+.login-subtitle{
+
+  color:#6c757d;
+
+  margin-bottom:30px;
+
+}
+
+.feature-box{
+  max-width: 420px;
+  width:100%;
+  margin-top:40px;
+  margin-left: auto;
+  margin-right: auto;
+  padding:30px;
+  border-radius:20px;
+  background:rgba(255,255,255,.10);
+  backdrop-filter:blur(15px);
+  text-align: left;
+}
+
+.feature-box div{
+
+  color:white;
+
+  margin-bottom:18px;
+
+  font-size:17px;
+
+}
+
+.feature-box i{
+
+  color:#7CFC98;
+
+  margin-right:10px;
+
+}

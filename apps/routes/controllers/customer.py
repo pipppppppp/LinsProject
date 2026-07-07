@@ -1,10 +1,8 @@
 from flask import Blueprint, request, render_template, session, redirect, url_for
-from flask import current_app as app
 
-from ... import db
-from ...database.db_customers import Customers
 
-import time
+from ..models.customer import CustomerModels
+from ...utilities.responseHelper import bad_request
 
 # BLUEPRINT ================================================== Begin
 customer = Blueprint(
@@ -20,95 +18,81 @@ customer = Blueprint(
 # [GET] https://127.0.0.1:5000/customer/
 @customer.get('/')
 def index():
+    try:
+        if 'user_id' not in session:
+            return redirect(url_for('auth.signin_page'))
 
-    if 'user_id' not in session:
-        return redirect(
-            url_for('auth.signin_page')
+        if session.get('role') != 1:
+            return redirect(url_for('dashboard.index'))
+
+        return render_template(
+            title='Customer - POS Bengkel',
+            template_name_or_list='customer.html',
+            active_menu="customer",
         )
-
-    customers = Customers.query.filter_by(
-        is_delete=0
-    ).all()
-
-    return render_template(
-        template_name_or_list='customer.html',
-        active_menu="customer",
-        title='Data Pelanggan',
-        customers=customers
-    )
+    except Exception as e:
+        return bad_request(str(e))
 # CUSTOMER PAGE ============================================================ End
 
 
 # ADD CUSTOMER DATA ============================================================ Begin
 # [POST] https://127.0.0.1:5000/customer/add
 @customer.post('/add')
-def addCustomer():
+def create_customer():
+    try:
 
-    body = request.json
+        body = request.json
 
-    customer = Customers(
-        nama=body['nama'],
-        alamat=body['alamat'],
-        telepon=body['telepon'],
-        created_at=int(time.time()),
-        updated_at=int(time.time())
-    )
+        response = CustomerModels.add_customer(body)
 
-    db.session.add(customer)
-    db.session.commit()
+        return response
 
-    return {
-        "status": True,
-        "message": "Data berhasil disimpan",
-        "customer_id": customer.id,
-        "nama": customer.nama
-    }
+    except Exception as e:
+        return bad_request(str(e))
 # ADD CUSTOMER DATA ============================================================ End
+
+# GET CUSTOMER DATA ============================================================ Begin
+# GET https://127.0.0.1:5000/customer/view
+@customer.get('/view')
+def get_customer():
+    try:
+
+        response = CustomerModels.view_customer()
+
+        return response
+
+    except Exception as e:
+        return bad_request(str(e))
+# GET CUSTOMER DATA ============================================================ End
 
 
 # UPDATE CUSTOMER DATA ============================================================ Begin
-# [PUT] https://127.0.0.1:5000/customer/update/<id>
-@customer.put('/update/<int:id>')
-def updateCustomer(id):
+# [PUT] https://127.0.0.1:5000/customer/edit/<id>
+@customer.put('/edit/<int:id>')
+def update_customer(id):
     try:
+
         body = request.json
 
-        data = Customers.query.get_or_404(id)
+        response = CustomerModels.edit_customer(body, id)
 
-        data.nama = body['nama']
-        data.alamat = body['alamat']
-        data.telepon = body['telepon']
-        data.updated_at = int(time.time())
-
-        db.session.commit()
-
-        return {
-            "status": True,
-            "message": "Data berhasil diupdate"
-        }
+        return response
 
     except Exception as e:
-        return {
-            "status": False,
-            "message": str(e)
-        }, 500
+        return bad_request(str(e))
 # UPDATE CUSTOMER DATA ============================================================ End
 
 
 # DELETE CUSTOMER DATA ============================================================ Begin
 # [DELETE] https://127.0.0.1:5000/customer/delete/<id>
 @customer.delete('/delete/<int:id>')
-def deleteCustomer(id):
+def delete_customer(id):
+    try:
 
-    data = Customers.query.get_or_404(id)
+        response = CustomerModels.delete_customer(id)
 
-    data.is_delete = 1
-    data.deleted_at = int(time.time())
+        return response
 
-    db.session.commit()
-
-    return {
-        "status": True,
-        "message": "Data berhasil dihapus"
-    }
+    except Exception as e:
+        return bad_request(str(e))
 # DELETE CUSTOMER DATA ============================================================ End

@@ -1,9 +1,11 @@
 from .. import db
 
-class Payment(db.Model):
+class Payments(db.Model):
+          
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     customer_id = db.Column(db.Integer, db.ForeignKey("customers.id"))
     workshop_id = db.Column(db.Integer, db.ForeignKey("workshops.id"))
+    vehicle_id = db.Column(db.Integer, db.ForeignKey("vehicles.id"))
     payment_date = db.Column(db.BigInteger, nullable=False)
     total = db.Column(db.BigInteger, nullable=False)
     paid = db.Column(db.BigInteger, nullable=False,default=0)
@@ -14,8 +16,11 @@ class Payment(db.Model):
     is_delete = db.Column(db.Integer, nullable=False, server_default='0')
 
     # Relationship
-    workshops = db.relationship("Workshops", back_populates="payment")
-    customers = db.relationship("Customers", back_populates="payment")
+    workshops = db.relationship("Workshops", back_populates="payments")
+    customers = db.relationship("Customers", back_populates="payments")
+    vehicles = db.relationship("Vehicles", back_populates="payments")
+    sale_details = db.relationship("SaleDetails", back_populates="payments")
+    sale_service_details = db.relationship("SaleServiceDetails", back_populates="payments")
     # admin = db.relationship("Admins", primaryjoin="Sales.admin_id == Admins.id", foreign_keys=[admin_id], uselist=False)
 
     def __repr__(self):

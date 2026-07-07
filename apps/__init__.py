@@ -45,6 +45,7 @@ for x in list_folder:
 from .database import db_users
 from .database import db_workshops
 from .database import db_customers
+from .database import db_vehicles
 from .database import db_categories
 from .database import db_suppliers
 from .database import db_products
@@ -54,6 +55,7 @@ from .database import db_payment
 from .database import db_sale_details
 from .database import db_services
 from .database import db_sale_service_details
+from .database import db_cash_deposits
 # Database Seed
 from .database import seed
 with app.app_context():
