@@ -295,7 +295,7 @@ def workshop_validator(user_id, name, address, phone, is_create=True):
 # WORKSHOP VALIDATION ============================================================ End
 
 # CATEGORY VALIDATION ============================================================ Begin
-def category_validator(category, is_create=True):
+def category_validator(category, workshop_id):
     check_result = []
 
     # Check Null Value ---------------------------------------- Start
@@ -315,10 +315,9 @@ def category_validator(category, is_create=True):
     # Check String Value ---------------------------------------- Finish
 
     # Check Duplicate Category ---------------------------------------- Start
-    if is_create:
-        result = Categories.query.filter_by(category=category).first()
-        if result:
-            check_result.append("Kategori sudah terdaftar")
+    result = Categories.query.filter_by(category=category, workshop_id=workshop_id, is_delete=0).first()
+    if result:
+        check_result.append("Kategori sudah terdaftar")
     # Check Duplicate Category ---------------------------------------- Finish
 
     return check_result

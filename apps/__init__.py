@@ -14,7 +14,10 @@ from .configure.configDB import ConnectDB
 app = Flask(__name__)
 app.config['PRODUCT_ENVIRONMENT'] = config.PRODUCT_ENVIRONMENT
 app.config['BASE_URL'] = config.BASE_URL
-app.config['JWT_ACCESS_TOKE_EXPIRES'] = config.JWT_ACCESS_TOKEN_EXPIRED
+app.config['JWT_ACCESS_TOKEN_EXPIRES'] = config.JWT_ACCESS_TOKEN_EXPIRED
+app.config["JWT_TOKEN_LOCATION"] = ["cookies"]
+app.config["JWT_COOKIE_SECURE"] = False  # True jika HTTPS
+app.config["JWT_COOKIE_CSRF_PROTECT"] = False  # sementara saat development
 app.config['SECRET_KEY'] = config.JWT_SECRET_KEY
 
 # Database Section ==============================##

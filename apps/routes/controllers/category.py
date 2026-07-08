@@ -23,7 +23,7 @@ category = Blueprint(
 @jwt_required()
 def index():
     try:
-        # # Access User ======================================== 
+        # # JWT Access Data ======================================== 
         # id = str(get_jwt()["id"])
         # role = str(get_jwt()["role"])
 
@@ -52,15 +52,15 @@ def index():
 @jwt_required()
 def create_category():
     try:
-        # Access User ======================================== 
-        id = str(get_jwt()["id"])
+        # JWT Access Data ======================================== 
         role = str(get_jwt()["role"])
+        ws_id = str(get_jwt()["ws_id"])
 
         # Request Data ======================================== 
-        data = request.json
+        body = request.json
 
         # Request Process ======================================== 
-        response = CategoryModels.create_category(id, role, data)
+        response = CategoryModels.create_category(role, ws_id, body)
 
         # Request Data ======================================== 
         return response
@@ -74,14 +74,13 @@ def create_category():
 # POST https://127.0.0.1:5000/category/view [Done]
 @category.get('/view')
 @jwt_required()
-def get_category():
+def read_category():
     try:
-        # Access User ======================================== 
-        id = str(get_jwt()["id"])
-        workshop_id = str(get_jwt()["ws_id"])
+        # JWT Access Data ======================================== 
+        ws_id = str(get_jwt()["ws_id"])
 
         # Request Process ======================================== 
-        response = CategoryModels.get_category(id, workshop_id)
+        response = CategoryModels.read_category(ws_id)
 
         # Request Data ======================================== 
         return response
@@ -91,42 +90,49 @@ def get_category():
 # VIEW CATEGORY DATA ============================================================ End
 
 
-# # UPDATE CATEGORY DATA ============================================================ Begin
-# # PUT https://127.0.0.1:5000/category/edit
-# @category.put('/edit/<int:id>')
-# def updateCategory(id):
-#     try:
-#         # Request Data ========================================
-#         body = request.json
+# EDIT CATEGORY DATA ============================================================ Begin
+# PUT https://127.0.0.1:5000/category/edit [Done]
+@category.put('/edit')
+@jwt_required()
+def update_category():
+    try:
+        # JWT Access Data ======================================== 
+        role = str(get_jwt()["role"])
+        ws_id = str(get_jwt()["ws_id"])
 
-#         # Request Process ======================================== 
-#         response = CategoryModels.edit_category(body, id)
+        # Request Data ========================================
+        body = request.json
 
-#         # Request Data ======================================== 
-#         return response
+        # Request Process ======================================== 
+        response = CategoryModels.update_category(role, ws_id, body)
 
-#     except Exception as e:
-#         return render_template(
-#             title="Error $04 - Aplikasi e Hel",
-#             template_name_or_list='errorPages/404.html'
-#         )
-# # UPDATE CATEGORY DATA ============================================================ End
+        # Request Data ======================================== 
+        return response
+
+    except Exception as e:
+        return bad_request(str(e))
+# EDIT CATEGORY DATA ============================================================ End
 
 
-# # DELETE CATEGORY DATA ============================================================ Begin
-# # DELETE https://127.0.0.1:5000/category/delete
-# @category.delete('/delete/<int:id>')
-# def deleteCategory(id):
-#     try:
-#         # Request Process ======================================== 
-#         response = CategoryModels.delete_category(id)
+# DELETE CATEGORY DATA ============================================================ Begin
+# DELETE https://127.0.0.1:5000/category/delete [Done]
+@category.delete('/delete')
+@jwt_required()
+def delete_category():
+    try:
+        # JWT Access Data ======================================== 
+        role = str(get_jwt()["role"])
+        ws_id = str(get_jwt()["ws_id"])
 
-#         # Request Data ======================================== 
-#         return response
+        # Request Data ========================================
+        body = request.json
+
+        # Request Process ======================================== 
+        response = CategoryModels.delete_category(role, ws_id, body)
+
+        # Request Data ======================================== 
+        return response
         
-#     except Exception as e:
-#         return {
-#             "status": False,
-#             "message": str(e)
-#         }, 500
-# # DELETE CATEGORY DATA ============================================================ End
+    except Exception as e:
+        return bad_request(str(e))
+# DELETE CATEGORY DATA ============================================================ End

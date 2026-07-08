@@ -1,13 +1,8 @@
-from flask import Blueprint, request, redirect, url_for, render_template, session
+from flask import Blueprint, render_template, session
 from flask import current_app as app
 from flask_jwt_extended import jwt_required
 
-from ..models.signin import SigninModels
-from ...utilities.forms import SigninForm
-
 from datetime import datetime, timedelta
-from ...database.db_sale_details import SaleDetails
-from ...database.db_sale_service_details import SaleServiceDetails
 
 from ...database.db_products import Products
 from ...database.db_customers import Customers
@@ -28,18 +23,19 @@ dashboard = Blueprint(
 # DASHBOARD PAGE ============================================================ Begin
 # GET https://127.0.0.1:5000/dashboard/
 @dashboard.get('/')
+@jwt_required()
 def index():
     try:
         # Return Page ======================================== 
         # return redirect(url_for('dashboard'))
-        if 'user_id' not in session:
+        # if 'user_id' not in session:
     
-            return redirect(
-                url_for('auth.signin_page')
-            )
+        #     return redirect(
+        #         url_for('auth.signin_page')
+        #     )
 
         # Total data
-        total_items = Items.query.filter_by(
+        total_items = Products.query.filter_by(
             is_delete=0
         ).count()
 
@@ -54,11 +50,11 @@ def index():
         total_transactions = (
             Purchases.query.filter_by(is_delete=0).count()
             +
-            Sales.query.filter_by(is_delete=0).count()
+            Payment.query.filter_by(is_delete=0).count()
         )
 
-        low_stock = Items.query.filter(
-            Items.stok <= 5
+        low_stock = Products.query.filter(
+            Products.stok <= 5
         ).all()
 
         # =====================================
@@ -77,8 +73,8 @@ def index():
             days=1
         )
 
-        sales_today = Sales.query.filter(
-            Sales.tanggal.between(
+        sales_today = Payment.query.filter(
+            Payment.tanggal.between(
                 int(start_today.timestamp()),
                 int(end_today.timestamp())
             )
@@ -123,8 +119,8 @@ def index():
                 1
             )
 
-        sales_month = Sales.query.filter(
-            Sales.tanggal.between(
+        sales_month = Payment.query.filter(
+            Payment.tanggal.between(
                 int(start_month.timestamp()),
                 int(end_month.timestamp())
             )
@@ -186,5 +182,4 @@ def index():
         
         print("ERROR DASHBOARD =", e)
         raise e
-
-# SIGNIN PAGE ============================================================ End
+# DASHBOARD PAGE ============================================================ End
