@@ -1,4 +1,4 @@
-from flask_jwt_extended import create_access_token
+from flask_jwt_extended import create_access_token, set_access_cookies
 import time
 
 from apps import db
@@ -42,7 +42,7 @@ class AuthModels():
             # Initialize
             password_encrypt = hash_password(password)
             timestamp = int(round(time.time()*1000))
-            data = Users(
+            user_data = Users(
                 username=username,
                 email=email,
                 password=password_encrypt,
@@ -53,7 +53,7 @@ class AuthModels():
 
             # Save Data
             try:
-                db.session.add(data)
+                db.session.add(user_data)
                 db.session.commit()
             except Exception as e:
                 db.session.rollback()
@@ -61,7 +61,7 @@ class AuthModels():
             # Insert Data ---------------------------------------- Finish
 
             # Insert Workshop ---------------------------------------- Start
-            user_data = Users.query.filter_by(email=email, is_delete=0).first()
+            # user_data = Users.query.filter_by(email=email, is_delete=0).first()
             workshop = WorkshopModels.create_workshop(user_data.id, user_data.role, datas)
             if workshop.status_code != 200:
                 user_data.is_delete = '1'
@@ -71,13 +71,13 @@ class AuthModels():
             # Insert Workshop ---------------------------------------- Finish
 
             # Data Payload ---------------------------------------- Start
-            workshop_data = Workshops.query.filter_by(owner_id=user_data.id, is_delete=0).first()
+            # workshop_data = Workshops.query.filter_by(owner_id=user_data.id, is_delete=0).first()
             jwt_payload = {
                 "id" : user_data.id,
                 "email" : user_data.email,
                 "username" : user_data.username,
                 "role" : user_data.role,
-                "ws_id" : workshop_data.id
+                "ws_id" : user_data.workshops[0].id
             }
             # Data Payload ---------------------------------------- Finish
             
@@ -85,14 +85,15 @@ class AuthModels():
             access_token = create_access_token(email, additional_claims=jwt_payload)
             
             # Data Response ---------------------------------------- Start
-            response = {
+            response = success_data({
                 "access_token" : access_token,
                 "role" : user_data.role
-            }
+            })
+            set_access_cookies(response, access_token)
             # Data Response ---------------------------------------- Finish
             
             # Return Response ======================================== 
-            return success_data(response)
+            return response
 
         except Exception as e:
             return bad_request(str(e))
@@ -132,13 +133,13 @@ class AuthModels():
             # Generate File URL ---------------------------------------- Finish
             
             # Data Payload ---------------------------------------- Start
-            workshop_data = Workshops.query.filter_by(owner_id=result.id, is_delete=0).first()
+            # workshop_data = Workshops.query.filter_by(owner_id=result.id, is_delete=0).first()
             jwt_payload = {
                 "id" : result.id,
                 "email" : result.email,
                 "name" : result.username,
                 "role" : result.role,
-                "ws_id" : workshop_data.id
+                "ws_id" : result.workshops[0].id
             }
             # Data Payload ---------------------------------------- Finish
 
@@ -146,14 +147,15 @@ class AuthModels():
             access_token = create_access_token(result.email, additional_claims=jwt_payload)
 
             # Data Response ---------------------------------------- Start
-            response = {
+            response = success_data({
                 "access_token" : access_token,
                 "role" : result.role
-            }
+            })
+            set_access_cookies(response, access_token)
             # Data Response ---------------------------------------- Finish
 
             # Return Response ======================================== 
-            return success_data(response)
+            return response
 
         except Exception as e:
             return bad_request(str(e))

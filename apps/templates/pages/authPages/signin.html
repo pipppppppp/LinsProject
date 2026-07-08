@@ -1,67 +1,92 @@
-<!doctype html>
-<html lang="en">
-   <head>
-      <meta charset="UTF-8" />
-      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-      <title>Login - POS Bengkel Motor</title>
-      <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}" />
+{% extends 'layouts/dashboard_layout.html' %} {% block content %}
 
-      <link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}" />
-      <link rel="stylesheet" href="{{ url_for('static', filename='css/auth.css') }}" />
+<div id="auth">
+   <div class="row h-100">
+      <!--! ================================================================ !-->
+      <!--! [Start] Sign In Form Section !-->
+      <!--! ================================================================ !-->
+      <div class="col-lg-5 col-12">
+         <div id="auth-left">
+            <!--! ================================================================ !-->
+            <!--! [Start] Card Box !-->
+            <div class="card shadow-lg login-card">
+               <div class="card-body p-5">
+                  <!--! ================================================================ !-->
+                  <!--! [Start] Card Box - Header !-->
+                  <div class="text-center mb-4">
+                     <h3 class="fw-bold">Login</h3>
 
-      <link rel="stylesheet" href="{{ url_for('static', filename='vendors/bootstrap-icons/bootstrap-icons.css') }}" />
-   </head>
-   <body>
-      <div id="auth">
-         <div class="row h-100">
-            <div class="col-lg-5 col-12">
-               <div id="auth-left">
-                  <div class="card shadow-lg login-card">
-                     <div class="card-body p-5">
-                        <div class="text-center mb-4">
-                           <h3 class="fw-bold">Login</h3>
-
-                           <p class="text-muted">Sistem Informasi POS Bengkel Motor</p>
-                        </div>
-
-                        <form action="/auth/signin/account" method="POST">
-                           <div class="form-group position-relative has-icon-left mb-4">
-                              <input type="text" name="username" class="form-control form-control-xl" placeholder="Username" required />
-
-                              <div class="form-control-icon">
-                                 <i class="bi bi-person"></i>
-                              </div>
-                           </div>
-
-                           <div class="form-group position-relative has-icon-left mb-4">
-                              <input type="password" name="password" class="form-control form-control-xl" placeholder="Password" required />
-
-                              <div class="form-control-icon">
-                                 <i class="bi bi-shield-lock"></i>
-                              </div>
-                           </div>
-
-                           <button type="submit" class="btn btn-primary btn-lg w-100">Masuk ke Sistem</button>
-                        </form>
-                     </div>
+                     <p class="text-muted">Sistem Informasi POS Bengkel Motor</p>
                   </div>
+                  <!--! [End] Card Box - Header !-->
+                  <!--! ================================================================ !-->
+
+                  <!--! ================================================================ !-->
+                  <!--! [Start] Card Box - Form !-->
+                  <form id="signin_form">
+                     <!-- Username/ Email -->
+                     <div class="form-group position-relative has-icon-left mb-4">
+                        <input type="text" name="usermail" id="usermail" class="form-control form-control-xl" placeholder="Username/Email" required />
+                        <div class="form-control-icon">
+                           <i class="bi bi-person"></i>
+                        </div>
+                     </div>
+                     <!-- Username/ Email - Close -->
+
+                     <!-- Password -->
+                     <div class="form-group position-relative has-icon-left mb-4">
+                        <input type="password" name="password" id="password" class="form-control form-control-xl" placeholder="Password" required />
+                        <div class="form-control-icon">
+                           <i class="bi bi-shield-lock"></i>
+                        </div>
+                     </div>
+                     <!-- Password - Close -->
+
+                     <button type="submit" class="btn btn-primary btn-lg w-100 btn-submit">Masuk ke Sistem</button>
+                  </form>
+                  <div class="text-center mt-4">
+                     <span class="text-muted"> Belum punya akun? </span>
+                     <a href="{{ url_for('auth.signup_page') }}" class="login-link"> Daftar Sekarang </a>
+                  </div>
+                  <!-- <a href="" class="nav-item nav-link"></a>   -->
+                  <!--! [End] Card Box - Form !-->
+                  <!--! ================================================================ !-->
                </div>
             </div>
+            <!--! [End] Card Box !-->
+            <!--! ================================================================ !-->
+         </div>
+      </div>
+      <!--! ================================================================ !-->
+      <!--! [End] Sign In Form Section !-->
+      <!--! ================================================================ !-->
 
-            <div class="col-lg-7 d-none d-lg-block">
-               <div id="auth-right">
-                  <div class="text-center text-white">
-                     <img src="{{ url_for('static', filename='images/items/logopos.png') }}" class="logo-right mb-4" />
+      <!--! ================================================================ !-->
+      <!--! [Start] Side Banner Section !-->
+      <!--! ================================================================ !-->
+      <div class="col-lg-7 d-none d-lg-block">
+         <div id="auth-right">
+            <div class="text-center text-white">
+               <img src="{{ url_for('static', filename='images/items/logopos.png') }}" class="logo-right mb-4" />
 
-                     <h1 class="fw-bold text-white">POS Bengkel Motor</h1>
+               <h1 class="fw-bold text-white">POS Bengkel Motor</h1>
 
-                     <p class="fs-4 text-white">Sistem Informasi Point Of Sale</p>
+               <p class="fs-4 text-white">Sistem Informasi Point Of Sale</p>
 
-                     <p class="text-light">Kelola Transaksi dan Stok Bengkel Motor</p>
-                  </div>
-               </div>
+               <p class="text-light">Kelola Transaksi dan Stok Bengkel Motor</p>
             </div>
          </div>
       </div>
-   </body>
-</html>
+      <!--! ================================================================ !-->
+      <!--! [End] Side Banner Section !-->
+      <!--! ================================================================ !-->
+   </div>
+</div>
+
+<!--! ================================================================ !-->
+<!--! [Start] Javascrpt Modul !-->
+<script src="{{ url_for('static', filename='javascript/api/auth.js') }}"></script>
+<!--! [End] Javascrpt Modul !-->
+<!--! ================================================================ !-->
+
+{% endblock %}

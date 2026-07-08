@@ -1,25 +1,25 @@
 from flask import jsonify, make_response
 
-def success(message="Successfull", statusCode=200):
-    return make_response(jsonify({"statusCode":statusCode, "message":message}), 200)
+def success(message="Successfull", status_code=200):
+    return make_response(jsonify({"status_code":status_code, "message":message}), 200)
 
-def success_data(data, statusCode=200):
-    return make_response(jsonify({"statusCode":statusCode, "message":"Successfull!", "data":data}), 200)
+def success_data(data, status_code=200):
+    return make_response(jsonify({"status_code":status_code, "message":"Successfull!", "data":data}), 200)
 
-def not_found(message, statusCode=404):
-    return make_response(jsonify({"statusCode":statusCode, "error":"Not Found", "message":message}), 404)
+def not_found(message, status_code=404):
+    return make_response(jsonify({"status_code":status_code, "error":"Not Found", "message":message}), 404)
 
-def defined_error(message, error="Defined Error", statusCode=499):
-    return make_response(jsonify({"statusCode":statusCode, "error":error, "message":message}), 499)
+def defined_error(message, error="Defined Error", status_code=499):
+    return make_response(jsonify({"status_code":status_code, "error":error, "message":message}), 499)
 
-def parameter_error(message, error="Parameter Error", statusCode=400):
-    return make_response(jsonify({"statusCode":statusCode, "error":error, "message":message}), 400)
+def parameter_error(message, error="Parameter Error", status_code=400):
+    return make_response(jsonify({"status_code":status_code, "error":error, "message":message}), 400)
 
-def authorization_error(statusCode=403):
-    return make_response(jsonify({"statusCode":statusCode, "error":"Forbidden", "message":"Sorry! Permission Denied."}), 403)
+def authorization_error(status_code=403):
+    return make_response(jsonify({"status_code":status_code, "error":"Forbidden", "message":"Sorry! Permission Denied."}), 403)
 
-def invalid_params(statusCode=400):
-    return make_response(jsonify({"statusCode":statusCode, "error":"Invalid Parameters"}), 400)
+def invalid_params(status_code=400):
+    return make_response(jsonify({"status_code":status_code, "error":"Invalid Parameters"}), 400)
 
-def bad_request(message="", error="Bad Request", statusCode=400):
-    return make_response(jsonify({"statusCode":statusCode, "error":error, "message":f"{message}"}), 400)
+def bad_request(message="", error="Bad Request", status_code=400):
+    return make_response(jsonify({"status_code":status_code, "error":error, "message":f"{message}"}), 400)

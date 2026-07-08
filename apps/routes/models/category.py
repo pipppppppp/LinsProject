@@ -3,6 +3,8 @@ import time
 
 from apps import db
 from apps.database.db_categories import Categories
+from apps.database.db_products import Products
+from apps.database.db_users import Users
 from apps.database.db_workshops import Workshops
 from apps.utilities.responseHelpers import *
 from apps.utilities.utilities import split_date_time
@@ -11,53 +13,8 @@ from apps.utilities.validators import role_validator, category_validator
 
 # CATEGORY MODEL CLASS ============================================================ Begin
 class CategoryModels():
-    # # UPDATE CATEGORY ============================================================ Begin
-    # def edit_category(datas, id):
-    #     try:
-    #         # Update Data ---------------------------------------- Start
-    #         data = Categories.query.get_or_404(id)
-
-    #         data.category = datas['category']
-    #         data.updated_at = int(time.time())
-
-    #         db.session.commit()
-    #         # Update Data ---------------------------------------- Finish
-
-    #         # Return Response ======================================== 
-    #         # return success(message="Updated!")
-    #         return {
-    #             "status": True,
-    #             "message": "Kategori berhasil diupdate"
-    #         }
-            
-    #     except Exception as e:
-    #         return "bad_request(str(e))"
-    # # UPDATE CATEGORY ============================================================ End
-
-    # # DELETE CATEGORY ============================================================ Begin
-    # def delete_category(id):
-    #     try:
-    #         # Delete Data ---------------------------------------- Start
-    #         data = Categories.query.get_or_404(id)
-    #         data.is_delete = 1
-    #         data.deleted_at = int(time.time())
-
-    #         db.session.commit()
-    #         # Delete Data ---------------------------------------- Finish
-
-    #         # Return Response ======================================== 
-    #         # return success(message="Deleted!")
-    #         return {
-    #             "status": True,
-    #             "message": "Kategori berhasil dihapus"
-    #         }
-            
-    #     except Exception as e:
-    #         return "bad_request(str(e))"
-    # # DELETE CATEGORY ============================================================ End
-
     # ADD CATEGORY ============================================================ Begin
-    def create_category(user_id, user_role, datas):
+    def create_category(user_role, workshop_id, datas):
         try:
             # Access Validation ---------------------------------------- Start
             access = role_validator(user_role)
@@ -65,24 +22,24 @@ class CategoryModels():
                 return authorization_error()
             # Access Validation ---------------------------------------- Finish
 
-            # Checking Request Body ---------------------------------------- Start
+            # Check Request Body ---------------------------------------- Start
             if datas == None:
                 return invalid_params()
             
             if "category" not in datas:
                 return parameter_error(f"Missing category in request body.")
-            # Checking Request Body ---------------------------------------- Finish
+            # Check Request Body ---------------------------------------- Finish
             
             # Data Validation ---------------------------------------- Start
             category = datas["category"].strip()
-            checker_result = category_validator(category)
+            checker_result = category_validator(category, workshop_id)
             if len(checker_result) != 0:
                 return defined_error(checker_result, "Defined Error", 499)
             # Data Validation ---------------------------------------- Finish
             
             # Insert Data ---------------------------------------- Start
             # Get Workshop Data
-            result = Workshops.query.filter_by(owner_id=user_id, is_delete=0).first()
+            result = Workshops.query.filter_by(id=workshop_id, is_delete=0).first()
 
             # Initialize
             timestamp = int(round(time.time()*1000))
@@ -113,12 +70,13 @@ class CategoryModels():
     # ADD CATEGORY ============================================================ End
 
     # VIEW CATEGORY ============================================================ Begin
-    def get_category(user_id, workshop_id):
+    def read_category(workshop_id):
         try:
             # Check Data ---------------------------------------- Start
             result = Categories.query.filter_by(workshop_id=workshop_id, is_delete=0).all()
             if not result:
-                return not_found("Data kategori tidak dapat ditemukan.")
+                # return not_found("Data kategori tidak dapat ditemukan.")
+                return not_found("Category data could not be found.")
             # Check Data ---------------------------------------- Finish
             
             # Response Data ---------------------------------------- Start
@@ -141,234 +99,129 @@ class CategoryModels():
             return bad_request(str(e))
     # VIEW CATEGORY ============================================================ End
 
-    # # UPDATE CATEGORY ============================================================ Begin
-    # # Clear
-    # def edit_category(user_id, user_role, datas):
-    #     try:
-    #         # Access Validation ---------------------------------------- Start
-    #         access = vld_role(user_role)
-    #         if not access: # Access = True -> Admin
-    #             return authorization_error()
-    #         # Access Validation ---------------------------------------- Finish
+    # EDIT CATEGORY ============================================================ Begin
+    def update_category(user_role, workshop_id, datas):
+        try:
+            # Access Validation ---------------------------------------- Start
+            access = role_validator(user_role)
+            if not access: # Access = True -> Admin
+                return authorization_error()
+            # Access Validation ---------------------------------------- Finish
 
-    #         # Checking Request Body ---------------------------------------- Start
-    #         if datas == None:
-    #             return invalid_params()
+            # Check Request Body ---------------------------------------- Start
+            if datas == None:
+                return invalid_params()
             
-    #         requiredData = ["category_id", "category", "format_data"]
-    #         for req in requiredData:
-    #             if req not in datas:
-    #                 return parameter_error(f"Missing {req} in Request Body.")
-    #         # Checking Request Body ---------------------------------------- Finish
+            required_data = ["category_id", "category"]
+            for req in required_data:
+                if req not in datas:
+                    return parameter_error(f"Missing {req} in request body.")
+            # Check Request Body ---------------------------------------- Finish
             
-    #         # Initialize Data Input ---------------------------------------- Start
-    #         catgId = datas["category_id"]
-    #         category = datas["category"].strip()
-    #         formatData = datas["format_data"]
-    #         # Initialize Data Input ---------------------------------------- Finish
+            # Initialize Data Input ---------------------------------------- Start
+            category_id = datas["category_id"]
+            category = datas["category"].strip()
+            # Initialize Data Input ---------------------------------------- Finish
 
-    #         # Data Validation ---------------------------------------- Start
-    #         query = CTGR_GET_BY_ID_QUERY
-    #         values = (catgId,)
-    #         result = DBHelper().get_data(query, values)
-    #         if len(result) < 1 :
-    #             return not_found(f"Data kategori dengan id {catgId} tidak dapat ditemukan.")
+            # Data Validation ---------------------------------------- Start
+            result = Categories.query.filter_by(id=category_id, workshop_id=workshop_id, is_delete=0).first()
+            if not result :
+                # return not_found(f"Data kategori dengan id {category_id} tidak dapat ditemukan.")
+                return not_found(f"Category data with id {category_id} could not be found.")
             
-    #         ctgrCheck = vld_category(category, formatData, False)
-    #         if len(ctgrCheck) != 0:
-    #             return defined_error(ctgrCheck, "Bad Request", 400)
-    #         # Data Validation ---------------------------------------- Finish
+            if result.category == category:
+                return success(message="Successful!")
             
-    #         # Update Data ---------------------------------------- Start
-    #         formatData = json.dumps(formatData)
-    #         timestamp = int(round(time.time()*1000))
-    #         query = CTGR_UPDATE_QUERY
-    #         values = (category, formatData, timestamp, user_id, catgId)
-    #         DBHelper().save_data(query, values)
-    #         # Update Data ---------------------------------------- Finish
+            checker_result = category_validator(category, workshop_id)
+            if len(checker_result) != 0:
+                return defined_error(checker_result, "Defined Error", 499)
+            # Data Validation ---------------------------------------- Finish
+            
+            # Update Data ---------------------------------------- Start
+            # Initialize
+            result.category = datas['category']
+            result.updated_at = int(round(time.time()*1000))
 
-    #         # Log Activity Record ---------------------------------------- Start
-    #         activity = f"Admin dengan id {user_id} mengubah kategori {result[0]['category']} menjadi {category}."
-    #         query = LOG_ADD_QUERY
-    #         values = (user_id, 1, activity, timestamp, )
-    #         DBHelper().save_data(query, values)
-    #         # Log Activity Record ---------------------------------------- Finish
+            # Save Data
+            try:
+                db.session.commit()
+            except Exception as e:
+                db.session.rollback()
+                return parameter_error(str(e))
+            # Update Data ---------------------------------------- Finish
 
-    #         # Return Response ======================================== 
-    #         return success(message="Updated!")
-            
-    #     except Exception as e:
-    #         return bad_request(str(e))
-    # # UPDATE CATEGORY ============================================================ End
+            # Log Activity Record ---------------------------------------- Start
+            # Log Activity Record ---------------------------------------- Finish
 
-    # # DELETE CATEGORY ============================================================ Begin
-    # # Clear
-    # def delete_category(user_id, user_role, datas):
-    #     try:
-    #         # Access Validation ---------------------------------------- Start
-    #         access = vld_role(user_role)
-    #         if not access: # Access = True -> Admin
-    #             return authorization_error()
-    #         # Access Validation ---------------------------------------- Finish
+            # Return Response ======================================== 
+            return success(message="Data has been updated!")
+            
+        except Exception as e:
+            return bad_request(str(e))
+    # EDIT CATEGORY ============================================================ End
 
-    #         # Checking Request Body ---------------------------------------- Start
-    #         if datas == None:
-    #             return invalid_params()
-            
-    #         if "category_id" not in datas:
-    #             return parameter_error("Missing 'category_id' in Request Body.")
-            
-    #         catgId = datas["category_id"]
-    #         if catgId == "":
-    #             return defined_error("Id kategori tidak boleh kosong.", "Defined Error", 499)
-    #         # Checking Request Body ---------------------------------------- Finish
-            
-    #         # Checking Data ---------------------------------------- Finish
-    #         query = CTGR_GET_BY_ID_QUERY
-    #         values = (catgId,)
-    #         result = DBHelper().get_count_filter_data(query, values)
-    #         if result < 1 or result is None:
-    #             return not_found(f"Kategori dengan Id {catgId} tidak dapat ditemukan.")
-    #         # Checking Data ---------------------------------------- Finish
-            
-    #         # Delete Data ---------------------------------------- Start
-    #         timestamp = int(round(time.time()*1000))
-    #         query = CTGR_DELETE_QUERY
-    #         values = (timestamp, user_id, catgId)
-    #         DBHelper().save_data(query, values)
-    #         # Delete Data ---------------------------------------- Finish
-            
-    #         # Delete Join Data ---------------------------------------- Start
-    #         # Template
-    #         query = TMPLT_GET_BY_CAT_QUERY
-    #         values = (catgId,)
-    #         template = DBHelper().get_data(query, values)
-    #         invitation = []
-    #         if len(template) > 0 :
-    #             query = TMPLT_DELETE_CAT_QUERY
-    #             values = (timestamp, user_id, catgId, )
-    #             DBHelper().save_data(query, values)
-    #             print("masuk")
-    #             for temp in template:
-    #                 # Invitation
-    #                 print(temp)
-    #                 query = INV_GET_BY_TEMP_QUERY
-    #                 values = (temp['id'],)
-    #                 invitation = DBHelper().get_data(query, values)
-    #                 print(invitation)
-    #                 if len(invitation) > 0:
-    #                     query = INV_DELETE_TEMP_QUERY
-    #                     values = (timestamp, user_id, temp['id'],)
-    #                     DBHelper().save_data(query, values)
+    # DELETE CATEGORY ============================================================ Begin
+    def delete_category(user_role, workshop_id, datas):
+        try:
+            # Access Validation ---------------------------------------- Start
+            access = role_validator(user_role)
+            if not access: # Access = True -> Admin
+                return authorization_error()
+            # Access Validation ---------------------------------------- Finish
 
-    #         if len(invitation) > 0:
-    #             print("masuk 2")
-    #             for inv in invitation:
-    #                 # Guest
-    #                 query = GUEST_GET_BY_CODE_QUERY
-    #                 values = (inv['code'], )
-    #                 guest = DBHelper().get_count_filter_data(query, values)
-    #                 print(guest)
-    #                 if guest > 0:
-    #                     query = GUEST_DELETE_INV_QUERY
-    #                     values = (timestamp, user_id, inv['code'], )
-    #                     DBHelper().save_data(query, values)
-
-    #                 # Greeting
-    #                 query = GRTG_GET_BY_CODE_QUERY
-    #                 values = (inv['code'], )
-    #                 greeting = DBHelper().get_count_filter_data(query, values)
-    #                 print(greeting)
-    #                 if greeting > 0:
-    #                     query = GRTG_DELETE_INV_QUERY
-    #                     values = (timestamp, user_id, inv['code'], )
-    #                     DBHelper().save_data(query, values)
+            # Checking Request Body ---------------------------------------- Start
+            if datas == None:
+                return invalid_params()
             
-    #         # Request
-    #         query = REQ_GET_BY_CAT_QUERY
-    #         values = (catgId, )
-    #         reqtem = DBHelper().get_count_filter_data(query, values)
-    #         if reqtem > 0:
-    #             query = REQ_DELETE_CAT_QUERY
-    #             values = (timestamp, user_id, catgId, )
-    #             DBHelper().save_data(query, values)
-    #         # Delete Join Data ---------------------------------------- Finish
-
-    #         # Log Activity Record ---------------------------------------- Start
-    #         activity = f"Admin dengan id {user_id} menghapus kategori {catgId}."
-    #         query = LOG_ADD_QUERY
-    #         values = (user_id, 1, activity, timestamp, )
-    #         # DBHelper().save_data(query, values)
-    #         # Log Activity Record ---------------------------------------- Finish
-
-    #         # Return Response ======================================== 
-    #         return success(message="Deleted!")
+            if "category_id" not in datas:
+                return parameter_error("Missing 'category_id' in request body.")
             
-    #     except Exception as e:
-    #         return bad_request(str(e))
-    # # DELETE CATEGORY ============================================================ End
+            category_id = datas["category_id"]
+            if category_id == "":
+                return defined_error("Category id cannot be empty.", "Defined Error", 499)
+            # Checking Request Body ---------------------------------------- Finish
+            
+            # Check Data ---------------------------------------- Finish
+            result = Categories.query.filter_by(id=category_id, workshop_id=workshop_id, is_delete=0).first()
+            if not result:
+                # return not_found(f"Kategori dengan Id {category_id} tidak dapat ditemukan.")
+                return not_found(f"Category data with id {category_id} could not be found.")
+            # Check Data ---------------------------------------- Finish
+            
+            # Delete Data ---------------------------------------- Start
+            # Initialize
+            timestamp = int(round(time.time()*1000))
+            result.is_delete = 1
+            result.deleted_at = timestamp
 
-    # # GET DETAIL CATEGORY ============================================================ Begin
-    # # Clear
-    # def view_detail_category(datas):
-    #     try:
-    #         # Checking Request Body ---------------------------------------- Start
-    #         if datas == None:
-    #             return invalid_params()
+            # Save Data
+            try:
+                db.session.commit()
+            except Exception as e:
+                db.session.rollback()
+                return parameter_error(str(e))
+            # Delete Data ---------------------------------------- Finish
             
-    #         if "category_id" not in datas:
-    #             return parameter_error("Missing 'category_id' in Request Body.")
-            
-    #         catgId = datas["category_id"]
-    #         if catgId == "":
-    #             return defined_error("Id kategori tidak boleh kosong.", "Defined Error", 400)
-    #         # Checking Request Body ---------------------------------------- Finish
-            
-    #         # Checking Data ---------------------------------------- Start
-    #         query = CTGR_GET_BY_ID_QUERY
-    #         values = (catgId,)
-    #         result = DBHelper().get_data(query, values)
-    #         if len(result) < 1 :
-    #             return not_found(f"Data kategori dengan Id {catgId} tidak dapat ditemukan.")
-    #         # Checking Data ---------------------------------------- Finish
-            
-    #         # Response Data ---------------------------------------- Start
-    #         response = {
-    #             "category_id" : result[0]["id"],
-    #             "category" : result[0]["category"],
-    #             "format_data" : json.loads(result[0]["format_data"]),
-    #             "created_at": split_date_time(datetime.fromtimestamp(result[0]["created_at"]/1000))
-    #         }
-    #         # Response Data ---------------------------------------- Finish
+            # Delete Join Data ---------------------------------------- Start
+            # Product
+            product = Products.query.filter_by(category_id=category_id, workshop_id=workshop_id, is_delete=0).first()
+            if product:
+                for item in product:
+                    item.is_delete = 1
+                    item.is_delete = timestamp
+                    db.session.commit()
+            # Delete Join Data ---------------------------------------- Finish
 
-    #         # Return Response ======================================== 
-    #         return success_data(response)
-        
-    #     except Exception as e:
-    #         return bad_request(str(e))
-    # # GET DETAIL CATEGORY ============================================================ End
+            # Log Activity Record ---------------------------------------- Start
+            # Log Activity Record ---------------------------------------- Finish
 
-    # # GET ROW-COUNT CATEGORY ============================================================ Begin
-    # # Clear
-    # def get_count_category():
-    #     try:
-    #         # Checking Data ---------------------------------------- Start
-    #         query = CTGR_GET_ALL_QUERY
-    #         result = DBHelper().get_count_data(query)
-    #         if result < 1 or result is None :
-    #             return not_found("Data kategori tidak dapat ditemukan.")
-    #         # Checking Data ---------------------------------------- Finish
+            # Return Response ======================================== 
+            return success(message="Data has been deleted!")
             
-    #         # Response Data ---------------------------------------- Start
-    #         response = {
-    #             "category_count" : result
-    #         }
-    #         # Response Data ---------------------------------------- Finish
+        except Exception as e:
+            return bad_request(str(e))
+    # DELETE CATEGORY ============================================================ End
 
-    #         # Return Response ======================================== 
-    #         return success_data(response)
-        
-    #     except Exception as e:
-    #         return bad_request(str(e))
-    # # GET ROW-COUNT CATEGORY ============================================================ End
+    # VIEW CATEGORY ROW-COUNT ============================================================ Begin
+    # VIEW CATEGORY ROW-COUNT ============================================================ End
 # CATEGORY MODEL CLASS ============================================================ End
