@@ -34,14 +34,15 @@
       <div class="page-title">
         <div class="row">
           <div class="col-12 col-md-6 order-md-1 order-last">
-            <h3>DATA PELANGGAN</h3>
+            <h3>DATA KENDARAAN</h3>
             <!-- <p class="text-subtitle text-muted">The default layout</p> -->
           </div>
           <div class="col-12 col-md-6 order-md-2 order-first">
             <nav aria-label="breadcrumb" class="breadcrumb-header float-start float-lg-end">
               <ol class="breadcrumb">
                 <li class="breadcrumb-item"><a href="{{ url_for('dashboard.index') }}">Dashboard</a></li>
-                <li class="breadcrumb-item active" aria-current="page">Pelanggan</li>
+                <li class="breadcrumb-item"><a href="{{ url_for('customer.index') }}">Pelanggan</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Kendaraan</li>
               </ol>
             </nav>
           </div>
@@ -57,7 +58,7 @@
           <div class="card-body">
             <div class="row">
               <div class="col-sm-12 d-flex justify-content-end">
-                <a href="#" class="btn btn-outline-success" data-bs-toggle="modal" data-bs-target="#customer_modal"> Tambah</a>
+                <a href="#" class="btn btn-outline-success" data-bs-toggle="modal" data-bs-target="#vehicle_modal"> Tambah</a>
               </div>
             </div>
           </div>
@@ -74,15 +75,17 @@
           <div class="card-body">
             <table class="table table-striped" id="table1">
               <thead>
-                <tr>
-                  <th>No</th>
-                  <th>Name</th>
-                  <th>Alamat</th>
-                  <th>Phone</th>
-                  <th>Action</th>
-                </tr>
+                  <tr>
+                        <th>No</th>
+                        <th>Plat Nomor</th>
+                        <th>Merk</th>
+                        <th>Tipe</th>
+                        <th>Tahun</th>
+                        <th>Warna</th>
+                        <th>Action</th>
+                  </tr>
               </thead>
-              <tbody id="customer_table">
+              <tbody id="vehicle_table">
                 <!-- row table set at javascript -->
               </tbody>
             </table>
@@ -104,7 +107,7 @@
 
     <!--! ================================================================ !-->
     <!--! [Start] Modal Form !-->
-    <div class="modal fade text-left" id="customer_modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel33" aria-hidden="true">
+    <div class="modal fade text-left" id="vehicle_modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel33" aria-hidden="true">
       <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable" role="document">
         <div class="modal-content">
           <div class="modal-header">
@@ -115,13 +118,16 @@
           </div>
           <form action="#">
             <div class="modal-body">
-               <input type="hidden" id="customer_id" />
-               <label>Nama : </label>
-               <input type="text" id="customer_name" class="form-control" placeholder="Nama" />
-               <label>Alamat : </label>
-               <input type="text" id="customer_address" class="form-control mt-2" placeholder="Alamat" />
-               <label>No. Telepon : </label>
-               <input type="text" id="customer_phone" class="form-control mt-2" placeholder="Telepon" />
+                  <input type="hidden" id="vehicle_id">
+                  <input type="hidden" id="customer_id">
+                  <label>Plat Nomor : </label>
+                  <input type="text" id="plate_number" class="form-control" placeholder="Pkat Nomor Kendaraan" />
+                  <label>Merek : </label>
+                  <input type="text" id="vehicle_brand" class="form-control mt-2" placeholder="Merek Kendaraan" />
+                  <label>Tahun : </label>
+                  <input type="text" id="vehicle_year" class="form-control mt-2" placeholder="Tahun Kendaraan" />
+                  <label>Warna : </label>
+                  <input type="text" id="vehicle_color" class="form-control mt-2" placeholder="Warna Kendaraan" />
             </div>
             <div class="modal-footer">
               <button type="button" class="btn btn-light-secondary" data-bs-dismiss="modal">
@@ -141,9 +147,6 @@
   <!--! [End] Page Content !-->
   <!--! ================================================================ !-->
 </div>
-<script src="{{ url_for('static', filename='javascript/helper/utilities.js') }}"></script>
-<script src="{{ url_for('static', filename='javascript/helper/formatter.js') }}"></script>
-<script src="{{ url_for('static', filename='javascript/helper/swal.js') }}"></script>
-<script src="{{ url_for('static', filename='javascript/helper/validators.js') }}"></script>
-<script src="{{ url_for('static', filename='javascript/api/customer.js') }}"></script>
+
+<script src="{{ url_for('static', filename='javascript/api/vehicle.js') }}"></script>
 {% endblock %}

@@ -13,7 +13,8 @@ class Customers(db.Model):
 
     # Relationship
     workshops = db.relationship("Workshops", back_populates="customers")
-    payment = db.relationship("Payment", back_populates="customers")
+    payments = db.relationship("Payments", back_populates="customers")
+    vehicles = db.relationship("Vehicles", back_populates="customers")
 
     def __repr__(self):
         return '<Customers {}>'.format(self.customer_name)
