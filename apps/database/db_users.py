@@ -22,6 +22,8 @@ class Users(db.Model):
 
     # Relationship
     workshops = db.relationship("Workshops", back_populates="users")
+    cash_deposits = db.relationship("CashDeposits", foreign_keys="CashDeposits.user_id", back_populates="users")
+    verified_cash_deposits = db.relationship("CashDeposits", foreign_keys="CashDeposits.verified_by", back_populates="verifier")
     
     def __repr__(self):
         return '<Users {}>'.format(self.username)

@@ -2,7 +2,7 @@ from flask import Blueprint, request, render_template, session, redirect, url_fo
 
 
 from ..models.customer import CustomerModels
-from ...utilities.responseHelper import bad_request
+from ...utilities.responseHelpers import bad_request
 
 # BLUEPRINT ================================================== Begin
 customer = Blueprint(

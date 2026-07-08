@@ -2,41 +2,16 @@ from .. import db
 
 class SaleDetails(db.Model):
 
-    id = db.Column(
-        db.Integer,
-        primary_key=True,
-        autoincrement=True
-    )
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    payment_id = db.Column(db.Integer, db.ForeignKey("payments.id"), nullable=False)
+    product_id = db.Column(db.Integer, db.ForeignKey("products.id"), nullable=False)
+    quantity = db.Column(db.Integer, nullable=False)
+    unit_price = db.Column(db.BigInteger, nullable=False)
+    subtotal = db.Column(db.BigInteger, nullable=False)
 
-    # Relasi ke tabel sales
-    sale_id = db.Column(
-        db.Integer,
-        nullable=False
-    )
-
-    # Relasi ke tabel items
-    item_id = db.Column(
-        db.Integer,
-        nullable=False
-    )
-
-    # Jumlah barang yang dijual
-    qty = db.Column(
-        db.Integer,
-        nullable=False
-    )
-
-    # Harga jual saat transaksi
-    harga_jual = db.Column(
-        db.BigInteger,
-        nullable=False
-    )
-
-    # Total per barang
-    subtotal = db.Column(
-        db.BigInteger,
-        nullable=False
-    )
+    # Relationships
+    payments = db.relationship("Payments", back_populates="sale_details")
+    products = db.relationship("Products", back_populates="sale_details")
 
     def __repr__(self):
-        return '<SaleDetails {}>'.format(self.id)
+        return f"<SaleDetail {self.id}>"

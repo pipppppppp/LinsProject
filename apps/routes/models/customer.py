@@ -1,9 +1,9 @@
 from flask import session
 
 from ... import db
-from ...database.db_customer import Customers
+from ...database.db_customers import Customers
 from ...utilities.validators import CustomerValidator
-from ...utilities.responseHelper import bad_request
+from ...utilities.responseHelpers import bad_request
 
 import time
 
