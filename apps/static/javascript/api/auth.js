@@ -90,7 +90,7 @@ document.getElementById("signin_form").addEventListener("submit", signin_process
 // **************************************************************
 function signup_process(e) {
    e.preventDefault();
-   const { username, email, password, retype_password, workshop_name, workshop_phone, workshop_address } = form;
+   const { username, email, password, retype_password, workshop_name, workshop_phone, workshop_address } = reg_form;
 
    // Set API Request Configuration
    const API = "/auth/signup/account";
