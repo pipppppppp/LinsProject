@@ -2,7 +2,7 @@ from flask import Blueprint, request, render_template, session, redirect, url_fo
 from datetime import datetime
 from ... import db
 
-from ...database.db_payment import Payment
+from ...database.db_payment import Payments
 from ...database.db_sale_details import SaleDetails
 from ...database.db_services import Services
 from ...database.db_sale_service_details import SaleServiceDetails

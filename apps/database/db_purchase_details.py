@@ -3,22 +3,15 @@ from .. import db
 class PurchaseDetails(db.Model):
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    purchase_id = db.Column(db.Integer, nullable=False)
-    item_id = db.Column(
-        db.Integer,
-        nullable=False
-    )
-    qty = db.Column(
-        db.Integer,
-        nullable=False
-    )
-    harga_beli = db.Column(
-        db.Integer,
-        nullable=False
-    )
-    subtotal = db.Column(
-        db.Integer,
-        nullable=False
-    )
+    purchase_id = db.Column(db.Integer, db.ForeignKey("purchases.id"), nullable=False)
+    product_id = db.Column(db.Integer, db.ForeignKey("products.id"), nullable=False)
+    quantity = db.Column(db.Integer, nullable=False)
+    unit_cost = db.Column(db.BigInteger, nullable=False)
+    subtotal = db.Column(db.BigInteger, nullable=False)
+
+    # Relationships
+    purchases = db.relationship("Purchases", back_populates="purchase_details")
+    products = db.relationship("Products", back_populates="purchase_details")
+
     def __repr__(self):
-        return '<PurchaseDetails {}>'.format(self.id)
+        return f"<PurchaseDetail {self.id}>"

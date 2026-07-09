@@ -5,7 +5,7 @@ import json
 from apps.database.db_categories import Categories
 from apps.database.db_users import Users
 from apps.database.db_workshops import Workshops
-from apps.database.db_customer import Customers
+from apps.database.db_customers import Customers
 from apps.database.db_vehicles import Vehicles
 from apps.utilities.utilities import *
 

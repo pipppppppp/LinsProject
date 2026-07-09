@@ -1,16 +1,28 @@
-{% extends 'layouts/dashboard_layout.html' %} {% block content %}
+<!doctype html>
+<html lang="en">
+   <head>
+      <meta charset="UTF-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <title>Login - POS Bengkel Motor</title>
+      <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}" />
 
-<div id="auth">
-   <div class="row h-100">
-      <div class="col-lg-5 col-12">
-         <div id="auth-left">
-            <div class="card shadow-lg login-card">
-               <div class="card-body p-5">
-                  <div class="text-center mb-4">
-                     <h3 class="fw-bold">Register</h3>
+      <link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}" />
+      <link rel="stylesheet" href="{{ url_for('static', filename='css/auth.css') }}" />
 
-                     <p class="text-muted">Sistem Informasi POS Bengkel Motor</p>
-                  </div>
+      <link rel="stylesheet" href="{{ url_for('static', filename='vendors/bootstrap-icons/bootstrap-icons.css') }}" />
+   </head>
+   <body>
+      <div id="auth">
+         <div class="row h-100">
+            <div class="col-lg-5 col-12">
+               <div id="auth-left">
+                  <div class="card shadow-lg login-card">
+                     <div class="card-body p-5">
+                        <div class="text-center mb-4">
+                           <h3 class="fw-bold">Login</h3>
+
+                           <p class="text-muted">Sistem Informasi POS Bengkel Motor</p>
+                        </div>
 
                   <form id="signup_form">
                      <div class="form-group position-relative has-icon-left mb-4">
@@ -68,14 +80,14 @@
          </div>
       </div>
 
-      <div class="col-lg-7 d-none d-lg-block">
-         <div id="auth-right">
-            <div class="text-center text-white">
-               <img src="{{ url_for('static', filename='images/items/logopos.png') }}" class="logo-right mb-4" />
+            <div class="col-lg-7 d-none d-lg-block">
+               <div id="auth-right">
+                  <div class="text-center text-white">
+                     <img src="{{ url_for('static', filename='images/items/logopos.png') }}" class="logo-right mb-4" />
 
-               <h1 class="fw-bold text-white">POS Bengkel Motor</h1>
+                     <h1 class="fw-bold text-white">POS Bengkel Motor</h1>
 
-               <p class="fs-4 text-white">Sistem Informasi Point Of Sale</p>
+                     <p class="fs-4 text-white">Sistem Informasi Point Of Sale</p>
 
                <p class="text-light">Kelola Transaksi dan Stok Bengkel Motor</p>
             </div>

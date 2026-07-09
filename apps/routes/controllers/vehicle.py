@@ -1,7 +1,7 @@
 from flask import Blueprint, request, render_template, session, redirect, url_for
 
 from ..models.vehicle import VehicleModels
-from ...utilities.responseHelper import bad_request
+from ...utilities.responseHelpers import bad_request
 
 # BLUEPRINT ================================================== Begin
 vehicle = Blueprint(
