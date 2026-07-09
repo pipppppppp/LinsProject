@@ -55,20 +55,24 @@ function signin_process(e) {
       .then((http_response) => http_response.json())
       .then((response) => {
          if (response.status_code == 200) {
-            swal.fire({
-               title: "Login berhasil",
-               icon: "success",
-            }).then((result) => {
-               window.location.replace("/dashboard/");
-            });
+            swal
+               .fire({
+                  title: "Login berhasil",
+                  icon: "success",
+               })
+               .then((result) => {
+                  window.location.replace("/dashboard/");
+               });
          } else {
-            swal.fire({
-               title: `${response.description}`,
-               icon: "error",
-               buttons: "Kembali",
-            }).then((result) => {
-               window.location.replace("/auth/signin");
-            });
+            swal
+               .fire({
+                  title: `${response.description}`,
+                  icon: "error",
+                  buttons: "Kembali",
+               })
+               .then((result) => {
+                  window.location.replace("/auth/signin");
+               });
          }
       })
       .catch((error) => {
@@ -86,14 +90,19 @@ document.getElementById("signin_form").addEventListener("submit", signin_process
 // **************************************************************
 function signup_process(e) {
    e.preventDefault();
-   const { usermail, password } = form;
+   const { username, email, password, retype_password, workshop_name, workshop_phone, workshop_address } = form;
 
    // Set API Request Configuration
-   const API = "/auth/signin/account";
+   const API = "/auth/signup/account";
    const my_headers = new Headers();
    const raw = JSON.stringify({
-      usermail: usermail.value,
+      username: username.value,
+      email: email.value,
       password: password.value,
+      retype_password: retype_password.value,
+      workshop_name: workshop_name.value,
+      workshop_phone: workshop_phone.value,
+      workshop_address: workshop_address.value,
    });
 
    my_headers.append("Content-Type", "application/json");
@@ -132,7 +141,7 @@ function signup_process(e) {
                   buttons: "Kembali",
                })
                .then((result) => {
-                  window.location.replace("/auth/signin");
+                  window.location.replace("/auth/signup");
                });
          }
       })
