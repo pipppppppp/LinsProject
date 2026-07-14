@@ -12,14 +12,22 @@ from apps.utilities.validators import signin_validator, signup_validator
 
 # AUTH MODELS ============================================================ Begin
 class AuthModels():
-    # SIGB UP ============================================================ Begin
+    # SIGN UP ============================================================ Begin
     def signup(datas):
         try:
             # Validation Request Body ---------------------------------------- Start
             if datas == None:
                 return invalid_params()
             
-            required_data = ["username", "email", "password", "retype_password"]
+            required_data = [
+                "username",
+                "email",
+                "password",
+                "retype_password",
+                "workshop_name",
+                "workshop_address",
+                "workshop_phone"
+            ]
             for req in required_data:
                 if req not in datas:
                     return parameter_error(f"Missing {req} in request body.")
@@ -30,12 +38,16 @@ class AuthModels():
             email = datas["email"].strip()
             password = datas["password"]
             retype_password = datas["retype_password"]
+            workshop_name = datas["workshop_name"]
+            workshop_address = datas["workshop_address"]
+            workshop_phone = datas["workshop_phone"]
             # Initialize Data Input ---------------------------------------- Finish
-
+            
             # Data Validation ---------------------------------------- Start
-            checker_result = signup_validator(username, email, password, retype_password)
+            checker_result = signup_validator(username, email, password, retype_password, workshop_name, workshop_address, workshop_phone)
+            print(checker_result)   # <-- tambahkan ini
             if len(checker_result) != 0:
-                return defined_error(checker_result, "Bad Request", statusCode=400)
+                return defined_error(checker_result, "Bad Request", status_code=400)
             # Data Validation ---------------------------------------- Finish
             
             # Insert Data ---------------------------------------- Start
@@ -97,7 +109,7 @@ class AuthModels():
 
         except Exception as e:
             return bad_request(str(e))
-    # SIGB UP ============================================================ End
+    # SIGN UP ============================================================ End
 
     # SIGN IN ============================================================ Begin
     def signin(datas):
@@ -120,9 +132,9 @@ class AuthModels():
             # Data Validation ---------------------------------------- Start
             checker_result, result, stts = signin_validator(usermail, password)
             if len(checker_result) > 0:
-                return defined_error(checker_result, "Bad Request", statusCode=stts)
+                return defined_error(checker_result, "Bad Request", status_code=stts)
             # Data Validation ---------------------------------------- Finish
-
+            
             # Update Data Last Active ---------------------------------------- Start
             # Update Data Last Active ---------------------------------------- Finish
             

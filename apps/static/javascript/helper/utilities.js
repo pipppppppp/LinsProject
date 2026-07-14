@@ -2,14 +2,20 @@
 // GET REQUEST | START
 // **************************************************************
 async function getRequest(url) {
-  const response = await fetch(url, {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-    },
-  });
+  try {
+    const response = await fetch(url, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
 
-  return await response.json();
+    return await response.json();
+  } catch (error) {
+    swalError("Tidak dapat terhubung ke server.");
+
+    return null;
+  }
 }
 // **************************************************************
 // GET REQUEST | END
@@ -19,15 +25,21 @@ async function getRequest(url) {
 // POST REQUEST | START
 // **************************************************************
 async function postRequest(url, data) {
-  const response = await fetch(url, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(data),
-  });
+  try {
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    });
 
-  return await response.json();
+    return await response.json();
+  } catch (error) {
+    swalError("Tidak dapat terhubung ke server.");
+
+    return null;
+  }
 }
 // **************************************************************
 // POST REQUEST | END
@@ -37,15 +49,21 @@ async function postRequest(url, data) {
 // PUT REQUEST | START
 // **************************************************************
 async function putRequest(url, data) {
-  const response = await fetch(url, {
-    method: "PUT",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(data),
-  });
+  try {
+    const response = await fetch(url, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    });
 
-  return await response.json();
+    return await response.json();
+  } catch (error) {
+    swalError("Tidak dapat terhubung ke server.");
+
+    return null;
+  }
 }
 // **************************************************************
 // PUT REQUEST | END
@@ -55,14 +73,20 @@ async function putRequest(url, data) {
 // DELETE REQUEST | START
 // **************************************************************
 async function deleteRequest(url) {
-  const response = await fetch(url, {
-    method: "DELETE",
-    headers: {
-      "Content-Type": "application/json",
-    },
-  });
+  try {
+    const response = await fetch(url, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
 
-  return await response.json();
+    return await response.json();
+  } catch (error) {
+    swalError("Tidak dapat terhubung ke server.");
+
+    return null;
+  }
 }
 // **************************************************************
 // DELETE REQUEST | END
@@ -110,4 +134,56 @@ async function reloadTable(loadData, renderData) {
 }
 // **************************************************************
 // RELOAD TABLE | END
+// **************************************************************
+
+// **************************************************************
+// OPEN MODAL | START
+// **************************************************************
+function openModal(id) {
+  const modal = new bootstrap.Modal(document.getElementById(id));
+
+  modal.show();
+}
+// **************************************************************
+// OPEN MODAL | END
+// **************************************************************
+
+// **************************************************************
+// BUTTON LOADING | START
+// **************************************************************
+function setButtonLoading(button, loading = true) {
+  button.disabled = loading;
+
+  button.innerHTML = loading ? '<span class="spinner-border spinner-border-sm"></span> Loading...' : "Simpan";
+}
+// **************************************************************
+// BUTTON LOADING | END
+// **************************************************************
+
+// **************************************************************
+// DEBOUNCE | START
+// **************************************************************
+function debounce(callback, delay = 300) {
+  let timer;
+
+  return (...args) => {
+    clearTimeout(timer);
+
+    timer = setTimeout(() => {
+      callback(...args);
+    }, delay);
+  };
+}
+// **************************************************************
+// DEBOUNCE | END
+// **************************************************************
+
+// **************************************************************
+// SLEEP | START
+// **************************************************************
+function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+// **************************************************************
+// SLEEP | END
 // **************************************************************

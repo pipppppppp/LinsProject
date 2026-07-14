@@ -3,16 +3,15 @@
 // **************************************************************
 document.addEventListener("DOMContentLoaded", init);
 async function init() {
-   await loadCategories();
-
-   renderTable();
+  await loadCategories();
+  renderTable();
 }
 
 // Form ID Setup
 const form = {
-   title: document.getElementById("modal_label"),
-   id: document.getElementById("category_id"),
-   name: document.getElementById("category_name"),
+  title: document.getElementById("modal_label"),
+  id: document.getElementById("category_id"),
+  name: document.getElementById("category_name"),
 };
 // **************************************************************
 // BASE INISIALIZATION | END
@@ -26,21 +25,15 @@ let categoriesData = [];
 
 // Get Data -------------------------------------------------
 async function loadCategories() {
-   const response = await fetch("/category/view", {
-      method: "GET",
-      headers: {
-         "Content-Type": "application/json",
-      },
-   });
-   categoriesData = await response.json();
+  categoriesData = await getRequest("/category/view");
 }
 
 // Load Data -------------------------------------------------
 function renderTable() {
-   let html = "";
+  let html = "";
 
-   categoriesData.forEach((category, index) => {
-      html += `
+  categoriesData.forEach((category, index) => {
+    html += `
             <tr>
                 <td>${index + 1}</td>
                 <td>${category.category_name}</td>
@@ -58,8 +51,8 @@ function renderTable() {
                 </td>
             </tr>
         `;
-   });
-   document.getElementById("category_table").innerHTML = html;
+  });
+  document.getElementById("category_table").innerHTML = html;
 }
 // **************************************************************
 // RENDER DATA TABLES | END
@@ -69,37 +62,39 @@ function renderTable() {
 // SAVE CATEGORY | START
 // **************************************************************
 async function saveCategory() {
-   const category_id = form.id.value;
-   const category = form.name.value;
+  const category = {
+    category_id: form.id.value,
+    category_name: formatTitle(form.name.value),
+  };
 
-   let response;
-   if (!category_id) {
-      response = await fetch("/category/add", {
-         method: "POST",
-         headers: {
-            "Content-Type": "application/json",
-         },
-         body: JSON.stringify({
-            category: category,
-         }),
-      });
-   } else {
-      response = await fetch(`/category/edit/${category_id}`, {
-         method: "PUT",
-         headers: {
-            "Content-Type": "application/json",
-         },
-         body: JSON.stringify({
-            category: category,
-         }),
-      });
-   }
+  // VALIDATION ==================================================
+  if (!validateCategory(category)) return;
 
-   const result = await response.json();
-   if (result.status) {
-      alert(result.message);
-      location.reload();
-   }
+  swalLoading();
+
+  let result;
+  try {
+    if (!category.category_id) {
+      result = await postRequest("/category/add", category);
+    } else {
+      result = await putRequest(`/category/edit/${category.category_id}`, category);
+    }
+  } finally {
+    swalClose();
+  }
+
+  if (result.status) {
+    await swalSuccess(result.message);
+
+    closeModal("category_modal");
+    clearValue(form.id, form.name);
+
+    form.title.textContent = "Tambah Kategori";
+
+    await reloadTable(loadCategories, renderTable);
+  } else {
+    await swalError(result.message);
+  }
 }
 document.querySelector(".btn-save").addEventListener("click", saveCategory);
 // **************************************************************
@@ -111,32 +106,34 @@ document.querySelector(".btn-save").addEventListener("click", saveCategory);
 // **************************************************************
 document.getElementById("category_table").addEventListener("click", handleTableClick);
 async function handleTableClick(e) {
-   const id = Number(e.target.dataset.id);
-   if (e.target.classList.contains("btn-edit")) {
-      // proses edit
-      const category = categoriesData.find((p) => p.category_id === id);
+  const id = Number(e.target.dataset.id);
+  if (e.target.classList.contains("btn-edit")) {
+    // proses edit
+    const category = categoriesData.find((c) => c.category_id === id);
 
-      form.title.textContent = "Ubah Kategori";
-      form.id.value = category.category_id;
-      form.name.value = category.category_name;
-   } else if (e.target.classList.contains("btn-delete")) {
-      // proses delete
-      if (!confirm("Yakin hapus data?")) {
-         return;
-      }
+    form.title.textContent = "Ubah Kategori";
+    form.id.value = category.category_id;
+    form.name.value = category.category_name;
+  } else if (e.target.classList.contains("btn-delete")) {
+    // proses delete
+    const confirmDelete = await swalDelete();
 
-      const response = await fetch(`/category/delete/${id}`, {
-         method: "DELETE",
-      });
+    if (!confirmDelete.isConfirmed) {
+      return;
+    }
+    swalLoading();
+    const result = await deleteRequest(`/category/delete/${id}`);
 
-      const result = await response.json();
+    swalClose();
 
-      if (result.status) {
-         location.reload();
-      } else {
-         alert(result.message);
-      }
-   }
+    if (result.status) {
+      await swalSuccess(result.message);
+
+      await reloadTable(loadCategories, renderTable);
+    } else {
+      await swalError(result.message);
+    }
+  }
 }
 // **************************************************************
 // UPDATE & DELETE CATEGORY | END

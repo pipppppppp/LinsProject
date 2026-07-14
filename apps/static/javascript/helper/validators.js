@@ -14,6 +14,59 @@ function required(value, message) {
 // **************************************************************
 
 // **************************************************************
+// EMAIL VALIDATION | START
+// **************************************************************
+function email(emailAddress) {
+
+  const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+  if (!regex.test(emailAddress)) {
+      swalWarning("Email tidak valid.");
+      return false;
+  }
+
+  return true;
+
+}
+// **************************************************************
+// EMAIL VALIDATION | END
+// **************************************************************
+
+// **************************************************************
+// PASSWORD VALIDATION | START
+// **************************************************************
+function password(password) {
+
+  if (password.length < 8) {
+      swalWarning("Password minimal 8 karakter.");
+      return false;
+  }
+
+  return true;
+
+}
+// **************************************************************
+// PASSWORD VALIDATION | END
+// **************************************************************
+
+// **************************************************************
+// CONFIRM PASSWORD | START
+// **************************************************************
+function confirmPassword(password, confirmPassword) {
+
+  if (password !== confirmPassword) {
+      swalWarning("Konfirmasi password tidak sama.");
+      return false;
+  }
+
+  return true;
+
+}
+// **************************************************************
+// CONFIRM PASSWORD | END
+// **************************************************************
+
+// **************************************************************
 // PHONE VALIDATION | START
 // **************************************************************
 function phone(phoneNumber) {
@@ -100,6 +153,23 @@ function price(value, message) {
 // **************************************************************
 
 // **************************************************************
+// POSITIVE NUMBER | START
+// **************************************************************
+function positiveNumber(value, message) {
+
+  if (Number(value) <= 0) {
+      swalWarning(message);
+      return false;
+  }
+
+  return true;
+
+}
+// **************************************************************
+// POSITIVE NUMBER | END
+// **************************************************************
+
+// **************************************************************
 // STOCK VALIDATION | START
 // **************************************************************
 function stock(value) {
@@ -130,4 +200,86 @@ function validateCustomer(customer) {
 }
 // **************************************************************
 // CUSOMER VALIDATION | END
+// **************************************************************
+
+// **************************************************************
+// VEHICLE VALIDATION | START
+// **************************************************************
+function validateVehicle(vehicle) {
+
+  if (!required(vehicle.vehicle_plate, "Plat nomor wajib diisi")) return false;
+
+  if (!plate(vehicle.vehicle_plate)) return false;
+
+  if (!required(vehicle.vehicle_brand, "Merek kendaraan wajib diisi")) return false;
+
+  if (!required(vehicle.vehicle_type, "Tipe kendaraan wajib diisi")) return false;
+
+  if (!required(vehicle.vehicle_year, "Tahun kendaraan wajib diisi")) return false;
+
+  if (!year(vehicle.vehicle_year)) return false;
+
+  return true;
+
+}
+// **************************************************************
+// VEHICLE VALIDATION | END
+// **************************************************************
+
+// **************************************************************
+// CATEGORY VALIDATION | START
+// **************************************************************
+function validateCategory(category) {
+
+  if (!required(category.category_name, "Nama kategori wajib diisi")) {
+      return false;
+  }
+
+  return true;
+
+}
+// **************************************************************
+// CATEGORY VALIDATION | END
+// **************************************************************
+
+// **************************************************************
+// SUPPLIER VALIDATION | START
+// **************************************************************
+function validateSupplier(supplier) {
+
+  if (!required(supplier.supplier_name, "Nama supplier wajib diisi")) return false;
+
+  if (!required(supplier.supplier_address, "Alamat wajib diisi")) return false;
+
+  if (!required(supplier.supplier_phone, "Nomor telepon wajib diisi")) return false;
+
+  if (!phone(supplier.supplier_phone)) return false;
+
+  return true;
+
+}
+// **************************************************************
+// SUPPLIER VALIDATION | END
+// **************************************************************
+
+// **************************************************************
+// PRODUCT VALIDATION | START
+// **************************************************************
+function validateProduct(product) {
+
+  if (!required(product.product_name, "Nama barang wajib diisi")) return false;
+
+  if (!required(product.product_price, "Harga wajib diisi")) return false;
+
+  if (!price(product.product_price, "Harga tidak valid")) return false;
+
+  if (!required(product.product_stock, "Stok wajib diisi")) return false;
+
+  if (!stock(product.product_stock)) return false;
+
+  return true;
+
+}
+// **************************************************************
+// PRODUCT VALIDATION | END
 // **************************************************************

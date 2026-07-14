@@ -1,0 +1,178 @@
+{% extends 'layouts/dashboard_layout.html' %} {% block content %}
+
+<div id="app">
+  <!--! ================================================================ !-->
+  <!--! [Start] Navigation Section !-->
+  <!--! ================================================================ !-->
+  {% include 'components/nav_dashboard.html' %}
+  <!--! ================================================================ !-->
+  <!--! [End] Navigation Section !-->
+  <!--! ================================================================ !-->
+
+  <!--! ================================================================ !-->
+  <!--! [Start] Page Content !-->
+  <!--! ================================================================ !-->
+  <div id="main">
+    <!--! ================================================================ !-->
+    <!--! [Start] Burger Button !-->
+    <!--! ================================================================ !-->
+    <header class="mb-3">
+      <a href="#" class="burger-btn d-block d-xl-none">
+        <i class="bi bi-justify fs-3"></i>
+      </a>
+    </header>
+    <!--! ================================================================ !-->
+    <!--! [End] Burger Button !-->
+    <!--! ================================================================ !-->
+
+    <!--! ================================================================ !-->
+    <!--! [Start] Main Content !-->
+    <!--! ================================================================ !-->
+    <div class="page-heading">
+
+      <!--! ================================================================ !-->
+      <!--! [Start] Header !-->
+      <!--! ================================================================ !-->
+      <div class="page-title">
+        <div class="row">
+          <div class="col-12 col-md-6 order-md-1 order-last">
+            <h3>PROFIL BENGKEL</h3>
+          </div>
+
+          <div class="col-12 col-md-6 order-md-2 order-first">
+            <nav
+              aria-label="breadcrumb"
+              class="breadcrumb-header float-start float-lg-end"
+            >
+              <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                  <a href="{{ url_for('dashboard.index') }}">Dashboard</a>
+                </li>
+                <li class="breadcrumb-item active">
+                  Profil Bengkel
+                </li>
+              </ol>
+            </nav>
+          </div>
+        </div>
+      </div>
+      <!--! ================================================================ !-->
+      <!--! [End] Header !-->
+      <!--! ================================================================ !-->
+
+      <!--! ================================================================ !-->
+      <!--! [Start] Form !-->
+      <!--! ================================================================ !-->
+      <section class="section">
+        <div class="card">
+          <div class="card-body">
+
+            <div class="row">
+
+              <div class="col-md-3 text-center mb-3">
+                <img
+                  id="logo_preview"
+                  src="{{ url_for('static', filename='images/default.png') }}"
+                  class="img-fluid rounded border mb-3"
+                  style="max-width:200px;"
+                />
+
+                <input
+                  type="file"
+                  id="workshop_logo"
+                  class="form-control"
+                  accept=".jpg,.jpeg,.png"
+                />
+              </div>
+
+              <div class="col-md-9">
+
+                <div class="mb-3">
+                  <label>Nama Bengkel</label>
+                  <input
+                    type="text"
+                    id="workshop_name"
+                    class="form-control"
+                  />
+                </div>
+
+                <div class="mb-3">
+                  <label>Nomor HP</label>
+                  <input
+                    type="text"
+                    id="workshop_phone"
+                    class="form-control"
+                  />
+                </div>
+
+                <div class="mb-3">
+                  <label>Alamat</label>
+                  <textarea
+                    id="workshop_address"
+                    class="form-control"
+                    rows="4"
+                  ></textarea>
+                </div>
+
+                <div class="mb-3">
+                  <label>Email</label>
+                  <input
+                    type="email"
+                    id="workshop_email"
+                    class="form-control"
+                  />
+                </div>
+
+                <div class="mb-3">
+                  <label>Status</label>
+                  <select
+                    id="workshop_status"
+                    class="form-control"
+                  >
+                    <option value="1">Aktif</option>
+                    <option value="0">Nonaktif</option>
+                  </select>
+                </div>
+
+                <div class="text-end">
+                  <button
+                    type="button"
+                    class="btn btn-primary btn-save"
+                  >
+                    Simpan
+                  </button>
+                </div>
+
+              </div>
+
+            </div>
+
+          </div>
+        </div>
+      </section>
+      <!--! ================================================================ !-->
+      <!--! [End] Form !-->
+      <!--! ================================================================ !-->
+
+    </div>
+    <!--! ================================================================ !-->
+    <!--! [End] Main Content !-->
+    <!--! ================================================================ !-->
+
+    <!--! ================================================================ !-->
+    <!--! [Start] Footer !-->
+    <!--! ================================================================ !-->
+    {% include 'components/footer_dashboard.html' %}
+    <!--! ================================================================ !-->
+    <!--! [End] Footer !-->
+    <!--! ================================================================ !-->
+
+  </div>
+  <!--! ================================================================ !-->
+  <!--! [End] Page Content !-->
+  <!--! ================================================================ !-->
+</div>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="{{ url_for('static', filename='javascript/api/workshop.js') }}"></script>
+
+{% endblock %}

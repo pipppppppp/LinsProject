@@ -14,7 +14,7 @@ from apps.utilities.utilities import *
 # VALIDATION
 
 # AUTH VALIDATION ============================================================ Begin
-def signup_validator(username, email, password, repassword):
+def signup_validator(username, email, password, repassword, workshop_name, workshop_address, workshop_phone):
     checker_result = []
 
     # Check Null Value ---------------------------------------- Start
@@ -26,6 +26,12 @@ def signup_validator(username, email, password, repassword):
         checker_result.append(f"Password tidak boleh kosong")
     if repassword == "":
         checker_result.append(f"Password tidak boleh kosong")
+    if workshop_name == "":
+          checker_result.append("Nama bengkel tidak boleh kosong")
+    if workshop_address == "":
+        checker_result.append("Alamat bengkel tidak boleh kosong")
+    if workshop_phone == "":
+        checker_result.append("Nomor HP bengkel tidak boleh kosong")
     # Check Null Value ---------------------------------------- Finish
 
     # Sanitize String Content ---------------------------------------- Start
@@ -41,6 +47,11 @@ def signup_validator(username, email, password, repassword):
     sanitizeRepass, charRepass = sanitize_passwd_char(repassword)
     if sanitizeRepass:
         checker_result.append(f"Password tidak boleh mengandung karakter {charRepass}")
+    sanitizeWorkshop, charWorkshop = sanitize_all_char(workshop_name)
+    if sanitizeWorkshop:
+        checker_result.append(f"Nama bengkel tidak boleh mengandung karakter {charWorkshop}")
+    if phone_checker(workshop_phone):
+        checker_result.append("Nomor HP tidak valid.")
     # Sanitize String Content ---------------------------------------- Finish
 
 
@@ -111,8 +122,8 @@ def signin_validator(usermail, password):
             return checker_result, result_data, stts
         
         # Cek password
-        passwd_compare = password_comparison(result_data.password, password)
-        if not passwd_compare:
+        password_match = password_compare(result_data.password, password)
+        if not password_match:
             stts = 400
             checker_result.append("Invalid account.")
     # Password Validation ---------------------------------------- Finish

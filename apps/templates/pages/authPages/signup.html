@@ -1,67 +1,198 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-   <head>
-      <meta charset="UTF-8" />
-      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-      <title>Login - POS Bengkel Motor</title>
-      <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}" />
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sign Up - POS Bengkel Motor</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}" />
 
-      <link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}" />
-      <link rel="stylesheet" href="{{ url_for('static', filename='css/auth.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/auth.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/register.css') }}" />
 
-      <link rel="stylesheet" href="{{ url_for('static', filename='vendors/bootstrap-icons/bootstrap-icons.css') }}" />
-   </head>
-   <body>
-      <div id="auth">
-         <div class="row h-100">
-            <div class="col-lg-5 col-12">
-               <div id="auth-left">
-                  <div class="card shadow-lg login-card">
-                     <div class="card-body p-5">
-                        <div class="text-center mb-4">
-                           <h3 class="fw-bold">Login</h3>
+    <link rel="stylesheet" href="{{ url_for('static', filename='vendors/bootstrap-icons/bootstrap-icons.css') }}" />
+  </head>
 
-                           <p class="text-muted">Sistem Informasi POS Bengkel Motor</p>
-                        </div>
+  <body>
+    <div id="auth">
+      <div class="container-fluid">
+        <div class="row min-vh-100">
+          <!-- ====================================================== -->
+          <!-- LEFT SIDE -->
+          <!-- ====================================================== -->
 
-                        <form action="/auth/signin/account" method="POST">
-                           <div class="form-group position-relative has-icon-left mb-4">
-                              <input type="text" name="username" class="form-control form-control-xl" placeholder="Username" required />
+          <div class="col-lg-5 d-flex align-items-center">
+            <div class="w-100 px-lg-5 px-4 py-5">
+              <!-- Logo -->
 
-                              <div class="form-control-icon">
-                                 <i class="bi bi-person"></i>
-                              </div>
-                           </div>
+              <div class="mb-5">
+                <h2 class="fw-bold mb-2">POS Bengkel</h2>
 
-                           <div class="form-group position-relative has-icon-left mb-4">
-                              <input type="password" name="password" class="form-control form-control-xl" placeholder="Password" required />
+                <p class="text-muted mb-0">Daftarkan bengkel Anda dan mulai kelola bisnis dengan lebih mudah.</p>
+              </div>
 
-                              <div class="form-control-icon">
-                                 <i class="bi bi-shield-lock"></i>
-                              </div>
-                           </div>
+              <!-- Card -->
 
-                           <button type="submit" class="btn btn-primary btn-lg w-100">Masuk ke Sistem</button>
-                        </form>
-                     </div>
+              <div class="card border-0 shadow-sm rounded-4">
+                <div class="card-body p-4">
+                  <!-- Heading -->
+
+                  <div class="mb-4">
+                    <h3 class="fw-bold mb-2">Buat Akun</h3>
+
+                    <p class="text-muted mb-0">Lengkapi data berikut untuk membuat akun.</p>
                   </div>
-               </div>
+
+                  <form id="signup_form" action="/auth/signup/account" method="POST">
+                    <!-- ====================================================== -->
+                    <!-- INFORMASI AKUN -->
+                    <!-- ====================================================== -->
+
+                    <div class="mb-4">
+                      <div class="section-title">
+                        <i class="bi bi-person-circle me-2"></i>
+
+                        Informasi Akun
+                      </div>
+
+                      <!-- Username -->
+
+                      <div class="mb-3">
+                        <label class="form-label"> Username </label>
+
+                        <input type="text" id="username" name="username" class="form-control rounded-3" placeholder="Masukkan username" />
+                      </div>
+
+                      <!-- Email -->
+
+                      <div class="mb-3">
+                        <label class="form-label"> Email </label>
+
+                        <input type="email" id="email" name="email" class="form-control rounded-3" placeholder="Masukkan email" />
+                      </div>
+
+                      <!-- Password -->
+
+                      <div class="mb-3">
+                        <label class="form-label"> Password </label>
+
+                        <input type="password" id="password" name="password" class="form-control rounded-3" placeholder="Masukkan password" />
+                      </div>
+
+                      <!-- Confirm Password -->
+
+                      <div>
+                        <label class="form-label"> Konfirmasi Password </label>
+
+                        <input type="password" id="retype_password" name="retype_password" class="form-control rounded-3" placeholder="Konfirmasi password" />
+                      </div>
+                    </div>
+                    <!-- ====================================================== -->
+                    <!-- INFORMASI BENGKEL -->
+                    <!-- ====================================================== -->
+
+                    <div class="mb-4">
+                      <div class="section-title">
+                        <i class="bi bi-shop me-2"></i>
+
+                        Informasi Bengkel
+                      </div>
+
+                      <!-- Nama Bengkel -->
+
+                      <div class="mb-3">
+                        <label class="form-label"> Nama Bengkel </label>
+
+                        <input type="text" id="workshop_name" name="workshop_name" class="form-control rounded-3" placeholder="Masukkan nama bengkel" />
+                      </div>
+
+                      <!-- Alamat -->
+
+                      <div class="mb-3">
+                        <label class="form-label"> Alamat </label>
+
+                        <textarea id="workshop_address" name="workshop_address" rows="3" class="form-control rounded-3" placeholder="Masukkan alamat bengkel"></textarea>
+                      </div>
+
+                      <!-- Nomor HP -->
+
+                      <div class="mb-4">
+                        <label class="form-label"> Nomor HP </label>
+
+                        <input type="text" id="workshop_phone" name="workshop_phone" class="form-control rounded-3" placeholder="08xxxxxxxxxx" />
+                      </div>
+                    </div>
+
+                    <!-- Button -->
+
+                    <div class="d-grid mb-3">
+                      <button type="submit" class="btn btn-primary btn-save">
+                        <i class="bi bi-person-plus-fill me-2"></i>
+
+                        Daftar Sekarang
+                      </button>
+                    </div>
+
+                    <!-- Login -->
+
+                    <div class="text-center">
+                      <small class="text-muted">
+                        Sudah punya akun?
+
+                        <a href="{{ url_for('auth.signin_page') }}" class="login-link"> Login </a>
+                      </small>
+                    </div>
+                  </form>
+                </div>
+              </div>
             </div>
+          </div>
 
-            <div class="col-lg-7 d-none d-lg-block">
-               <div id="auth-right">
-                  <div class="text-center text-white">
-                     <img src="{{ url_for('static', filename='images/items/logopos.png') }}" class="logo-right mb-4" />
+          <!-- ====================================================== -->
+          <!-- RIGHT SIDE -->
+          <!-- ====================================================== -->
+          <div class="col-lg-7 auth-right">
+            <div class="hero-content">
+              <img src="{{ url_for('static', filename='images/items/logopos.png') }}" class="logo-right mb-4" />
 
-                     <h1 class="fw-bold text-white">POS Bengkel Motor</h1>
+              <h1 class="hero-title">POS Bengkel</h1>
 
-                     <p class="fs-4 text-white">Sistem Informasi Point Of Sale</p>
+              <p class="hero-subtitle">Kelola seluruh operasional bengkel dalam satu aplikasi modern.</p>
 
-                     <p class="text-light">Kelola Transaksi dan Stok Bengkel Motor</p>
-                  </div>
-               </div>
+              <div class="feature-box">
+                <div>
+                  <i class="bi bi-check-circle-fill"></i>
+                  Multi Bengkel
+                </div>
+
+                <div>
+                  <i class="bi bi-check-circle-fill"></i>
+                  Produk & Jasa
+                </div>
+
+                <div>
+                  <i class="bi bi-check-circle-fill"></i>
+                  Dashboard Real-Time
+                </div>
+
+                <div>
+                  <i class="bi bi-check-circle-fill"></i>
+                  Pembelian & Penjualan
+                </div>
+
+                <div>
+                  <i class="bi bi-check-circle-fill"></i>
+                  Laporan Lengkap
+                </div>
+              </div>
+
+              <img src="{{ url_for('static', filename='images/items/dashboard-preview.png') }}" class="dashboard-preview" />
             </div>
-         </div>
+          </div>
+        </div>
       </div>
-   </body>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="{{ url_for('static', filename='javascript/api/auth.js') }}"></script>
+  </body>
 </html>

@@ -26,12 +26,12 @@ class CategoryModels():
             if datas == None:
                 return invalid_params()
             
-            if "category" not in datas:
+            if "category_name" not in datas:
                 return parameter_error(f"Missing category in request body.")
             # Check Request Body ---------------------------------------- Finish
             
             # Data Validation ---------------------------------------- Start
-            category = datas["category"].strip()
+            category = datas["category_name"].strip()
             checker_result = category_validator(category, workshop_id)
             if len(checker_result) != 0:
                 return defined_error(checker_result, "Defined Error", 499)
@@ -86,7 +86,7 @@ class CategoryModels():
                 data = {
                     "category_id" : res.id,
                     "workshop_id" : res.workshop_id,
-                    "category" : res.category,
+                    "category_name" : res.category,
                     "created_at": created_at
                 }
                 response.append(data)
@@ -112,7 +112,7 @@ class CategoryModels():
             if datas == None:
                 return invalid_params()
             
-            required_data = ["category_id", "category"]
+            required_data = ["category_id", "category_name"]
             for req in required_data:
                 if req not in datas:
                     return parameter_error(f"Missing {req} in request body.")
@@ -120,7 +120,7 @@ class CategoryModels():
             
             # Initialize Data Input ---------------------------------------- Start
             category_id = datas["category_id"]
-            category = datas["category"].strip()
+            category = datas["category_name"].strip()
             # Initialize Data Input ---------------------------------------- Finish
 
             # Data Validation ---------------------------------------- Start
@@ -139,7 +139,7 @@ class CategoryModels():
             
             # Update Data ---------------------------------------- Start
             # Initialize
-            result.category = datas['category']
+            result.category = datas['category_name']
             result.updated_at = int(round(time.time()*1000))
 
             # Save Data
