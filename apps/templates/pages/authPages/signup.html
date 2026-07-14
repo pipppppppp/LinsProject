@@ -1,67 +1,330 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-   <head>
-      <meta charset="UTF-8" />
-      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-      <title>Login - POS Bengkel Motor</title>
-      <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}" />
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login - POS Bengkel Motor</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}" />
 
-      <link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}" />
-      <link rel="stylesheet" href="{{ url_for('static', filename='css/auth.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/auth.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/register.css') }}" />
 
-      <link rel="stylesheet" href="{{ url_for('static', filename='vendors/bootstrap-icons/bootstrap-icons.css') }}" />
-   </head>
-   <body>
-      <div id="auth">
-         <div class="row h-100">
-            <div class="col-lg-5 col-12">
-               <div id="auth-left">
-                  <div class="card shadow-lg login-card">
-                     <div class="card-body p-5">
-                        <div class="text-center mb-4">
-                           <h3 class="fw-bold">Login</h3>
+    <link rel="stylesheet" href="{{ url_for('static', filename='vendors/bootstrap-icons/bootstrap-icons.css') }}" />
+  </head>
 
-                           <p class="text-muted">Sistem Informasi POS Bengkel Motor</p>
+  <body>
+    <div id="auth">
+      <div class="container-fluid">
+        <div class="row min-vh-100">
+          <!-- ====================================================== -->
+          <!-- LEFT SIDE -->
+          <!-- ====================================================== -->
+
+          <div class="col-lg-5 d-flex align-items-center">
+            <div class="w-100 px-lg-5 px-4 py-5">
+              <!-- Logo -->
+
+              <div class="mb-5">
+                <h2 class="fw-bold mb-2">POS Bengkel</h2>
+
+                <p class="text-muted mb-0">Daftarkan bengkel Anda dan mulai kelola bisnis dengan lebih mudah.</p>
+              </div>
+
+              <!-- Card -->
+
+              <div class="card border-0 shadow-sm rounded-4">
+                <div class="card-body p-4">
+                  <!-- Heading -->
+
+                  <div class="mb-4">
+                    <h3 class="fw-bold mb-2">Buat Akun</h3>
+
+                    <p class="text-muted mb-0">Lengkapi data berikut untuk membuat akun.</p>
+                  </div>
+
+                  <form action="#">
+                    <!-- ====================================================== -->
+                    <!-- INFORMASI AKUN -->
+                    <!-- ====================================================== -->
+
+                    <div class="mb-4">
+                      <div class="section-title">
+                        <i class="bi bi-person-circle me-2"></i>
+
+                        Informasi Akun
+                      </div>
+
+                      <!-- Username -->
+
+                      <div class="mb-3">
+                        <label class="form-label"> Username </label>
+
+                        <input type="text" id="username" class="form-control rounded-3" placeholder="Masukkan username" />
+                      </div>
+
+                      <!-- Email -->
+
+                      <div class="mb-3">
+                        <label class="form-label"> Email </label>
+
+                        <input type="email" id="email" class="form-control rounded-3" placeholder="Masukkan email" />
+                      </div>
+
+                      <!-- Password -->
+
+                      <div class="mb-3">
+                        <label class="form-label"> Password </label>
+
+                        <input type="password" id="password" class="form-control rounded-3" placeholder="Masukkan password" />
+                      </div>
+
+                      <!-- Confirm Password -->
+
+                      <div>
+                        <label class="form-label"> Konfirmasi Password </label>
+
+                        <input type="password" id="confirm_password" class="form-control rounded-3" placeholder="Ulangi password" />
+                      </div>
+                    </div>
+                    <!-- ====================================================== -->
+                    <!-- INFORMASI BENGKEL -->
+                    <!-- ====================================================== -->
+
+                    <div class="mb-4">
+                      <div class="section-title">
+                        <i class="bi bi-shop me-2"></i>
+
+                        Informasi Bengkel
+                      </div>
+
+                      <!-- Nama Bengkel -->
+
+                      <div class="mb-3">
+                        <label class="form-label"> Nama Bengkel </label>
+
+                        <input type="text" id="workshop_name" class="form-control rounded-3" placeholder="Masukkan nama bengkel" />
+                      </div>
+
+                      <!-- Alamat -->
+
+                      <div class="mb-3">
+                        <label class="form-label"> Alamat </label>
+
+                        <textarea id="workshop_address" rows="3" class="form-control rounded-3" placeholder="Masukkan alamat bengkel"></textarea>
+                      </div>
+
+                      <!-- Nomor HP -->
+
+                      <div class="mb-4">
+                        <label class="form-label"> Nomor HP </label>
+
+                        <input type="text" id="workshop_phone" class="form-control rounded-3" placeholder="08xxxxxxxxxx" />
+                      </div>
+                    </div>
+
+                    <!-- Button -->
+
+                    <div class="d-grid mb-3">
+                      <button type="submit" class="btn btn-primary btn-save">
+                        <i class="bi bi-person-plus-fill me-2"></i>Daftar Sekarang
+                      </button>
+                    </div>
+
+                    <!-- Login -->
+
+                    <div class="text-center">
+                      <small class="text-muted">
+                        Sudah punya akun?
+
+                        <a href="{{ url_for('auth.signin_page') }}" class="login-link"> Login </a>
+                      </small>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ====================================================== -->
+          <!-- RIGHT SIDE -->
+          <!-- ====================================================== -->
+          <div class="col-lg-7 auth-right">
+            <div class="hero-content">
+              <img src="{{ url_for('static', filename='images/items/logopos.png') }}" class="logo-right mb-4" />
+
+              <h1 class="hero-title">POS Bengkel</h1>
+
+              <p class="hero-subtitle">Kelola seluruh operasional bengkel dalam satu aplikasi modern.</p>
+
+              <div class="feature-box">
+                <div>
+                  <i class="bi bi-check-circle-fill"></i>
+                  Multi Bengkel
+                </div>
+
+                <div>
+                  <i class="bi bi-check-circle-fill"></i>
+                  Produk & Jasa
+                </div>
+
+                <div>
+                  <i class="bi bi-check-circle-fill"></i>
+                  Dashboard Real-Time
+                </div>
+
+                <div>
+                  <i class="bi bi-check-circle-fill"></i>
+                  Pembelian & Penjualan
+                </div>
+
+                <div>
+                  <i class="bi bi-check-circle-fill"></i>
+                  Laporan Lengkap
+                </div>
+              </div>
+
+              <img src="{{ url_for('static', filename='images/items/dashboard-preview.png') }}" class="dashboard-preview" />
+            </div>
+          </div>
+          <!-- <div class="col-lg-7 d-none d-lg-flex align-items-center">
+                    
+                        <div class="w-100 p-5">
+                            
+                            <div class="card">
+                    
+                                <div class="card-body p-4">
+                    
+                                    <h5 class="fw-bold text-danger mb-4">
+                    
+                                        Kenapa memilih POS Bengkel?
+                    
+                                    </h5>
+                    
+                                    <div class="mb-3">
+                    
+                                        <i class="bi bi-check-circle-fill text-success me-2"></i>
+                    
+                                        Multi Bengkel
+                    
+                                    </div>
+                    
+                                    <div class="mb-3">
+                    
+                                        <i class="bi bi-check-circle-fill text-success me-2"></i>
+                    
+                                        Manajemen Produk & Jasa
+                    
+                                    </div>
+                    
+                                    <div class="mb-3">
+                    
+                                        <i class="bi bi-check-circle-fill text-success me-2"></i>
+                    
+                                        Pembelian & Penjualan
+                    
+                                    </div>
+                    
+                                    <div class="mb-3">
+                    
+                                        <i class="bi bi-check-circle-fill text-success me-2"></i>
+                    
+                                        Dashboard Interaktif
+                    
+                                    </div>
+                    
+                                    <div>
+                    
+                                        <i class="bi bi-check-circle-fill text-success me-2"></i>
+                    
+                                        Laporan Lengkap
+                    
+                                    </div>
+                    
+                                </div>
+                    
+                            </div><hr>
+                            <div class="preview-card">
+
+                                <div class="preview-header">
+                                    Dashboard POS Bengkel
+                                </div>
+                            
+                                <div class="row g-3">
+                            
+                                    <div class="col-6">
+                            
+                                        <div class="mini-card">
+                            
+                                            <small>Total Barang</small>
+                            
+                                            <h4>129</h4>
+                            
+                                        </div>
+                            
+                                    </div>
+                            
+                                    <div class="col-6">
+                            
+                                        <div class="mini-card">
+                            
+                                            <small>Total Customer</small>
+                            
+                                            <h4>42</h4>
+                            
+                                        </div>
+                            
+                                    </div>
+                            
+                                    <div class="col-6">
+                            
+                                        <div class="mini-card">
+                            
+                                            <small>Total Supplier</small>
+                            
+                                            <h4>18</h4>
+                            
+                                        </div>
+                            
+                                    </div>
+                            
+                                    <div class="col-6">
+                            
+                                        <div class="mini-card">
+                            
+                                            <small>Transaksi</small>
+                            
+                                            <h4>320</h4>
+                            
+                                        </div>
+                            
+                                    </div>
+                            
+                                </div>
+                            
+                            </div>
+                            <div class="text-center">
+                                <img src="{{ url_for('static', filename='images/items/logopos.png') }}"class="logo-right mb-4">
+                                <h1 class="fw-bold text-success mb-3"> POS Bengkel </h1>
+                                <span class="badge bg-primary-subtle text-primary">Multi Workshop System</span>
+                                <img src="{{ url_for('static', filename='images/items/dashboard-preview.png') }}" class="dashboard-preview img-fluid shadow"><hr>
+                                <p class="fs-5 text-black-50 mb-5">
+                    
+                                    Solusi modern untuk mengelola
+                                    bengkel motor secara lebih mudah,
+                                    cepat, dan profesional.
+                    
+                                </p>
+                    
+                            </div>
+                    
                         </div>
-
-                        <form action="/auth/signin/account" method="POST">
-                           <div class="form-group position-relative has-icon-left mb-4">
-                              <input type="text" name="username" class="form-control form-control-xl" placeholder="Username" required />
-
-                              <div class="form-control-icon">
-                                 <i class="bi bi-person"></i>
-                              </div>
-                           </div>
-
-                           <div class="form-group position-relative has-icon-left mb-4">
-                              <input type="password" name="password" class="form-control form-control-xl" placeholder="Password" required />
-
-                              <div class="form-control-icon">
-                                 <i class="bi bi-shield-lock"></i>
-                              </div>
-                           </div>
-
-                           <button type="submit" class="btn btn-primary btn-lg w-100">Masuk ke Sistem</button>
-                        </form>
-                     </div>
-                  </div>
-               </div>
-            </div>
-
-            <div class="col-lg-7 d-none d-lg-block">
-               <div id="auth-right">
-                  <div class="text-center text-white">
-                     <img src="{{ url_for('static', filename='images/items/logopos.png') }}" class="logo-right mb-4" />
-
-                     <h1 class="fw-bold text-white">POS Bengkel Motor</h1>
-
-                     <p class="fs-4 text-white">Sistem Informasi Point Of Sale</p>
-
-                     <p class="text-light">Kelola Transaksi dan Stok Bengkel Motor</p>
-                  </div>
-               </div>
-            </div>
-         </div>
+                    
+                </div> -->
+        </div>
       </div>
-   </body>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="{{ url_for('static', filename='javascript/api/auth.js') }}"></script>
+  </body>
 </html>

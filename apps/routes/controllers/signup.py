@@ -5,23 +5,23 @@ from ..models.signup import SignupModels
 
 
 # BLUEPRINT ================================================== Begin
-signup = Blueprint(
-    name='signup',
+auth = Blueprint(
+    name='auth',
     import_name=__name__,
     template_folder="../../templates/pages",
-    url_prefix='/signup',
+    url_prefix='/auth',
 )
 # BLUEPRINT ================================================== End
 
 # REGISTER PAGE ============================================================ Begin
 # GET http://127.0.0.1:5000/register/
-@signup.get("/")
-def index():
+@signup.get("/signup")
+def signup_page():
     try:
 
         return render_template(
             title="Register",
-            template_name_or_list="authPages/register-page.html"
+            template_name_or_list="authPages/signup.html"
         )
 
     except Exception as e:
