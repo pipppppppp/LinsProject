@@ -18,7 +18,7 @@ category = Blueprint(
 
 
 # CATEGORY PAGE ============================================================ Begin
-# GET https://127.0.0.1:5000/category/
+# GET http://127.0.0.1:5000/category/
 @category.get('/')
 @jwt_required()
 def index():
@@ -47,7 +47,7 @@ def index():
 
 
 # ADD CATEGORY DATA ============================================================ Begin
-# POST https://127.0.0.1:5000/category/add [Done]
+# POST http://127.0.0.1:5000/category/add [Done]
 @category.post('/add')
 @jwt_required()
 def create_category():
@@ -60,7 +60,7 @@ def create_category():
         body = request.json
 
         # Request Process ======================================== 
-        response = CategoryModels.create_category(role, ws_id, body)
+        response = CategoryModels().create_category(role, ws_id, body)
 
         # Request Data ======================================== 
         return response
@@ -71,7 +71,7 @@ def create_category():
 
 
 # VIEW CATEGORY DATA ============================================================ Begin
-# POST https://127.0.0.1:5000/category/view [Done]
+# POST http://127.0.0.1:5000/category/view [Done]
 @category.get('/view')
 @jwt_required()
 def read_category():
@@ -80,7 +80,7 @@ def read_category():
         ws_id = str(get_jwt()["ws_id"])
 
         # Request Process ======================================== 
-        response = CategoryModels.read_category(ws_id)
+        response = CategoryModels().read_category(ws_id)
 
         # Request Data ======================================== 
         return response
@@ -91,7 +91,7 @@ def read_category():
 
 
 # EDIT CATEGORY DATA ============================================================ Begin
-# PUT https://127.0.0.1:5000/category/edit [Done]
+# PUT http://127.0.0.1:5000/category/edit [Done]
 @category.put('/edit')
 @jwt_required()
 def update_category():
@@ -104,7 +104,7 @@ def update_category():
         body = request.json
 
         # Request Process ======================================== 
-        response = CategoryModels.update_category(role, ws_id, body)
+        response = CategoryModels().update_category(role, ws_id, body)
 
         # Request Data ======================================== 
         return response
@@ -115,7 +115,7 @@ def update_category():
 
 
 # DELETE CATEGORY DATA ============================================================ Begin
-# DELETE https://127.0.0.1:5000/category/delete [Done]
+# DELETE http://127.0.0.1:5000/category/delete [Done]
 @category.delete('/delete')
 @jwt_required()
 def delete_category():
@@ -128,7 +128,7 @@ def delete_category():
         body = request.json
 
         # Request Process ======================================== 
-        response = CategoryModels.delete_category(role, ws_id, body)
+        response = CategoryModels().delete_category(role, ws_id, body)
 
         # Request Data ======================================== 
         return response

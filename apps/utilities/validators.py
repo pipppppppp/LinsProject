@@ -109,7 +109,7 @@ def signin_validator(usermail, password):
     stts = 200
     if not result_data:
         stts = 404
-        checker_result.append("Email belum terdaftar.")
+        checker_result.append("Username/Email tidak terdaftar.")
     # Check Data in Database ---------------------------------------- Finish
 
     # Password Validation ---------------------------------------- Start
@@ -118,14 +118,14 @@ def signin_validator(usermail, password):
         # Check activated
         if result_data.is_active == 0:
             stts = 400
-            checker_result.append("Your account has not been activated. Please verify it first.")
+            checker_result.append("Akun Anda belum diverifikasi Administrator.")
             return checker_result, result_data, stts
         
         # Cek password
         password_match = password_compare(result_data.password, password)
         if not password_match:
             stts = 400
-            checker_result.append("Invalid account.")
+            checker_result.append("Password salah.")
     # Password Validation ---------------------------------------- Finish
 
     # Get photo profile
@@ -141,131 +141,6 @@ def signin_validator(usermail, password):
     token = auth_token()
 
     return checkResult, token
-
-# def vld_profile(userId, userLevel, fName, mName, lName, phone):
-#     checkResult = []
- 
-#     # Validation For First Name ---------------------------------------- Start
-#     if fName == "":
-#         # Sanitize String Input ======================================== 
-#         sanitFName, charFName = sanitize_all_char(fName)
-#         if sanitFName:
-#             checkResult.append(f"Nama tidak boleh mengandung karakter {charFName}")
-
-#         # Filter String Input ======================================== 
-#         if string_checker(mName):
-#             checkResult.append(f"Nama tidak valid.")
-#     # Validation For First Name ---------------------------------------- Finish
-
-#     # Validation For Middle Name - If Set ---------------------------------------- Start
-#     if mName != "":
-#         # Sanitize String Input ======================================== 
-#         sanitMName, charMName = sanitize_all_char(mName)
-#         if sanitMName:
-#             checkResult.append(f"Nama tidak boleh mengandung karakter {charMName}")
-
-#         # Filter String Input ======================================== 
-#         if string_checker(mName):
-#             checkResult.append(f"Nama tidak valid.")
-#     # Validation For Middle Name - If Set ---------------------------------------- Finish
-    
-#     # Validation For Last Name - If Set ---------------------------------------- Start
-#     if lName != "":
-#         # Sanitize String Input ======================================== 
-#         sanitLName, charLName = sanitize_all_char(lName)
-#         if sanitLName:
-#             checkResult.append(f"Nama tidak boleh mengandung karakter {charLName}")
-
-#         # Filter String Input ======================================== 
-#         if string_checker(lName):
-#             checkResult.append(f"Nama tidak valid.")
-#     # Validation For Last Name - If Set ---------------------------------------- Finish
-
-#     # Validation For Phone - If Set ---------------------------------------- Start
-#     if (phone != "") or (phone != 0):
-#         # Sanitize Integer Input ======================================== 
-#         sanitPhone, charPhone = sanitize_all_char(phone)
-#         if sanitPhone:
-#             checkResult.append(f"Phone tidak boleh mengandung karakter {charPhone}")
-
-#         # Filter Integer Input ======================================== 
-#         if phone_checker(phone):
-#             checkResult.append(f"Phone tidak valid.")
-#     # Validation For Phone - If Set ---------------------------------------- Finish
-
-#     # Checking Email on DB ---------------------------------------- Start
-#     query = PROF_CHECK_QUERY
-#     values = (userId, userLevel, )
-#     result = DBHelper().get_data(query, values)
-#     if (len(result) == 0) or (result == None):
-#         checkResult.append(f"Profile user tidak ditemukan.")
-#     # Checking Email on DB ---------------------------------------- Finish
-
-#     # Return Checker ======================================== 
-#     return checkResult, result
-
-# def vld_edit_profile(userId, userLevel, fName, mName, lName, phone):
-#     checkResult = []
-
-#     # Checking Email on DB ---------------------------------------- Start
-#     query = PROF_CHECK_QUERY
-#     values = (userId, userLevel, )
-#     result = DBHelper().get_data(query, values)
-#     if len(result) < 1:
-#         checkResult.append(f"Profile user tidak ditemukan.")
-#     profile = result[0]
-#     # Checking Email on DB ---------------------------------------- Finish
- 
-#     # Validation For First Name ---------------------------------------- Start
-#     if fName != profile['first_name']:
-#         # Sanitize String Input ======================================== 
-#         sanitFName, charFName = sanitize_all_char(fName)
-#         if sanitFName:
-#             checkResult.append(f"Nama tidak boleh mengandung karakter {charFName}")
-
-#         # Filter String Input ======================================== 
-#         if string_checker(mName):
-#             checkResult.append(f"Nama tidak valid.")
-#     # Validation For First Name ---------------------------------------- Finish
-
-#     # Validation For Middle Name - If Set ---------------------------------------- Start
-#     if mName != profile['middle_name']:
-#         # Sanitize String Input ======================================== 
-#         sanitMName, charMName = sanitize_all_char(mName)
-#         if sanitMName:
-#             checkResult.append(f"Nama tidak boleh mengandung karakter {charMName}")
-
-#         # Filter String Input ======================================== 
-#         if string_checker(mName):
-#             checkResult.append(f"Nama tidak valid.")
-#     # Validation For Middle Name - If Set ---------------------------------------- Finish
-    
-#     # Validation For Last Name - If Set ---------------------------------------- Start
-#     if lName != profile['last_name']:
-#         # Sanitize String Input ======================================== 
-#         sanitLName, charLName = sanitize_all_char(lName)
-#         if sanitLName:
-#             checkResult.append(f"Nama tidak boleh mengandung karakter {charLName}")
-
-#         # Filter String Input ======================================== 
-#         if string_checker(lName):
-#             checkResult.append(f"Nama tidak valid.")
-#     # Validation For Last Name - If Set ---------------------------------------- Finish
-
-#     # Validation For Phone - If Set ---------------------------------------- Start
-#     if phone != profile['phone']:
-#         # Sanitize Integer Input ======================================== 
-#         sanitPhone, charPhone = sanitize_all_char(phone)
-#         if sanitPhone:
-#             checkResult.append(f"Phone tidak boleh mengandung karakter {charPhone}")
-
-#         # Filter Integer Input ======================================== 
-#         if phone_checker(phone):
-#             checkResult.append(f"Phone tidak valid.")
-#     # Validation For Phone - If Set ---------------------------------------- Finish
-
-#     # Return Checker ======================================== 
-#     return checkResult
 # AUTH VALIDATION ============================================================ End
 
 # WORKSHOP VALIDATION ============================================================ Begin
@@ -287,7 +162,7 @@ def workshop_validator(user_id, name, address, phone, is_create=True):
         checker_result.append(f"Nama bengkel tidak boleh mengandung karakter {char_wsname}")
     sanitize_wsphone, char_wsphone = sanitize_phone_char(phone)
     if sanitize_wsphone:
-        checker_result.append(f"No telepon bengkel tidak boleh mengandung karakter {char_wsphone}")
+        checker_result.append(f"No telepon tidak boleh mengandung karakter {char_wsphone}")
     # Sanitize String Content ---------------------------------------- Finish
 
     # Check Field Content ---------------------------------------- Start

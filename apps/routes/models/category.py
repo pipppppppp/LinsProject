@@ -63,7 +63,7 @@ class CategoryModels():
             # # Log Activity Record ---------------------------------------- Finish
 
             # # Return Response ======================================== 
-            return success(statusCode=201)
+            return success(status_code=200)
         
         except Exception as e:
             return bad_request(str(e))
@@ -204,12 +204,11 @@ class CategoryModels():
             
             # Delete Join Data ---------------------------------------- Start
             # Product
-            product = Products.query.filter_by(category_id=category_id, workshop_id=workshop_id, is_delete=0).first()
-            if product:
-                for item in product:
-                    item.is_delete = 1
-                    item.is_delete = timestamp
-                    db.session.commit()
+            product = Products.query.filter_by(category_id=category_id, workshop_id=workshop_id, is_delete=0).all()
+            for item in product:
+                item.is_delete = 1
+                item.deleted_at = timestamp
+            db.session.commit()
             # Delete Join Data ---------------------------------------- Finish
 
             # Log Activity Record ---------------------------------------- Start

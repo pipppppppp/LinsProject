@@ -1,4 +1,3 @@
-console.log("AUTH JS LOADED");
 // **************************************************************
 // BASE INISIALIZATION | START
 // **************************************************************
@@ -14,7 +13,6 @@ const signinForm = {
 // **************************************************************
 // SIGN IN PROCESS | START
 // **************************************************************
-console.log("SIGNIN JALAN");
 function signin_process(e) {
    e.preventDefault();
    const { usermail, password } = signinForm;
@@ -38,7 +36,7 @@ function signin_process(e) {
    // Set Loading UI
    swal.fire({
       title: "Tunggu Sebentar..",
-      text: "Permintaan kamu sedang diproses",
+      text: "Akun Anda sedang menunggu verifikasi.",
       button: false,
    });
 
@@ -46,6 +44,8 @@ function signin_process(e) {
    fetch(API, request_options)
       .then((http_response) => http_response.json())
       .then((response) => {
+         console.log(response);
+
          if (response.status_code == 200) {
             swal
                .fire({
@@ -56,15 +56,20 @@ function signin_process(e) {
                   window.location.replace("/dashboard/");
                });
          } else {
+            let icon = "error";
+            if (response.status_code === 403){
             swal
                .fire({
-                  title: `${response.description}`,
-                  icon: "error",
+                  title: response.error,
+                  text: response.message,
+                  icon: icon,
                   buttons: "Kembali",
                })
                .then((result) => {
                   window.location.replace("/auth/signin");
                });
+            }
+            
          }
       })
       .catch((error) => {
@@ -93,9 +98,7 @@ const reg_form = {
    workshop_address: document.getElementById("workshop_address"),
    workshop_phone: document.getElementById("workshop_phone"),
 };
-console.log("MASUK SIGNUP");
 function signup_process(e) {
-   console.log("signup_process jalan");
    e.preventDefault();
    const { username, email, password, retype_password, workshop_name, workshop_phone, workshop_address } = reg_form;
 
@@ -134,11 +137,11 @@ function signup_process(e) {
          if (response.status_code == 200) {
             swal
                .fire({
-                  title: "Login berhasil",
+                  title: "Registrasi berhasil",
                   icon: "success",
                })
                .then((result) => {
-                  window.location.replace("/dashboard/");
+                  window.location.replace("/auth/signin");
                });
          } else {
             swal

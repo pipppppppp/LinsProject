@@ -1,0 +1,263 @@
+{% extends 'layouts/dashboard_layout.html' %} {% block content %}
+
+<div id="app">
+  <!--! ================================================================ !-->
+  <!--! [Start] Navigation Section !-->
+  <!--! ================================================================ !-->
+  {% include 'components/nav_dashboard.html' %}
+  <!--! ================================================================ !-->
+  <!--! [End] Navigation Section !-->
+  <!--! ================================================================ !-->
+
+  <!--! ================================================================ !-->
+  <!--! [Start] Main Content !-->
+  <!--! ================================================================ !-->
+  <div id="main">
+    <!--! ================================================================ !-->
+    <!--! [Start] Header !-->
+    <header class="mb-3">
+      <a href="#" class="burger-btn d-block d-xl-none">
+        <i class="bi bi-justify fs-3"></i>
+      </a>
+    </header>
+    <!--! [End] Header !-->
+    <!--! ================================================================ !-->
+
+    <div class="page-content">
+      <section class="row">
+        <div class="col-12">
+          <div class="page-heading mb-4">
+            <h3>Dashboard POS Bengkel</h3>
+          </div>
+        </div>
+        
+        <div class="col-md-3">
+          <div class="card shadow-sm">
+            <div class="card-body">
+              <div class="d-flex align-items-center justify-content-between">
+                <div>
+                  <h6 class="text-muted">Total Barang</h6>
+
+                  <h2 class="mb-0">{{ total_items }}</h2>
+                </div>
+
+                <div class="stats-icon purple">
+                  <i class="bi bi-box-seam"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-3">
+          <div class="card shadow-sm">
+            <div class="card-body">
+              <div class="d-flex align-items-center justify-content-between">
+                <div>
+                  <h6 class="text-muted">Total Pelanggan</h6>
+
+                  <h2 class="mb-0">{{ total_customers }}</h2>
+                </div>
+
+                <div class="stats-icon green">
+                  <i class="bi bi-people"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-3">
+          <div class="card shadow-sm">
+            <div class="card-body">
+              <div class="d-flex align-items-center justify-content-between">
+                <div>
+                  <h6 class="text-muted">Total Supplier</h6>
+
+                  <h2 class="mb-0">{{ total_suppliers }}</h2>
+                </div>
+
+                <div class="stats-icon warning">
+                  <i class="bi bi-truck"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-3">
+          <div class="card shadow-sm">
+            <div class="card-body">
+              <div class="d-flex align-items-center justify-content-between">
+                <div>
+                  <h6 class="text-muted">Total Transaksi</h6>
+
+                  <h2 class="mb-0">{{ total_transactions }}</h2>
+                </div>
+
+                <div class="stats-icon red">
+                  <i class="bi bi-cart-check"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-3">
+          <div class="card shadow-sm">
+            <div class="card-body">
+              <h6 class="text-muted">Penjualan Hari Ini</h6>
+
+              <h4>
+                Rp {{ "{:,.0f}".format( penjualan_hari_ini ).replace(",", ".")
+                }}
+              </h4>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-3">
+          <div class="card shadow-sm">
+            <div class="card-body">
+              <h6 class="text-muted">Pembelian Hari Ini</h6>
+
+              <!-- <h4>
+                Rp {{ "{:,.0f}".format( pembelian_hari_ini ).replace(",", ".")
+                }}
+              </h4> -->
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-3">
+          <div class="card shadow-sm">
+            <div class="card-body">
+              <h6 class="text-muted">Omset Bulan Ini</h6>
+
+              <h4>
+                Rp {{ "{:,.0f}".format( omset_bulan ).replace(",", ".") }}
+              </h4>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-3">
+          <div class="card shadow-sm">
+            <div class="card-body">
+              <h6 class="text-muted">Laba Bulan Ini</h6>
+
+              <h4>Rp {{ "{:,.0f}".format( laba_bulan ).replace(",", ".") }}</h4>
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-md-8">
+            <div class="card shadow-sm">
+              <div class="card-header">
+                <h4>Informasi Sistem</h4>
+              </div>
+
+              <div class="card-body">
+                <p>
+                  Sistem Informasi Point Of Sale Bengkel Motor berbasis Flask
+                  dan MySQL.
+                </p>
+
+                <ul>
+                  <li>Manajemen Barang</li>
+
+                  <li>Manajemen Supplier</li>
+
+                  <li>Manajemen Pelanggan</li>
+
+                  <li>Transaksi Pembelian</li>
+
+                  <li>Transaksi Penjualan</li>
+
+                  <li>Laporan Stok</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-4">
+            <div class="card shadow-sm">
+              <div class="card-header">
+                <h5>Informasi Akun</h5>
+              </div>
+
+              <div class="card-body">
+                <p>
+                  <strong>Administrator :</strong>
+
+                  {{ username }}
+                </p>
+
+                <p>
+                  <strong>Status :</strong>
+
+                  Aktif
+                </p>
+
+                <p>
+                  <strong>Akses :</strong>
+                    {{ session.get('role') }}
+                </p>
+
+                <a
+                  href="{{ url_for('auth.logout') }}"
+                  class="btn btn-danger w-100"
+                >
+                  Logout
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card shadow-sm">
+          <div class="card-header">
+            <h4>Stok Menipis</h4>
+          </div>
+
+          <div class="card-body">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Barang</th>
+                  <th>Stok</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                {% for item in low_stock %}
+
+                <tr>
+                  <td>{{ item.nama_barang }}</td>
+
+                  <td>
+                    <span class="badge bg-danger"> {{ item.stok }} </span>
+                  </td>
+                </tr>
+
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!--! ================================================================ !-->
+    <!--! [Start] Footer !-->
+    {% include 'components/footer_dashboard.html' %}
+    <!--! [End] Footer !-->
+    <!--! ================================================================ !-->
+  </div>
+  <!--! ================================================================ !-->
+  <!--! [End] Main Content !-->
+  <!--! ================================================================ !-->
+</div>
+
+{% endblock %}

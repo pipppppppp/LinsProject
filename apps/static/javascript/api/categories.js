@@ -74,8 +74,9 @@ async function saveCategory() {
 
   let result;
   try {
-    if (!category.category_id) {
+    if (!category.category_id){
       result = await postRequest("/category/add", category);
+      console.log(result);
     } else {
       result = await putRequest(`/category/edit/${category.category_id}`, category);
     }
@@ -87,7 +88,7 @@ async function saveCategory() {
     await swalSuccess(result.message);
 
     closeModal("category_modal");
-    clearValue(form.id, form.name);
+    clearValue(form.id, form.category);
 
     form.title.textContent = "Tambah Kategori";
 
@@ -126,7 +127,7 @@ async function handleTableClick(e) {
 
     swalClose();
 
-    if (result.status) {
+    if (result.status_code === 200) {
       await swalSuccess(result.message);
 
       await reloadTable(loadCategories, renderTable);

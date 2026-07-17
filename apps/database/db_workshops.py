@@ -9,7 +9,7 @@ class Workshops(db.Model):
     workshop_phone = db.Column(db.String(100), nullable=False)
     workshop_email = db.Column(db.String(100), nullable=True)
     logo = db.Column(db.String(255), nullable=True)
-    is_active = db.Column(db.Integer, nullable=False, server_default='0')
+    is_active = db.Column(db.Integer, nullable=False, server_default='0', comment="0=Belum disetujui, 1=Aktif")
     created_at = db.Column(db.BigInteger, nullable=False)
     updated_at = db.Column(db.BigInteger, nullable=False)
     deleted_at = db.Column(db.BigInteger, nullable=True)

@@ -35,108 +35,108 @@ def index():
         #     )
 
         # Total data
-        total_items = Products.query.filter_by(
-            is_delete=0
-        ).count()
+        # total_items = Products.query.filter_by(
+        #     is_delete=0
+        # ).count()
 
-        total_customers = Customers.query.filter_by(
-            is_delete=0
-        ).count()
+        # total_customers = Customers.query.filter_by(
+        #     is_delete=0
+        # ).count()
 
-        total_suppliers = Suppliers.query.filter_by(
-            is_delete=0
-        ).count()
+        # total_suppliers = Suppliers.query.filter_by(
+        #     is_delete=0
+        # ).count()
 
-        total_transactions = (
-            Purchases.query.filter_by(is_delete=0).count()
-            +
-            Payment.query.filter_by(is_delete=0).count()
-        )
+        # total_transactions = (
+        #     Purchases.query.filter_by(is_delete=0).count()
+        #     +
+        #     Payment.query.filter_by(is_delete=0).count()
+        # )
 
-        low_stock = Products.query.filter(
-            Products.stok <= 5
-        ).all()
+        # low_stock = Products.query.filter(
+        #     Products.stok <= 5
+        # ).all()
 
         # =====================================
         # DASHBOARD SUMMARY
         # =====================================
 
-        now = datetime.now()
+        # now = datetime.now()
 
-        start_today = datetime(
-            now.year,
-            now.month,
-            now.day
-        )
+        # start_today = datetime(
+        #     now.year,
+        #     now.month,
+        #     now.day
+        # )
 
-        end_today = start_today + timedelta(
-            days=1
-        )
+        # end_today = start_today + timedelta(
+        #     days=1
+        # )
 
-        sales_today = Payment.query.filter(
-            Payment.tanggal.between(
-                int(start_today.timestamp()),
-                int(end_today.timestamp())
-            )
-        ).all()
+        # sales_today = Payment.query.filter(
+        #     Payment.tanggal.between(
+        #         int(start_today.timestamp()),
+        #         int(end_today.timestamp())
+        #     )
+        # ).all()
 
-        penjualan_hari_ini = sum(
-            sale.total
-            for sale in sales_today
-        )
+        # penjualan_hari_ini = sum(
+        #     sale.total
+        #     for sale in sales_today
+        # )
 
-        purchases_today = Purchases.query.filter(
-            Purchases.tanggal.between(
-                int(start_today.timestamp()),
-                int(end_today.timestamp())
-            )
-        ).all()
+        # purchases_today = Purchases.query.filter(
+        #     Purchases.tanggal.between(
+        #         int(start_today.timestamp()),
+        #         int(end_today.timestamp())
+        #     )
+        # ).all()
 
-        pembelian_hari_ini = sum(
-            purchase.total
-            for purchase in purchases_today
-        )
+        # pembelian_hari_ini = sum(
+        #     purchase.total
+        #     for purchase in purchases_today
+        # )
 
-        start_month = datetime(
-            now.year,
-            now.month,
-            1
-        )
+        # start_month = datetime(
+        #     now.year,
+        #     now.month,
+        #     1
+        # )
 
-        if now.month == 12:
+        # if now.month == 12:
 
-            end_month = datetime(
-                now.year + 1,
-                1,
-                1
-            )
+        #     end_month = datetime(
+        #         now.year + 1,
+        #         1,
+        #         1
+        #     )
 
-        else:
+        # else:
 
-            end_month = datetime(
-                now.year,
-                now.month + 1,
-                1
-            )
+        #     end_month = datetime(
+        #         now.year,
+        #         now.month + 1,
+        #         1
+        #     )
 
-        sales_month = Payment.query.filter(
-            Payment.tanggal.between(
-                int(start_month.timestamp()),
-                int(end_month.timestamp())
-            )
-        ).all()
+        # sales_month = Payment.query.filter(
+        #     Payment.tanggal.between(
+        #         int(start_month.timestamp()),
+        #         int(end_month.timestamp())
+        #     )
+        # ).all()
 
-        sale_ids = [
-            sale.id
-            for sale in sales_month
-        ]
+        # sale_ids = [
+        #     sale.id
+        #     for sale in sales_month
+        # ]
 
-        profit = calculate_profit(
-            sale_ids
-        )
+        # profit = calculate_profit(
+        #     sale_ids
+        # )
 
-        omset_bulan = profit["omset"]
-        laba_bulan = profit["laba_bersih"]
+        # omset_bulan = profit["omset"]
+        # laba_bulan = profit["laba_bersih"]
        
 
         # =====================================
@@ -151,25 +151,25 @@ def index():
 
             active_menu="dashboard",
 
-            username=session.get('username'),
+        #     username=session.get('username'),
 
-            total_items=total_items,
+        #     total_items=total_items,
 
-            total_customers=total_customers,
+        #     total_customers=total_customers,
 
-            total_suppliers=total_suppliers,
+        #     total_suppliers=total_suppliers,
 
-            total_transactions=total_transactions,
+        #     total_transactions=total_transactions,
 
-            low_stock=low_stock,
+        #     low_stock=low_stock,
 
-            penjualan_hari_ini=penjualan_hari_ini,
+        #     penjualan_hari_ini=penjualan_hari_ini,
 
-            pembelian_hari_ini=pembelian_hari_ini,
+        #     pembelian_hari_ini=pembelian_hari_ini,
 
-            omset_bulan=omset_bulan,
+        #     omset_bulan=omset_bulan,
 
-            laba_bulan=laba_bulan
+        #     laba_bulan=laba_bulan
         )
 
     except Exception as e:
