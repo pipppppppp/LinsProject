@@ -4,7 +4,6 @@ import time
 from apps import db
 from apps.database.db_categories import Categories
 from apps.database.db_products import Products
-from apps.database.db_users import Users
 from apps.database.db_workshops import Workshops
 from apps.utilities.responseHelpers import *
 from apps.utilities.utilities import split_date_time
@@ -23,7 +22,7 @@ class CategoryModels():
             # Access Validation ---------------------------------------- Finish
 
             # Check Request Body ---------------------------------------- Start
-            if datas == None:
+            if datas is None:
                 return invalid_params()
             
             if "category_name" not in datas:
@@ -40,9 +39,10 @@ class CategoryModels():
             # Insert Data ---------------------------------------- Start
             # Get Workshop Data
             result = Workshops.query.filter_by(id=workshop_id, is_delete=0).first()
-
+            if not result:
+                return not_found("Workshop could not be found.")
             # Initialize
-            timestamp = int(round(time.time()*1000))
+            timestamp = int(time.time()*1000)
             data = Categories(
                 workshop_id=result.id,
                 category=category,
@@ -109,7 +109,7 @@ class CategoryModels():
             # Access Validation ---------------------------------------- Finish
 
             # Check Request Body ---------------------------------------- Start
-            if datas == None:
+            if datas is None:
                 return invalid_params()
             
             required_data = ["category_id", "category_name"]
@@ -139,8 +139,8 @@ class CategoryModels():
             
             # Update Data ---------------------------------------- Start
             # Initialize
-            result.category = datas['category_name']
-            result.updated_at = int(round(time.time()*1000))
+            result.category = category
+            result.updated_at = int(time.time()*1000)
 
             # Save Data
             try:
@@ -170,14 +170,14 @@ class CategoryModels():
             # Access Validation ---------------------------------------- Finish
 
             # Checking Request Body ---------------------------------------- Start
-            if datas == None:
+            if datas is None:
                 return invalid_params()
             
             if "category_id" not in datas:
                 return parameter_error("Missing 'category_id' in request body.")
             
             category_id = datas["category_id"]
-            if category_id == "":
+            if category_id is None:
                 return defined_error("Category id cannot be empty.", "Defined Error", 499)
             # Checking Request Body ---------------------------------------- Finish
             
@@ -190,25 +190,29 @@ class CategoryModels():
             
             # Delete Data ---------------------------------------- Start
             # Initialize
-            timestamp = int(round(time.time()*1000))
+            timestamp = int(time.time()*1000)
             result.is_delete = 1
             result.deleted_at = timestamp
-
-            # Save Data
-            try:
-                db.session.commit()
-            except Exception as e:
-                db.session.rollback()
-                return parameter_error(str(e))
             # Delete Data ---------------------------------------- Finish
             
             # Delete Join Data ---------------------------------------- Start
             # Product
             product = Products.query.filter_by(category_id=category_id, workshop_id=workshop_id, is_delete=0).all()
+            # for item in product:
+            #     item.is_delete = 1
+            #     item.deleted_at = timestamp
+            # db.session.commit()
+
             for item in product:
                 item.is_delete = 1
                 item.deleted_at = timestamp
-            db.session.commit()
+
+             # Save Data
+            try:
+                db.session.commit()
+            except Exception as e:
+                db.session.rollback()
+                return parameter_error(str(e))
             # Delete Join Data ---------------------------------------- Finish
 
             # Log Activity Record ---------------------------------------- Start

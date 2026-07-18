@@ -19,6 +19,7 @@ app.config["JWT_TOKEN_LOCATION"] = ["cookies"]
 app.config["JWT_COOKIE_SECURE"] = False  # True jika HTTPS
 app.config["JWT_COOKIE_CSRF_PROTECT"] = False  # sementara saat development
 app.config['SECRET_KEY'] = config.JWT_SECRET_KEY
+app.config["JWT_SECRET_KEY"] = config.JWT_SECRET_KEY
 
 # Database Section ==============================##
 app.config.from_object(ConnectDB)
@@ -79,30 +80,30 @@ def index():
 # Blueprint Section ==============================##
 # Import
 from .routes.controllers.auth import auth
+from.routes.controllers.administrator import administrator
 from .routes.controllers.dashboard import dashboard
 from .routes.controllers.category import category
 from .routes.controllers.customer import customer
 from .routes.controllers.workshop import workshop
-# from .routes.controllers.signup import signup
-# from .routes.controllers.product import product
-# from .routes.controllers.supplier import supplier
-# from .routes.controllers.purchase import purchase
-# from .routes.controllers.sales import sales
-# from .routes.controllers.report import report
-# from .routes.controllers.services import services
+from .routes.controllers.product import product
+from .routes.controllers.supplier import supplier
+from .routes.controllers.purchase import purchase
+from .routes.controllers.sales import sales
+from .routes.controllers.report import report
+from .routes.controllers.services import services
 
 # Register
 app.register_blueprint(auth)
+app.register_blueprint(administrator)
 app.register_blueprint(dashboard)
 app.register_blueprint(category)
 app.register_blueprint(workshop)
-# app.register_blueprint(signup)
-# app.register_blueprint(customer)
-# app.register_blueprint(product)
-# app.register_blueprint(supplier)
-# app.register_blueprint(purchase)
-# app.register_blueprint(sales)
-# app.register_blueprint(report)
-# app.register_blueprint(services)
+app.register_blueprint(customer)
+app.register_blueprint(product)
+app.register_blueprint(supplier)
+app.register_blueprint(purchase)
+app.register_blueprint(sales)
+app.register_blueprint(report)
+app.register_blueprint(services)
 # End Blueprint Section ==========================##
 # ====================== END - ROUTE CONFIGURATION ======================

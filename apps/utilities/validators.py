@@ -79,6 +79,16 @@ def role_validator(role):
         access = True
 
     return access
+    
+# ADMINISTRATOR VALIDATION ============================================================ Begin
+def administrator_validator(role):
+    access = False
+
+    if int(role) == 0:
+        access = True
+
+    return access
+# ADMINISTRATOR VALIDATION ============================================================ End
 
 def signin_validator(usermail, password):
     checker_result = []
@@ -117,7 +127,7 @@ def signin_validator(usermail, password):
     if result_data:
         # Check activated
         if result_data.is_active == 0:
-            stts = 400
+            stts = 403
             checker_result.append("Akun Anda belum diverifikasi Administrator.")
             return checker_result, result_data, stts
         

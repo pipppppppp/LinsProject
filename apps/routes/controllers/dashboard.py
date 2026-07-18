@@ -1,9 +1,11 @@
 from flask import Blueprint, render_template, session
 from flask import current_app as app
-from flask_jwt_extended import jwt_required
+from flask_jwt_extended import jwt_required, get_jwt
 
 from datetime import datetime, timedelta
 
+from ...database.db_workshops import Workshops
+from ...database.db_users import Users
 from ...database.db_products import Products
 from ...database.db_customers import Customers
 from ...database.db_suppliers import Suppliers
@@ -26,6 +28,33 @@ dashboard = Blueprint(
 @jwt_required()
 def index():
     try:
+        claims = get_jwt()
+
+        if claims["role"] !=1:
+            return redirect(url_for("administrator.index"))
+        workshop = Workshops.query.filter_by(
+            owner_id=claims["id"],
+            is_delete=0
+        ).first()
+
+        role_map = {
+            0: "Administrator",
+            1: "Owner",
+            2: "Kasir"
+        }
+        print(workshop.is_active)
+        print(type(workshop.is_active)) 
+        return render_template(
+            "dashboard.html",
+            title="Dashboard POS Bengkel",
+            active_menu="dashboard",
+
+            username=claims["name"],
+            email=claims["email"],
+            role_name=role_map.get(int(claims["role"]), "-"),
+            is_active=1,
+            workshop_status=workshop.is_active if workshop else 0
+        )
         # Return Page ======================================== 
         # return redirect(url_for('dashboard'))
         # if 'user_id' not in session:
@@ -143,13 +172,13 @@ def index():
         # END DASHBOARD SUMMARY
         # =====================================
 
-        return render_template(
+        # return render_template(
 
-            title='Dashboard POS Bengkel',
+        #     title='Dashboard POS Bengkel',
 
-            template_name_or_list='dashboard.html',
+        #     template_name_or_list='dashboard.html',
 
-            active_menu="dashboard",
+        #     active_menu="dashboard",
 
         #     username=session.get('username'),
 
@@ -170,7 +199,7 @@ def index():
         #     omset_bulan=omset_bulan,
 
         #     laba_bulan=laba_bulan
-        )
+        # )
 
     except Exception as e:
         # return bad_request(str(e))

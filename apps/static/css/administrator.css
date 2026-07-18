@@ -1,0 +1,248 @@
+/* =======================================================
+   ADMINISTRATOR DASHBOARD
+======================================================= */
+
+/* Dashboard Card */
+.card {
+  border: none;
+  border-radius: 12px;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+  transition: 0.2s ease;
+}
+
+.card:hover {
+  transform: translateY(-3px);
+  transition: 0.2s;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+}
+
+/* Dashboard Icon */
+.stats-icon {
+  width: 55px;
+  height: 55px;
+  font-size: 22px;
+}
+
+/* =======================================================
+     TABLE
+  ======================================================= */
+
+#table1 th,
+#table1 td {
+  vertical-align: middle;
+  padding-top: 14px;
+  padding-bottom: 14px;
+}
+
+#table1 tbody tr {
+  transition: background-color 0.2s;
+}
+
+#table1 tbody tr:hover {
+  background-color: #f8f6fb;
+}
+/* =======================================================
+     DETAIL LOGO
+  ======================================================= */
+.detail-logo {
+  width: 120px;
+
+  height: 120px;
+
+  object-fit: cover;
+
+  border-radius: 50%;
+
+  display: block;
+
+  margin: 0 auto 20px;
+}
+/* =======================================================
+     DETAIL
+  ======================================================= */
+
+.workshop-logo {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  margin-bottom: 15px;
+  object-fit: cover;
+  border: 2px solid #dee2e6;
+  background: #f8f9fa;
+  padding: 4px;
+}
+
+.detail-title {
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+/* =======================================================
+     WORKSHOP NAME
+  ======================================================= */
+
+.workshop-name {
+  font-weight: 600;
+}
+
+.workshop-info {
+  font-size: 12px;
+  color: #6c757d;
+}
+
+/* =======================================================
+     OWNER
+  ======================================================= */
+
+.owner-name {
+  font-weight: 600;
+}
+
+.owner-role {
+  font-size: 12px;
+  color: #6c757d;
+}
+
+/* =======================================================
+     STATUS
+  ======================================================= */
+
+.badge {
+  font-size: 12px;
+  padding: 7px 14px;
+  border-radius: 30px;
+  margin-top: 8px;
+}
+
+/* =======================================================
+     ACTION BUTTON
+  ======================================================= */
+
+.action-group {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  transition: 0.2s;
+}
+
+.action-group .btn {
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.action-group .btn:hover {
+  transform: scale(1.08);
+}
+/* =======================================================
+     REFRESH BUTTON
+  ======================================================= */
+
+#btn_refresh {
+  border-radius: 10px;
+}
+
+#btn_refresh:disabled {
+  opacity: 0.8;
+  cursor: not-allowed;
+}
+
+/* =======================================================
+     DATATABLE
+  ======================================================= */
+
+.dataTable-input {
+  border-radius: 8px;
+}
+
+.dataTable-selector {
+  border-radius: 8px;
+}
+
+/* =======================================================
+   PAGE SCROLL
+======================================================= */
+
+html,
+body {
+  height: auto;
+  overflow-y: auto;
+}
+
+/* =======================================================
+   NAVBAR
+======================================================= */
+
+.navbar {
+  background: #fff;
+  z-index: 1030;
+  box-shadow: 0 2px 15px rgba(0, 0, 0, 0.06);
+}
+
+.navbar-brand h4 {
+  font-size: 28px;
+
+  font-weight: 700;
+}
+
+.navbar-brand small {
+  font-size: 13px;
+}
+
+.admin-avatar {
+  width: 45px;
+
+  height: 45px;
+
+  font-size: 18px;
+
+  border-radius: 50%;
+}
+
+.admin-name {
+  font-size: 15px;
+
+  font-weight: 600;
+
+  color: #212529;
+}
+
+.admin-role {
+  font-size: 12px;
+
+  color: #6c757d;
+}
+/* =======================================================
+   ADMINISTRATOR LAYOUT
+======================================================= */
+
+#app {
+  width: 100%;
+}
+
+#main {
+  margin-left: 0 !important;
+
+  width: 100% !important;
+
+  padding: 0 !important;
+}
+
+.page-content {
+  padding: 32px 24px;
+  padding-bottom: 40px;
+  padding-top: 40px;
+}
+
+.page-content .row {
+  margin-left: 0;
+
+  margin-right: 0;
+}
+
+.page-heading {
+  margin-bottom: 30px;
+}

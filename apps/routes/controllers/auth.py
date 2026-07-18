@@ -1,5 +1,5 @@
 from flask import Blueprint, request, redirect, url_for, render_template, session
-from flask_jwt_extended import jwt_required
+from flask_jwt_extended import jwt_required, unset_jwt_cookies
 
 from apps.routes.models.auth import AuthModels
 from apps.utilities.responseHelpers import bad_request
@@ -88,14 +88,13 @@ def signin_process():
 # LOGOUT ============================================================ Begin
 # POST https://127.0.0.1:5000/auth/signout [Done]
 @auth.get('/signout')
-@jwt_required
+@jwt_required()
 def signout():
     try:
         session.clear()
-
-        return redirect(
-            url_for('auth.signin_page')
-        )
+        response = redirect(url_for('auth.signin_page'))
+        unset_jwt_cookies(response)
+        return response
     except Exception as e:
         return bad_request(str(e))
 # LOGOUT ============================================================ End

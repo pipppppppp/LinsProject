@@ -36,7 +36,7 @@ function signin_process(e) {
    // Set Loading UI
    swal.fire({
       title: "Tunggu Sebentar..",
-      text: "Akun Anda sedang menunggu verifikasi.",
+      text: "Permintaan kamu sedang diproses.",
       button: false,
    });
 
@@ -53,23 +53,28 @@ function signin_process(e) {
                   icon: "success",
                })
                .then((result) => {
-                  window.location.replace("/dashboard/");
+                  if (response.role == 0) {
+                     window.location.replace("/administrator/");
+                 } else if (response.role == 1) {
+                     window.location.replace("/dashboard/");
+                 } else if (response.role == 2) {
+                     window.location.replace("/cashier/");
+                 }
                });
          } else {
-            let icon = "error";
-            if (response.status_code === 403){
-            swal
-               .fire({
-                  title: response.error,
-                  text: response.message,
-                  icon: icon,
-                  buttons: "Kembali",
-               })
-               .then((result) => {
-                  window.location.replace("/auth/signin");
+            if (response.status_code === 403) {
+               swal.fire({
+                   title: response.error,
+                   text: response.message,
+                   icon: "warning"
                });
-            }
-            
+           } else {
+               swal.fire({
+                   title: response.error,
+                   text: response.message,
+                   icon: "error"
+               });
+           }
          }
       })
       .catch((error) => {
@@ -146,7 +151,7 @@ function signup_process(e) {
          } else {
             swal
                .fire({
-                  title: `${response.description}`,
+                  title: response.message,
                   icon: "error",
                   buttons: "Kembali",
                })

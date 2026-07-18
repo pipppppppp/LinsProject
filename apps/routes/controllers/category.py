@@ -60,7 +60,7 @@ def create_category():
         body = request.json
 
         # Request Process ======================================== 
-        response = CategoryModels().create_category(role, ws_id, body)
+        response = CategoryModels.create_category(role, ws_id, body)
 
         # Request Data ======================================== 
         return response
@@ -80,7 +80,7 @@ def read_category():
         ws_id = str(get_jwt()["ws_id"])
 
         # Request Process ======================================== 
-        response = CategoryModels().read_category(ws_id)
+        response = CategoryModels.read_category(ws_id)
 
         # Request Data ======================================== 
         return response
@@ -104,7 +104,7 @@ def update_category():
         body = request.json
 
         # Request Process ======================================== 
-        response = CategoryModels().update_category(role, ws_id, body)
+        response = CategoryModels.update_category(role, ws_id, body)
 
         # Request Data ======================================== 
         return response
@@ -128,7 +128,7 @@ def delete_category():
         body = request.json
 
         # Request Process ======================================== 
-        response = CategoryModels().delete_category(role, ws_id, body)
+        response = CategoryModels.delete_category(role, ws_id, body)
 
         # Request Data ======================================== 
         return response
