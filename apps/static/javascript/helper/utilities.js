@@ -22,6 +22,26 @@ async function getRequest(url) {
 // **************************************************************
 
 // **************************************************************
+// DATATABLE | START
+// **************************************************************
+let dataTable = null;
+
+function initDataTable(tableId = "#table1") {
+    const table = document.querySelector(tableId);
+
+    if (!table) return;
+
+    if (dataTable) {
+        dataTable.destroy();
+    }
+
+    dataTable = new simpleDatatables.DataTable(table);
+}
+// **************************************************************
+// DATATABLE | END
+// **************************************************************
+
+// **************************************************************
 // POST REQUEST | START
 // **************************************************************
 async function postRequest(url, data) {
@@ -72,13 +92,14 @@ async function putRequest(url, data) {
 // **************************************************************
 // DELETE REQUEST | START
 // **************************************************************
-async function deleteRequest(url) {
+async function deleteRequest(url, data) {
   try {
     const response = await fetch(url, {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",
       },
+      body: JSON.stringify(data),
     });
 
     return await response.json();
@@ -128,9 +149,18 @@ function closeModal(id) {
 // RELOAD TABLE | START
 // **************************************************************
 async function reloadTable(loadData, renderData) {
+  if (dataTable) {
+      dataTable.destroy();
+      dataTable = null;
+  }
+
   await loadData();
 
   renderData();
+
+  setTimeout(() => {
+      initDataTable();
+  }, 100);
 }
 // **************************************************************
 // RELOAD TABLE | END

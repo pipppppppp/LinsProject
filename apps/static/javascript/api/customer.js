@@ -101,7 +101,6 @@ async function saveCustomer() {
     swalClose();
   }
 
-
   if (result.status) {
     await swalSuccess(result.message);
 

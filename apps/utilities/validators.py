@@ -7,6 +7,7 @@ from apps.database.db_users import Users
 from apps.database.db_workshops import Workshops
 from apps.database.db_customers import Customers
 from apps.database.db_vehicles import Vehicles
+from apps.database.db_products import Products
 from apps.utilities.utilities import *
 
 
@@ -347,3 +348,107 @@ class VehicleValidator:
         # Check Duplicate Customer ---------------------------------------- Finish
         return check_result
 # VEHICLE VALIDATION ============================================================ End
+
+# PRODUCT VALIDATION ============================================================ Begin
+def product_validator(
+    category_id,
+    product_name,
+    stock,
+    purchase_price,
+    selling_price,
+    workshop_id,
+    product_id=None
+):
+    check_result = []
+
+    # Check Null Value ---------------------------------------- Start
+    if category_id == "":
+        check_result.append("Kategori tidak boleh kosong.")
+
+    if product_name == "":
+        check_result.append("Nama produk tidak boleh kosong.")
+
+    if stock == "":
+        check_result.append("Stok tidak boleh kosong.")
+
+    if purchase_price == "":
+        check_result.append("Harga beli tidak boleh kosong.")
+
+    if selling_price == "":
+        check_result.append("Harga jual tidak boleh kosong.")
+    # Check Null Value ---------------------------------------- Finish
+
+    # Sanitize String Content ---------------------------------------- Start
+    sanitize_product, char_product = sanitize_title_char(product_name)
+    if sanitize_product:
+        check_result.append(
+            f"Nama produk tidak boleh mengandung karakter {char_product}"
+        )
+    # Sanitize String Content ---------------------------------------- Finish
+
+    # Check Field Content ---------------------------------------- Start
+    if not str(category_id).isdigit():
+        check_result.append("Kategori tidak valid.")
+
+    if not str(stock).isdigit():
+        check_result.append("Stok harus berupa angka.")
+
+    if not str(purchase_price).isdigit():
+        check_result.append("Harga beli harus berupa angka.")
+
+    if not str(selling_price).isdigit():
+        check_result.append("Harga jual harus berupa angka.")
+
+    if str(stock).isdigit():
+        if int(stock) < 0:
+            check_result.append("Stok tidak boleh kurang dari 0.")
+
+    if str(purchase_price).isdigit():
+        if int(purchase_price) < 0:
+            check_result.append("Harga beli tidak boleh kurang dari 0.")
+
+    if str(selling_price).isdigit():
+        if int(selling_price) < 0:
+            check_result.append("Harga jual tidak boleh kurang dari 0.")
+
+    if (
+        str(purchase_price).isdigit() and
+        str(selling_price).isdigit()
+    ):
+        if int(selling_price) < int(purchase_price):
+            check_result.append(
+                "Harga jual tidak boleh lebih kecil dari harga beli."
+            )
+    # Check Field Content ---------------------------------------- Finish
+
+    # Check Category ---------------------------------------- Start
+    if str(category_id).isdigit():
+        result = Categories.query.filter_by(
+            id=category_id,
+            workshop_id=workshop_id,
+            is_delete=0
+        ).first()
+
+        if not result:
+            check_result.append("Kategori tidak ditemukan.")
+    # Check Category ---------------------------------------- Finish
+
+    # Check Duplicate Product ---------------------------------------- Start
+    query = Products.query.filter(
+        Products.workshop_id == workshop_id,
+        Products.product_name == product_name.strip(),
+        Products.is_delete == 0
+    )
+
+    if product_id is not None:
+        query = query.filter(
+            Products.id != product_id
+        )
+
+    result = query.first()
+
+    if result:
+        check_result.append("Nama produk sudah terdaftar.")
+    # Check Duplicate Product ---------------------------------------- Finish
+    return check_result
+# PRODUCT VALIDATION ============================================================ End

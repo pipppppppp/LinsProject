@@ -1,7 +1,10 @@
-from flask import Blueprint, request, render_template
+from flask import Blueprint, request, render_template, redirect, url_for
+from flask_jwt_extended import jwt_required, get_jwt
+
+from apps.utilities.responseHelpers import bad_request
 
 from ..models.product import ProductModels
-from ...utilities.responseHelpers import bad_request
+
 
 # BLUEPRINT ================================================== Begin
 product = Blueprint(
@@ -14,40 +17,51 @@ product = Blueprint(
 
 
 # PRODUCT PAGE ============================================================ Begin
-# GET https://127.0.0.1:5000/product/
+# GET http://127.0.0.1:5000/product/
 @product.get('/')
+@jwt_required()
 def index():
     try:
-        # Role Validation ======================================== 
-        if session.get('role') != 'admin':
-            return redirect(url_for('dashboard.index'))
+        # JWT Access Data ========================================
+        # id = str(get_jwt()["id"])
+        # role = str(get_jwt()["role"])
 
-        # Return Page ======================================== 
+        # # Role Validation ========================================
+        # if role != "admin":
+        #     return redirect(url_for("dashboard.index"))
+
+        # Return Page ========================================
         return render_template(
-            title='Produk - POS Bengkel',
-            template_name_or_list='product.html',
+            title="Produk - POS Bengkel",
+            template_name_or_list="product.html",
+            active_menu="product",
         )
 
-    except Exception as e:
+    except Exception:
         return render_template(
             title="Error 404 - POS Bengkel",
-            template_name_or_list='errorPages/404.html'
+            template_name_or_list="errorPages/404.html"
         )
 # PRODUCT PAGE ============================================================ End
 
 
 # ADD PRODUCT DATA ============================================================ Begin
-# POST https://127.0.0.1:5000/product/add
+# POST http://127.0.0.1:5000/product/add
 @product.post('/add')
-def createProduct():
+@jwt_required()
+def create_product():
     try:
+        # JWT Access Data ========================================
+        role = str(get_jwt()["role"])
+        ws_id = str(get_jwt()["ws_id"])
+
         # Request Data ========================================
         body = request.json
 
-        # Request Process ======================================== 
-        response = ProductModels.add_product(body)
+        # Request Process ========================================
+        response = ProductModels.create_product(role, ws_id, body)
 
-        # Request Data ======================================== 
+        # Return Response ========================================
         return response
 
     except Exception as e:
@@ -55,52 +69,72 @@ def createProduct():
 # ADD PRODUCT DATA ============================================================ End
 
 
-# GET PRODUCT DATA ============================================================ Begin
-# GET https://127.0.0.1:5000/product/view
+# VIEW PRODUCT DATA ============================================================ Begin
+# GET http://127.0.0.1:5000/product/view
 @product.get('/view')
-def getProduct():
+@jwt_required()
+def read_product():
     try:
-        # Request Process ======================================== 
-        response = ProductModels.view_product()
+        # JWT Access Data ========================================
+        role = str(get_jwt()["role"])
+        ws_id = str(get_jwt()["ws_id"])
 
-        # Return Page ======================================== 
+        # Request Process ========================================
+        response = ProductModels.read_product(role, ws_id)
+
+        # Return Response ========================================
         return response
 
     except Exception as e:
         return bad_request(str(e))
-# GET PRODUCT DATA ============================================================ End
+# VIEW PRODUCT DATA ============================================================ End
 
 
-# UPDATE PRODUCT DATA ============================================================ Begin
-# PUT https://127.0.0.1:5000/product/edit
-@product.put('/edit/<int:id>')
-def updateProduct(id):
+# EDIT PRODUCT DATA ============================================================ Begin
+# PUT http://127.0.0.1:5000/product/edit
+@product.put('/edit')
+@jwt_required()
+def update_product():
     try:
+        # JWT Access Data ========================================
+        role = str(get_jwt()["role"])
+        ws_id = str(get_jwt()["ws_id"])
+
         # Request Data ========================================
         body = request.json
+        product_id = body["id"]
 
-        # Request Process ======================================== 
-        response = ProductModels.edit_product(body, id)
+        # Request Process ========================================
+        response = ProductModels.update_product(role, ws_id, product_id, body)
 
-        # Request Data ======================================== 
+        # Return Response ========================================
         return response
 
     except Exception as e:
         return bad_request(str(e))
-# UPDATE PRODUCT DATA ============================================================ End
+# EDIT PRODUCT DATA ============================================================ End
 
 
 # DELETE PRODUCT DATA ============================================================ Begin
-# DELETE https://127.0.0.1:5000/product/delete
-@product.delete('/delete/<int:id>')
-def deleteProduct(id):
+# DELETE http://127.0.0.1:5000/product/delete
+@product.delete('/delete')
+@jwt_required()
+def delete_product():
     try:
-        # Request Process ======================================== 
-        response = ProductModels.delete_product(id)
+        # JWT Access Data ========================================
+        role = str(get_jwt()["role"])
+        ws_id = str(get_jwt()["ws_id"])
 
-        # Request Data ======================================== 
+        # Request Data ========================================
+        body = request.json
+        product_id = body["product_id"]
+
+        # Request Process ========================================
+        response = ProductModels.delete_product(role, ws_id, product_id)
+
+        # Return Response ========================================
         return response
-        
+
     except Exception as e:
         return bad_request(str(e))
 # DELETE PRODUCT DATA ============================================================ End

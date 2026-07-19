@@ -3,8 +3,7 @@
 // **************************************************************
 document.addEventListener("DOMContentLoaded", init);
 async function init() {
-  await loadCategories();
-  renderTable();
+  await reloadTable(loadCategories, renderTable);
 }
 
 // Form ID Setup
@@ -25,7 +24,9 @@ let categoriesData = [];
 
 // Get Data -------------------------------------------------
 async function loadCategories() {
-  categoriesData = await getRequest("/category/view");
+  const result = await getRequest("/category/view");
+  categoriesData = result.data;
+  // console.log(categoriesData);
 }
 
 // Load Data -------------------------------------------------
@@ -70,25 +71,23 @@ async function saveCategory() {
   // VALIDATION ==================================================
   if (!validateCategory(category)) return;
 
-  swalLoading();
-
   let result;
   try {
+    swalLoading();
     if (!category.category_id){
       result = await postRequest("/category/add", category);
-      console.log(result);
     } else {
-      result = await putRequest(`/category/edit/${category.category_id}`, category);
+      result = await putRequest("/category/edit", category);
     }
   } finally {
     swalClose();
   }
 
-  if (result.status) {
+  if (result.status_code === 200) {
     await swalSuccess(result.message);
 
     closeModal("category_modal");
-    clearValue(form.id, form.category);
+    clearValue(form.id, form.name);
 
     form.title.textContent = "Tambah Kategori";
 
@@ -123,8 +122,9 @@ async function handleTableClick(e) {
       return;
     }
     swalLoading();
-    const result = await deleteRequest(`/category/delete/${id}`);
-
+    
+    const result = await deleteRequest("/category/delete", {category_id: id,});
+    console.log(result)
     swalClose();
 
     if (result.status_code === 200) {
@@ -138,4 +138,21 @@ async function handleTableClick(e) {
 }
 // **************************************************************
 // UPDATE & DELETE CATEGORY | END
+// **************************************************************
+
+// **************************************************************
+// RESET FORM | START
+// **************************************************************
+function resetForm() {
+  form.title.textContent = "Tambah Kategori";
+
+  clearValue(
+      form.id,
+      form.name
+  );
+}
+
+document.getElementById("category_modal").addEventListener("hidden.bs.modal", resetForm);
+// **************************************************************
+// RESET FORM | END
 // **************************************************************

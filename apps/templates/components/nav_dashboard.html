@@ -50,12 +50,12 @@
             <span>Master Barang</span>
           </a>
 
-          <ul class="submenu {% if active_menu in ['category','item'] %}active{% endif %}">
+          <ul class="submenu {% if active_menu in ['category','product'] %}active{% endif %}">
             <li class="submenu-item {% if active_menu == 'category' %}active{% endif %}">
               <a href="{{ url_for('category.index') }}"> Kategori Barang </a>
             </li>
 
-            <li class="submenu-item {% if active_menu == 'item' %}active{% endif %}">
+            <li class="submenu-item {% if active_menu == 'product' %}active{% endif %}">
               <a href="{{ url_for('product.index') }}"> Data Barang </a>
             </li>
           </ul>
