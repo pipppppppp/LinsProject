@@ -1,6 +1,6 @@
 {% extends 'layouts/dashboard_layout.html' %} {% block content %}
 
-<div id="app">
+<div id="app" class="administrator-page">
   <!--! ================================================================ !-->
   <!--! [Start] Navigation Section !-->
   <!--! ================================================================ !-->
@@ -129,26 +129,47 @@
           <div class="card shadow-sm">
             <div class="card-header">
               <div class="d-flex justify-content-between align-items-center">
-                <div>
-                  <h4 class="mb-0">Workshop Management</h4>
-
-                  <small class="text-muted"> Registered workshop list. </small>
-                </div>
-
-                <button class="btn btn-primary" id="btn_refresh">
-                  <i class="bi bi-arrow-clockwise"></i>
-
-                  Refresh
-                </button>
+          
+                  <div>
+                      <h4 class="mb-0">Workshop Management</h4>
+                      <small class="text-muted">
+                          Registered workshop list.
+                      </small>
+                  </div>
+          
+                  <div class="d-flex align-items-center gap-2">
+          
+                      <select
+                          id="filter_status"
+                          class="form-select"
+                          style="width:200px;">
+          
+                          <option value="all">All Status</option>
+                          <option value="pending">Pending Verification</option>
+                          <option value="active">Active</option>
+                          <option value="inactive">Inactive</option>
+          
+                      </select>
+          
+                      <button
+                          class="btn btn-primary"
+                          id="btn_refresh">
+          
+                          <i class="bi bi-arrow-clockwise"></i>
+                          Refresh
+          
+                      </button>
+          
+                  </div>
+          
               </div>
             </div>
-
             <div class="card-body">
               <!-- ========================================================= -->
               <!-- WORKSHOP TABLE -->
               <!-- ========================================================= -->
               <div class="table-responsive">
-                <table class="table table-striped" id="table1">
+                <table class="table table-striped" id="administratorTable">
                   <thead>
                     <tr>
                       <th width="5%">No</th>

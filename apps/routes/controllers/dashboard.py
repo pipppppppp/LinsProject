@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, session
+from flask import Blueprint, render_template, session, redirect, url_for
 from flask import current_app as app
 from flask_jwt_extended import jwt_required, get_jwt
 
@@ -17,7 +17,7 @@ from ...routes.controllers.report import calculate_profit
 dashboard = Blueprint(
     name='dashboard',
     import_name=__name__,
-    template_folder="../../templates/pages/appPages",
+    template_folder="../../templates/pages/adminPages",
     url_prefix='/dashboard',
 )
 # BLUEPRINT ================================================== End
@@ -30,8 +30,12 @@ def index():
     try:
         claims = get_jwt()
 
-        if claims["role"] !=1:
-            return redirect(url_for("administrator.index"))
+        if claims["role"] == 0:
+            return redirect(url_for("administrator.dashboard"))
+        elif claims["role"] == 1:
+            return render_template("dashboard.html")   # atau dashboard.index
+        # elif claims["role"] == 2:
+        #     return redirect(url_for("cashier.index"))
         workshop = Workshops.query.filter_by(
             owner_id=claims["id"],
             is_delete=0

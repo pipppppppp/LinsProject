@@ -62,8 +62,13 @@ def read_workshop():
         # JWT Access Data ========================================
         role = str(get_jwt()["role"])
 
+        status = request.args.get(
+            "status",
+            "all"
+        )
+
         # Request Process ========================================
-        response = AdministratorModels.read_workshop(role)
+        response = AdministratorModels.read_workshop(role, status)
 
         # Return Response ========================================
         return response

@@ -219,30 +219,27 @@ body {
    ADMINISTRATOR LAYOUT
 ======================================================= */
 
-#app {
+.administrator-page {
   width: 100%;
 }
 
-#main {
+.administrator-page #main {
   margin-left: 0 !important;
-
   width: 100% !important;
-
   padding: 0 !important;
 }
 
-.page-content {
+.administrator-page .page-content {
   padding: 32px 24px;
   padding-bottom: 40px;
   padding-top: 40px;
 }
 
-.page-content .row {
+.administrator-page .page-content .row {
   margin-left: 0;
-
   margin-right: 0;
 }
 
-.page-heading {
+.administrator-page .page-heading {
   margin-bottom: 30px;
 }

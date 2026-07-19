@@ -60,51 +60,46 @@
           <div class="col-md-4">
             <div class="card shadow-sm">
               <div class="card-header">
-                  <h5>Informasi Akun</h5>
+                <h5>Informasi Akun</h5>
               </div>
-          
-              <div class="card-body">
-          
-                  <p>
-                      <strong>Nama Pengguna :</strong>
-                      {{ username }}
-                  </p>
-          
-                  <p>
-                      <strong>Email :</strong>
-                      {{ email }}
-                  </p>
-          
-                  <p>
-                      <strong>Role :</strong>
-                      {{ role_name }}
-                  </p>
-          
-                  <p>
-                      <strong>Status Akun :</strong>
-                      {% if is_active == 1 %}
-                          <span class="badge bg-success">Aktif</span>
-                      {% else %}
-                          <span class="badge bg-warning">Menunggu Verifikasi</span>
-                      {% endif %}
-                  </p>
 
-                  <p>
-                    <strong>Status Bengkel :</strong>
-                    {% if workshop_status == 1 %}
-                        <span class="badge bg-success">Aktif</span>
-                    {% else %}
-                        <span class="badge bg-warning">Menunggu Verifikasi </span>
-                    {% endif %}
-                  </p>
-          
-                  <a href="{{ url_for('auth.signout') }}"
-                     class="btn btn-danger w-100">
-                      Logout
-                  </a>
-          
+              <div class="card-body">
+                <p>
+                  <strong>Nama Pengguna :</strong>
+                  {{ username }}
+                </p>
+
+                <p>
+                  <strong>Email :</strong>
+                  {{ email }}
+                </p>
+
+                <p>
+                  <strong>Role :</strong>
+                  {{ role_name }}
+                </p>
+
+                <p>
+                  <strong>Status Akun :</strong>
+                  {% if is_active == 1 %}
+                  <span class="badge bg-success">Aktif</span>
+                  {% else %}
+                  <span class="badge bg-warning">Menunggu Verifikasi</span>
+                  {% endif %}
+                </p>
+
+                <p>
+                  <strong>Status Bengkel :</strong>
+                  {% if workshop_status == 1 %}
+                  <span class="badge bg-success">Aktif</span>
+                  {% else %}
+                  <span class="badge bg-warning">Menunggu Verifikasi </span>
+                  {% endif %}
+                </p>
+
+                <a href="{{ url_for('auth.signout') }}" class="btn btn-danger w-100"> Logout </a>
               </div>
-          </div>
+            </div>
           </div>
         </div>
       </section>

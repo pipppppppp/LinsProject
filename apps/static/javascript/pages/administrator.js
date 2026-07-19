@@ -22,7 +22,8 @@ const dashboardCard = {
 const tableBody = document.getElementById("table_workshop");
 
 let selectedWorkshop = null;
-
+let workshopTable = null;
+let workshopDatas = [];
 // **************************************************************
 // BASE INITIALIZATION | END
 // **************************************************************
@@ -78,37 +79,26 @@ async function loadDashboard() {
 // READ WORKSHOP | START
 // **************************************************************
 
-async function loadWorkshop() {
+async function loadWorkshop(status = "all") {
+
   try {
-    const response = await fetch(API.view, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
 
-    const result = await response.json();
+      const response = await fetch(`${API.view}?status=${status}`);
 
-    if (result.status_code != 200) {
-      Swal.fire({
-        icon: "error",
-        title: result.error,
-        text: result.message,
-      });
+      const result = await response.json();
 
-      return;
-    }
+      if(result.status_code != 200){
+          return;
+      }
 
-    renderWorkshopTable(result.data);
-  } catch (error) {
-    console.error(error);
+      workshopDatas = result.data;
 
-    Swal.fire({
-      icon: "error",
-      title: "Error",
-      text: "Failed to load workshop data.",
-    });
+      renderWorkshopTable(workshopDatas);
+
+  } catch(err){
+      console.error(err);
   }
+
 }
 
 // **************************************************************
@@ -174,7 +164,7 @@ function renderWorkshopTable(datas) {
   
                   <td class="text-center">
   
-                      ${generateStatusBadge(data.workshop_status)}
+                      ${generateStatusBadge(data.is_verified, data.workshop_status)}
   
                   </td>
   
@@ -207,10 +197,28 @@ function renderWorkshopTable(datas) {
 // STATUS BADGE | START
 // **************************************************************
 
-function generateStatusBadge(status) {
-  return Number(status) === 1
-    ? `<span class="badge rounded-pill bg-success px-3 py-2">Active</span>`
-    : `<span class="badge rounded-pill bg-danger px-3 py-2">Inactive</span>`;
+function generateStatusBadge(is_verified, is_active) {
+  if (!Number(is_verified)) {
+    return `
+          <span class="badge rounded-pill bg-warning px-3 py-2">
+              Pending Verification
+          </span>
+      `;
+  }
+
+  if (Number(is_active)) {
+    return `
+          <span class="badge rounded-pill bg-success px-3 py-2">
+              Active
+          </span>
+      `;
+  }
+
+  return `
+      <span class="badge rounded-pill bg-secondary px-3 py-2">
+          Inactive
+      </span>
+  `;
 }
 
 // **************************************************************
@@ -222,84 +230,75 @@ function generateStatusBadge(status) {
 // **************************************************************
 
 function generateActionButton(data) {
-  let button = "";
+  let button = `
+      <div class="action-group">
+  `;
 
-  if (parseInt(data.workshop_status) === 0) {
+  // Belum diverifikasi
+  if (!Number(data.is_verified)) {
     button += `
-            <div class="action-group">
+          <button
+              class="btn btn-outline-success btn-sm"
+              title="Verify Workshop"
+              onclick="verifyWorkshop(${data.workshop_id})">
 
-                <button
-                    class="btn btn-outline-success btn-sm"
-                    title="Verify Workshop"
-                    onclick="verifyWorkshop(${data.workshop_id})">
+              <i class="bi bi-shield-check"></i>
 
-                    <i class="bi bi-patch-check-fill"></i>
-
-                </button>
-
-                <button
-                    class="btn btn-outline-primary btn-sm"
-                    title="Activate Workshop"
-                    onclick="activateWorkshop(${data.workshop_id})">
-
-                    <i class="bi bi-check-circle-fill"></i>
-
-                </button>
-
-                <button
-                    class="btn btn-outline-danger btn-sm"
-                    title="Delete Workshop"
-                    onclick="deleteWorkshop(${data.workshop_id})">
-
-                    <i class="bi bi-trash-fill"></i>
-
-                </button>
-
-                <button
-                    class="btn btn-outline-info btn-sm"
-                    title="Detail Workshop"
-                    onclick="detailWorkshop(${data.workshop_id})">
-
-                    <i class="bi bi-eye-fill"></i>
-
-                </button>
-
-            </div>
-        `;
-  } else {
-    button += `
-            <div class="d-flex justify-content-center align-items-center gap-2">
-
-                <button
-                    class="btn btn-outline-warning btn-sm"
-                    title="Deactivate Workshop"
-                    onclick="deactivateWorkshop(${data.workshop_id})">
-
-                    <i class="bi bi-slash-circle-fill"></i>
-
-                </button>
-
-                <button
-                    class="btn btn-outline-danger btn-sm"
-                    title="Delete Workshop"
-                    onclick="deleteWorkshop(${data.workshop_id})">
-
-                    <i class="bi bi-trash-fill"></i>
-
-                </button>
-
-                <button
-                    class="btn btn-outline-info btn-sm"
-                    title="Detail Workshop"
-                    onclick="detailWorkshop(${data.workshop_id})">
-
-                    <i class="bi bi-eye-fill"></i>
-
-                </button>
-
-            </div>
-        `;
+          </button>
+      `;
   }
+
+  // Sudah diverifikasi tapi belum aktif
+  else if (!Number(data.workshop_status)) {
+    button += `
+          <button
+              class="btn btn-outline-primary btn-sm"
+              title="Activate Workshop"
+              onclick="activateWorkshop(${data.workshop_id})">
+
+              <i class="bi bi-play-circle-fill"></i>
+
+          </button>
+      `;
+  }
+
+  // Sudah aktif
+  else {
+    button += `
+          <button
+              class="btn btn-outline-warning btn-sm"
+              title="Deactivate Workshop"
+              onclick="deactivateWorkshop(${data.workshop_id})">
+
+              <i class="bi bi-pause-circle-fill"></i>
+
+          </button>
+      `;
+  }
+
+  // Tombol yang selalu ada
+  button += `
+
+      <button
+          class="btn btn-outline-danger btn-sm"
+          title="Delete Workshop"
+          onclick="deleteWorkshop(${data.workshop_id})">
+
+          <i class="bi bi-trash-fill"></i>
+
+      </button>
+
+      <button
+          class="btn btn-outline-info btn-sm"
+          title="Detail Workshop"
+          onclick="detailWorkshop(${data.workshop_id})">
+
+          <i class="bi bi-eye-fill"></i>
+
+      </button>
+
+  </div>
+  `;
 
   return button;
 }
@@ -475,33 +474,30 @@ async function deactivateWorkshop(workshop_id) {
 // DETAIL WORKSHOP | START
 // **************************************************************
 async function detailWorkshop(workshopId) {
-  
   try {
+    const response = await fetch(`${API.detail}/${workshopId}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
 
-      const response = await fetch(`${API.detail}/${workshopId}`, {
-          method: "GET",
-          headers: {
-              "Content-Type": "application/json",
-          },
+    const result = await response.json();
+
+    // alert(JSON.stringify(result));
+    if (result.status_code != 200) {
+      Swal.fire({
+        icon: "error",
+        title: result.error,
+        text: result.message,
       });
 
-      const result = await response.json();
+      return;
+    }
 
-      // alert(JSON.stringify(result));
-      if (result.status_code != 200) {
+    const data = result.data;
 
-          Swal.fire({
-              icon: "error",
-              title: result.error,
-              text: result.message,
-          });
-
-          return;
-      }
-
-      const data = result.data;
-
-      document.getElementById("detailWorkshopContent").innerHTML = `
+    document.getElementById("detailWorkshopContent").innerHTML = `
           <div class="text-center mb-4">
 
               <img
@@ -512,7 +508,7 @@ async function detailWorkshop(workshopId) {
                   ${data.workshop_name}
               </h4>
 
-              ${generateStatusBadge(data.workshop_status)}
+              ${generateStatusBadge(data.is_verified, data.workshop_status)}
 
           </div>
 
@@ -546,20 +542,14 @@ async function detailWorkshop(workshopId) {
           </table>
       `;
 
-      new bootstrap.Modal(
-          document.getElementById("detailWorkshopModal")
-      ).show();
-
+    new bootstrap.Modal(document.getElementById("detailWorkshopModal")).show();
   } catch (error) {
-
-      Swal.fire({
-          icon: "error",
-          title: "Error",
-          text: error.message,
-      });
-
+    Swal.fire({
+      icon: "error",
+      title: "Error",
+      text: error.message,
+    });
   }
-
 }
 // **************************************************************
 // DETAIL WORKSHOP | END
@@ -632,8 +622,8 @@ async function deleteWorkshop(workshop_id) {
 
 async function refreshAdministrator() {
   await loadDashboard();
-
-  await loadWorkshop();
+  const status = document.getElementById("filter_status").value;
+  await loadWorkshop(status);
 }
 
 // **************************************************************
@@ -643,6 +633,18 @@ async function refreshAdministrator() {
 // **************************************************************
 // EVENT LISTENER | START
 // **************************************************************
+const filterStatus = document.getElementById("filter_status");
+
+if (filterStatus) {
+
+    filterStatus.addEventListener("change", async function () {
+
+        await loadWorkshop(this.value);
+
+    });
+
+}
+
 
 const btnRefresh = document.getElementById("btn_refresh");
 
@@ -659,26 +661,17 @@ if (btnRefresh) {
 
     // Refresh data
     try {
-
-        await refreshAdministrator();
-
+      await refreshAdministrator();
     } finally {
-
-        btnRefresh.innerHTML = `
+      btnRefresh.innerHTML = `
             <i class="bi bi-arrow-clockwise"></i>
             Refresh
         `;
 
-        btnRefresh.disabled = false;
-
+      btnRefresh.disabled = false;
     }
-
   });
 }
-
-// **************************************************************
-// EVENT LISTENER | END
-// **************************************************************
 
 // **************************************************************
 // EVENT LISTENER | END
@@ -689,7 +682,17 @@ if (btnRefresh) {
 // **************************************************************
 
 document.addEventListener("DOMContentLoaded", async function () {
+
   await refreshAdministrator();
+
+  workshopTable = new simpleDatatables.DataTable("#administratorTable", {
+      searchable:true,
+      paging:true,
+      perPage:5,
+      perPageSelect:[5,10,25,50],
+      fixedHeight:false
+  });
+
 });
 
 // **************************************************************

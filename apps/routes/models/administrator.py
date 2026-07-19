@@ -1,6 +1,6 @@
 from datetime import datetime
 import time
-
+from sqlalchemy import func
 from apps import db
 from apps.database.db_users import Users
 from apps.database.db_workshops import Workshops
@@ -38,10 +38,16 @@ class AdministratorModels():
                 is_active=0
             ).count()
 
-            total_owner = Users.query.filter_by(
-                role='1',
-                is_delete=0
-            ).count()
+            # total_owner = Users.query.filter_by(
+            #     role='1',
+            #     is_delete=0
+            # ).count()
+
+            total_owner = db.session.query(
+                func.count(func.distinct(Workshops.owner_id))
+            ).filter(
+                Workshops.is_delete == 0
+            ).scalar()
             # Dashboard Data ---------------------------------------- Finish
 
             # Response Data ---------------------------------------- Start
@@ -64,7 +70,7 @@ class AdministratorModels():
 
     # VIEW WORKSHOP ============================================================ Begin
     @staticmethod
-    def read_workshop(user_role):
+    def read_workshop(user_role, status):
         try:
             # Access Validation ---------------------------------------- Start
             access = administrator_validator(user_role)
@@ -73,12 +79,33 @@ class AdministratorModels():
             # Access Validation ---------------------------------------- Finish
 
             # Check Data ---------------------------------------- Start
-            result = Workshops.query.filter_by(
+            query = Workshops.query.filter_by(
                 is_delete=0
-            ).order_by(
-                Workshops.created_at.desc()
-            ).all()
+            )
+            status = status.strip().lower()
             
+            if status == "pending":
+
+                query = query.filter(
+                    Workshops.is_verified == 0
+                )
+
+            elif status == "active":
+
+                query = query.filter(
+                    Workshops.is_verified == 1,
+                    Workshops.is_active == 1
+                )
+
+            elif status == "inactive":
+
+                query = query.filter(
+                    Workshops.is_verified == 1,
+                    Workshops.is_active == 0
+                )
+            result = query.order_by(
+                Workshops.created_at.desc()
+            ).all()       
             # if not result:
             #     return not_found("Workshop data could not be found.")
             # Check Data ---------------------------------------- Finish
@@ -108,6 +135,7 @@ class AdministratorModels():
                     "owner_name": owner.username if owner else "-",
                     "owner_email": owner.email if owner else "-",
                     "account_status": owner.is_active if owner else 0,
+                    "is_verified": workshop.is_verified,
                     "workshop_status": workshop.is_active,
                     "created_at": created_at
                 }
@@ -161,14 +189,14 @@ class AdministratorModels():
             if not owner:
                 return not_found("Owner could not be found.")
 
-            if workshop.is_active == 1:
+            if workshop.is_verified == 1:
                 return success(message="Workshop already verified.")
             # Check Data ---------------------------------------- Finish
 
             # Update Data ---------------------------------------- Start
             timestamp = int(time.time() * 1000)
 
-            workshop.is_active = 1
+            workshop.is_verified = 1
             workshop.updated_at = timestamp
 
             owner.is_active = 1
@@ -231,6 +259,7 @@ class AdministratorModels():
             "workshop_phone": workshop_data.workshop_phone,
             "workshop_address": workshop_data.workshop_address,
             "logo": workshop_data.logo,
+            "is_verified": workshop_data.is_verified,
             "workshop_status": workshop_data.is_active,
             "created_at": split_date_time(
                 datetime.fromtimestamp(workshop_data.created_at / 1000)
@@ -269,6 +298,8 @@ class AdministratorModels():
 
             if not workshop:
                 return not_found("Workshop could not be found.")
+            if not workshop.is_verified:
+                return bad_request("Workshop has not been verified.")
             if workshop.is_active == 1:
                 return success(message="Workshop already active.")
             # Check Data ---------------------------------------- Finish
