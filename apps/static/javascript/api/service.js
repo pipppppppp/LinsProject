@@ -1,39 +1,37 @@
 // **************************************************************
-// BASE INISIALIZATION | START
+// BASE INITIALIZATION | START
 // **************************************************************
 document.addEventListener("DOMContentLoaded", init);
 
 async function init() {
-  await reloadTable(loadSuppliers, renderTable);
+  await reloadTable(loadServices, renderTable);
 }
 
 // Form ID Setup
 const form = {
   title: document.getElementById("modal_label"),
-  id: document.getElementById("supplier_id"),
-  name: document.getElementById("supplier_name"),
-  address: document.getElementById("supplier_address"),
-  phone: document.getElementById("supplier_phone"),
+  id: document.getElementById("service_id"),
+  name: document.getElementById("service_name"),
+  fee: document.getElementById("service_fee"),
+  description: document.getElementById("service_description"),
 };
 // **************************************************************
-// BASE INISIALIZATION | END
+// BASE INITIALIZATION | END
 // **************************************************************
 
 
 // **************************************************************
-// GET SUPPLIER | START
+// GET SERVICE | START
 // **************************************************************
-// Variable Setup -------------------------------------------------
-let suppliersData = [];
+let servicesData = [];
 
-// Load Data -------------------------------------------------
-async function loadSuppliers() {
-  const result = await getRequest("/supplier/view");
+async function loadServices() {
+  const result = await getRequest("/service/view");
 
-  suppliersData = result.data;
+  servicesData = result.data;
 }
 // **************************************************************
-// GET SUPPLIER | END
+// GET SERVICE | END
 // **************************************************************
 
 
@@ -43,39 +41,41 @@ async function loadSuppliers() {
 function renderTable() {
   let html = "";
 
-  suppliersData.forEach((supplier, index) => {
+  servicesData.forEach((service, index) => {
     html += `
-        <tr>
-            <td>${index + 1}</td>
-            <td>${supplier.name}</td>
-            <td>${supplier.address}</td>
-            <td>${supplier.phone}</td>
-            <td>
-                <div class="action-buttons">
-                    <button
-                        class="btn btn-outline-warning btn-sm btn-action btn-edit"
-                        data-bs-toggle="modal"
-                        data-bs-target="#supplier_modal"
-                        data-id="${supplier.id}"
-                        title="Edit">
+      <tr>
+        <td>${index + 1}</td>
+        <td>${service.name}</td>
+        <td>${formatRupiah(service.service_fee)}</td>
+        <td>${service.description ?? "-"}</td>
+        <td>
+          <div class="action-buttons">
 
-                        <i class="bi bi-pencil-fill"></i>
-                    </button>
+            <button
+              class="btn btn-outline-warning btn-sm btn-action btn-edit"
+              data-bs-toggle="modal"
+              data-bs-target="#service_modal"
+              data-id="${service.id}"
+              title="Edit">
 
-                    <button
-                        class="btn btn-outline-danger btn-sm btn-action btn-delete"
-                        data-id="${supplier.id}"
-                        title="Hapus">
+              <i class="bi bi-pencil-fill"></i>
+            </button>
 
-                        <i class="bi bi-trash-fill"></i>
-                    </button>
-                </div>
-            </td>
-        </tr>
-        `;
+            <button
+              class="btn btn-outline-danger btn-sm btn-action btn-delete"
+              data-id="${service.id}"
+              title="Hapus">
+
+              <i class="bi bi-trash-fill"></i>
+            </button>
+
+          </div>
+        </td>
+      </tr>
+    `;
   });
 
-  document.getElementById("supplier_table").innerHTML = html;
+  document.getElementById("service_table").innerHTML = html;
 }
 // **************************************************************
 // RENDER DATA | END
@@ -83,101 +83,132 @@ function renderTable() {
 
 
 // **************************************************************
-// SAVE SUPPLIER | START
+// SAVE SERVICE | START
 // **************************************************************
-async function saveSupplier() {
-  const supplier = {
+async function saveService() {
+
+  const service = {
     id: form.id.value,
     name: formatTitle(form.name.value),
-    address: form.address.value.trim(),
-    phone: formatPhone(form.phone.value),
+    service_fee: removeThousands(form.fee.value),
+    description: form.description.value.trim(),
   };
 
   // VALIDATION ==================================================
-  if (!validateSupplier(supplier)) return;
+  if (!validateService(service)) return;
 
   let result;
 
   try {
     swalLoading();
 
-    if (!supplier.id) {
-      result = await postRequest("/supplier/add", supplier);
+    if (!service.id) {
+      result = await postRequest("/service/add", service);
     } else {
-      result = await putRequest(`/supplier/edit/${supplier.id}`, supplier);
+      result = await putRequest(`/service/edit/${service.id}`, service);
     }
   } finally {
     swalClose();
   }
 
   if (result.status_code === 201 || result.status_code === 200) {
+
     await swalSuccess(result.message);
 
-    closeModal("supplier_modal");
-    clearValue(form.id, form.name, form.address, form.phone);
-    form.title.textContent = "Tambah Supplier";
+    closeModal("service_modal");
 
-    await reloadTable(loadSuppliers, renderTable);
+    clearValue(
+      form.id,
+      form.name,
+      form.fee,
+      form.description
+    );
+
+    form.title.textContent = "Tambah Jasa";
+
+    await reloadTable(loadServices, renderTable);
+
   } else {
+
     await swalError(result.message);
+
   }
+
 }
 
-document.querySelector(".btn-save").addEventListener("click", saveSupplier);
+document.querySelector(".btn-save").addEventListener("click", saveService);
 // **************************************************************
-// SAVE SUPPLIER | END
+// SAVE SERVICE | END
 // **************************************************************
 
 
 // **************************************************************
-// UPDATE & DELETE SUPPLIER | START
+// UPDATE & DELETE SERVICE | START
 // **************************************************************
 document.getElementById("table1").addEventListener("click", handleTableClick);
 
 async function handleTableClick(e) {
+
   const editBtn = e.target.closest(".btn-edit");
   const deleteBtn = e.target.closest(".btn-delete");
 
   if (editBtn) {
+
     const id = Number(editBtn.dataset.id);
 
-    const supplier = suppliersData.find((item) => item.id === id);
-    if (!supplier) return;
+    const service = servicesData.find(item => item.id === id);
 
-    form.title.textContent = "Ubah Supplier";
-    form.id.value = supplier.id;
-    form.name.value = supplier.name;
-    form.address.value = supplier.address;
-    form.phone.value = supplier.phone;
+    if (!service) return;
+
+    form.title.textContent = "Ubah Jasa";
+
+    form.id.value = service.id;
+    form.name.value = service.name;
+    form.fee.value = formatNumber(service.service_fee);
+    form.description.value = service.description ?? "";
 
     return;
   }
 
   if (deleteBtn) {
+
     const id = Number(deleteBtn.dataset.id);
 
     const confirmDelete = await swalDelete();
+
     if (!confirmDelete.isConfirmed) return;
 
     let result;
 
     try {
+
       swalLoading();
-      result = await deleteRequest(`/supplier/delete/${id}`);
+
+      result = await deleteRequest(`/service/delete/${id}`);
+
     } finally {
+
       swalClose();
+
     }
 
     if (result.status_code === 200) {
+
       await swalSuccess(result.message);
-      await reloadTable(loadSuppliers, renderTable);
+
+      await reloadTable(loadServices, renderTable);
+
     } else {
+
       await swalError(result.message);
+
     }
+
   }
+
 }
 // **************************************************************
-// UPDATE & DELETE SUPPLIER | END
+// UPDATE & DELETE SERVICE | END
 // **************************************************************
 
 
@@ -185,14 +216,16 @@ async function handleTableClick(e) {
 // RESET FORM | START
 // **************************************************************
 function resetForm() {
-  form.title.textContent = "Tambah Supplier";
+
+  form.title.textContent = "Tambah Jasa";
 
   clearValue(
     form.id,
     form.name,
-    form.address,
-    form.phone
+    form.fee,
+    form.description
   );
+
 }
 // **************************************************************
 // RESET FORM | END
@@ -200,10 +233,19 @@ function resetForm() {
 
 
 // **************************************************************
+// FORMAT INPUT | START
+// **************************************************************
+formatThousands(form.fee);
+// **************************************************************
+// FORMAT INPUT | END
+// **************************************************************
+
+
+// **************************************************************
 // MODAL EVENT | START
 // **************************************************************
 document
-  .getElementById("supplier_modal")
+  .getElementById("service_modal")
   .addEventListener("hidden.bs.modal", resetForm);
 // **************************************************************
 // MODAL EVENT | END

@@ -8,6 +8,8 @@ from apps.database.db_workshops import Workshops
 from apps.database.db_customers import Customers
 from apps.database.db_vehicles import Vehicles
 from apps.database.db_products import Products
+from apps.database.db_suppliers import Suppliers
+from apps.database.db_services import Services
 from apps.utilities.utilities import *
 
 
@@ -496,3 +498,126 @@ def product_validator(
     # Check Duplicate Product ---------------------------------------- Finish
     return check_result
 # PRODUCT VALIDATION ============================================================ End
+
+# SUPPLIER VALIDATION ============================================================ Begin
+def supplier_validator(
+    name,
+    phone,
+    address,
+    workshop_id,
+    supplier_id=None
+):
+    check_result = []
+
+    # Check Null Value ---------------------------------------- Start
+    if name == "":
+        check_result.append("Nama supplier tidak boleh kosong.")
+
+    if phone == "":
+        check_result.append("No telepon tidak boleh kosong.")
+
+    if address == "":
+        check_result.append("Alamat supplier tidak boleh kosong.")
+    # Check Null Value ---------------------------------------- Finish
+
+    # Sanitize String Content ---------------------------------------- Start
+    sanitize_name, char_name = sanitize_all_char(name)
+    if sanitize_name:
+        check_result.append(
+            f"Nama supplier tidak boleh mengandung karakter {char_name}"
+        )
+
+    sanitize_phone, char_phone = sanitize_phone_char(phone)
+    if sanitize_phone:
+        check_result.append(
+            f"No telepon tidak boleh mengandung karakter {char_phone}"
+        )
+    # Sanitize String Content ---------------------------------------- Finish
+
+    # Check Field Content ---------------------------------------- Start
+    if string_checker(name):
+        check_result.append("Nama supplier tidak valid.")
+
+    if phone_checker(phone):
+        check_result.append("No telepon tidak valid.")
+    # Check Field Content ---------------------------------------- Finish
+
+    # Check Duplicate Supplier ---------------------------------------- Start
+    query = Suppliers.query.filter(
+        Suppliers.workshop_id == workshop_id,
+        Suppliers.name == name.strip(),
+        Suppliers.is_delete == 0
+    )
+
+    if supplier_id is not None:
+        query = query.filter(
+            Suppliers.id != supplier_id
+        )
+
+    result = query.first()
+
+    if result:
+        check_result.append("Nama supplier sudah terdaftar.")
+    # Check Duplicate Supplier ---------------------------------------- Finish
+
+    return check_result
+# SUPPLIER VALIDATION ============================================================ End
+
+# SERVICE VALIDATION ============================================================ Begin
+def service_validator(
+    name,
+    service_fee,
+    description,
+    workshop_id,
+    service_id=None
+):
+    check_result = []
+
+    # Check Null Value ---------------------------------------- Start
+    if name == "":
+        check_result.append("Nama jasa tidak boleh kosong.")
+
+    if service_fee == "":
+        check_result.append("Biaya jasa tidak boleh kosong.")
+    # Check Null Value ---------------------------------------- Finish
+
+    # Sanitize String Content ---------------------------------------- Start
+    sanitize_name, char_name = sanitize_title_char(name)
+    if sanitize_name:
+        check_result.append(
+            f"Nama jasa tidak boleh mengandung karakter {char_name}"
+        )
+    # Sanitize String Content ---------------------------------------- Finish
+
+    # Check Field Content ---------------------------------------- Start
+    if string_checker(name):
+        check_result.append("Nama jasa tidak valid.")
+
+    if not str(service_fee).isdigit():
+        check_result.append("Biaya jasa harus berupa angka.")
+
+    if str(service_fee).isdigit():
+        if int(service_fee) < 0:
+            check_result.append("Biaya jasa tidak boleh kurang dari 0.")
+    # Check Field Content ---------------------------------------- Finish
+
+    # Check Duplicate Service ---------------------------------------- Start
+    query = Services.query.filter(
+        Services.workshop_id == workshop_id,
+        Services.name == name.strip(),
+        Services.is_delete == 0
+    )
+
+    if service_id is not None:
+        query = query.filter(
+            Services.id != service_id
+        )
+
+    result = query.first()
+
+    if result:
+        check_result.append("Nama jasa sudah terdaftar.")
+    # Check Duplicate Service ---------------------------------------- Finish
+
+    return check_result
+# SERVICE VALIDATION ============================================================ End

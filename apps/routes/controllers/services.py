@@ -1,106 +1,124 @@
 from flask import Blueprint, request, render_template
-from flask import session, redirect, url_for
+from flask_jwt_extended import jwt_required, get_jwt
 
-from ... import db
-from ...database.db_services import Services
+from ..models.services import ServiceModels
+from ...utilities.responseHelpers import bad_request
 
-import time
 
-services = Blueprint(
-    name='services',
+# BLUEPRINT ============================================================ Begin
+service = Blueprint(
+    name="service",
     import_name=__name__,
     template_folder="../../templates/pages/appPages",
-    url_prefix='/services',
+    url_prefix="/service",
 )
+# BLUEPRINT ============================================================ End
 
-# TAMPIL HALAMAN
-@services.get('/')
+
+# SERVICE PAGE ============================================================ Begin
+# [GET] https://127.0.0.1:5000/service/
+@service.get("/")
+@jwt_required()
 def index():
-
-    if 'user_id' not in session:
-        return redirect(
-            url_for('auth.signin_page')
-        )
-    # Protrksi role
-    if session.get('role') != 'admin':
-        return redirect(
-            url_for('dashboard.index')
+    try:
+        return render_template(
+            title="Jasa Servis - POS Bengkel",
+            template_name_or_list="service.html",
+            active_menu="service",
         )
 
-    services_data = Services.query.filter_by(
-        is_delete=0
-    ).all()
-
-    return render_template(
-        template_name_or_list='services.html',
-        active_menu="services",
-        title='Data Jasa Servis',
-        services=services_data
-    )
+    except Exception as e:
+        return bad_request(str(e))
+# SERVICE PAGE ============================================================ End
 
 
-# TAMBAH DATA
-@services.post('/add')
-def addService():
+# ADD SERVICE DATA ============================================================ Begin
+# [POST] https://127.0.0.1:5000/service/add
+@service.post("/add")
+@jwt_required()
+def create_service():
+    try:
+        role = str(get_jwt()["role"])
+        ws_id = str(get_jwt()["ws_id"])
 
-    body = request.json
+        body = request.json
 
-    service = Services(
-        nama_jasa=body['nama_jasa'],
-        biaya_jasa=body['biaya_jasa'],
-        keterangan=body['keterangan'],
-        created_at=int(time.time()),
-        updated_at=int(time.time())
-    )
+        response = ServiceModels.create_service(
+            role,
+            ws_id,
+            body
+        )
 
-    db.session.add(service)
-    db.session.commit()
+        return response
 
-    return {
-        "status": True,
-        "message": "Data berhasil disimpan"
-    }
-
-
-# UPDATE
-@services.put('/update/<int:id>')
-def updateService(id):
-
-    body = request.json
-
-    data = Services.query.get_or_404(id)
-
-    data.nama_jasa = body['nama_jasa']
-    data.biaya_jasa = body['biaya_jasa']
-    data.keterangan = body['keterangan']
-    data.updated_at = int(time.time())
-
-    db.session.commit()
-
-    return {
-        "status": True,
-        "message": "Data berhasil diupdate"
-    }
+    except Exception as e:
+        return bad_request(str(e))
+# ADD SERVICE DATA ============================================================ End
 
 
-# DELETE
-@services.delete('/delete/<int:id>')
-def deleteService(id):
-    
-    if session.get('role') != 'admin':
-            return {
-            "status": False,
-            "message": "Akses ditolak"
-        }, 403
+# GET SERVICE DATA ============================================================ Begin
+# [GET] https://127.0.0.1:5000/service/view
+@service.get("/view")
+@jwt_required()
+def read_service():
+    try:
+        role = str(get_jwt()["role"])
+        ws_id = str(get_jwt()["ws_id"])
 
-    data = Services.query.get_or_404(id)
+        response = ServiceModels.read_service(
+            role,
+            ws_id
+        )
 
-    data.is_delete = 1
-    data.deleted_at = int(time.time())
+        return response
 
-    db.session.commit()
+    except Exception as e:
+        return bad_request(str(e))
+# GET SERVICE DATA ============================================================ End
 
-    return {
-        "status": True,
-        "message": "Data berhasil dihapus"
-    }
+
+# UPDATE SERVICE DATA ============================================================ Begin
+# [PUT] https://127.0.0.1:5000/service/edit/<id>
+@service.put("/edit/<int:id>")
+@jwt_required()
+def update_service(id):
+    try:
+        role = str(get_jwt()["role"])
+        ws_id = str(get_jwt()["ws_id"])
+
+        body = request.json
+
+        response = ServiceModels.update_service(
+            role,
+            ws_id,
+            id,
+            body
+        )
+
+        return response
+
+    except Exception as e:
+        return bad_request(str(e))
+# UPDATE SERVICE DATA ============================================================ End
+
+
+# DELETE SERVICE DATA ============================================================ Begin
+# [DELETE] https://127.0.0.1:5000/service/delete/<id>
+@service.delete("/delete/<int:id>")
+@jwt_required()
+def delete_service(id):
+    try:
+        role = str(get_jwt()["role"])
+        ws_id = str(get_jwt()["ws_id"])
+
+        response = ServiceModels.delete_service(
+            role,
+            ws_id,
+            id
+        )
+
+        return response
+
+    except Exception as e:
+        return bad_request(str(e))
+# DELETE SERVICE DATA ============================================================ End

@@ -1,4 +1,6 @@
-{% extends 'layouts/dashboard_layout.html' %} {% block content %}
+{% extends 'layouts/dashboard_layout.html' %}
+
+{% block content %}
 
 <div id="app">
   <!--! ================================================================ !-->
@@ -13,6 +15,7 @@
   <!--! [Start] Page Content !-->
   <!--! ================================================================ !-->
   <div id="main">
+
     <!--! ================================================================ !-->
     <!--! [Start] Burger Button !-->
     <!--! ================================================================ !-->
@@ -29,80 +32,90 @@
     <!--! [Start] Main Content !-->
     <!--! ================================================================ !-->
     <div class="page-heading">
+
       <!--! ================================================================ !-->
       <!--! [Start] Header !-->
+      <!--! ================================================================ !-->
       <div class="page-title">
         <div class="row">
           <div class="col-12 col-md-6 order-md-1 order-last">
-            <h3>DATA SUPPLIER</h3>
+            <h3>DATA JASA SERVIS</h3>
           </div>
+
           <div class="col-12 col-md-6 order-md-2 order-first">
-            <nav
-              aria-label="breadcrumb"
-              class="breadcrumb-header float-start float-lg-end"
-            >
+            <nav aria-label="breadcrumb" class="breadcrumb-header float-start float-lg-end">
               <ol class="breadcrumb">
                 <li class="breadcrumb-item">
                   <a href="{{ url_for('dashboard.index') }}">Dashboard</a>
                 </li>
                 <li class="breadcrumb-item active" aria-current="page">
-                  Supplier
+                  Jasa Servis
                 </li>
               </ol>
             </nav>
           </div>
         </div>
       </div>
+      <!--! ================================================================ !-->
       <!--! [End] Header !-->
       <!--! ================================================================ !-->
 
       <!--! ================================================================ !-->
-      <!--! [Start] Title !-->
+      <!--! [Start] Button !-->
+      <!--! ================================================================ !-->
       <section class="section">
         <div class="card">
           <div class="card-body">
             <div class="row">
               <div class="col-sm-12 d-flex justify-content-end">
-                <a
-                  href="#"
+                <button
                   class="btn btn-outline-success"
                   data-bs-toggle="modal"
-                  data-bs-target="#supplier_modal"
-                >
-                  <i class="bi bi-plus-lg"></i> Tambah Supplier
-                </a>
+                  data-bs-target="#service_modal">
+
+                  <i class="bi bi-plus-lg"></i>
+                  Tambah Jasa
+                </button>
               </div>
             </div>
           </div>
         </div>
       </section>
-      <!--! [End] Title !-->
+      <!--! ================================================================ !-->
+      <!--! [End] Button !-->
       <!--! ================================================================ !-->
 
       <!--! ================================================================ !-->
-      <!--! [Start] Content !-->
+      <!--! [Start] Table !-->
+      <!--! ================================================================ !-->
       <section class="section">
         <div class="card">
           <div class="card-body">
+
             <table class="table table-striped" id="table1">
               <thead>
                 <tr>
                   <th>No</th>
-                  <th>Nama</th>
-                  <th>Alamat</th>
-                  <th>Telepon</th>
+                  <th>Nama Jasa</th>
+                  <th>Biaya</th>
+                  <th>Keterangan</th>
                   <th>Action</th>
                 </tr>
               </thead>
-              <tbody id="supplier_table">
-                <!-- row table set at javascript -->
+
+              <tbody id="service_table">
+                <!-- Render By Javascript -->
               </tbody>
+
             </table>
+
           </div>
         </div>
       </section>
-      <!--! [End] Content !-->
       <!--! ================================================================ !-->
+      <!--! [End] Table !-->
+      <!--! ================================================================ !-->
+
     </div>
     <!--! ================================================================ !-->
     <!--! [End] Main Content !-->
@@ -110,86 +123,101 @@
 
     <!--! ================================================================ !-->
     <!--! [Start] Footer !-->
+    <!--! ================================================================ !-->
     {% include 'components/footer_dashboard.html' %}
+    <!--! ================================================================ !-->
     <!--! [End] Footer !-->
     <!--! ================================================================ !-->
 
     <!--! ================================================================ !-->
-    <!--! [Start] Modal Form !-->
+    <!--! [Start] Modal !-->
+    <!--! ================================================================ !-->
     <div
       class="modal fade text-left"
-      id="supplier_modal"
+      id="service_modal"
       tabindex="-1"
       role="dialog"
-      aria-labelledby="myModalLabel33"
-      aria-hidden="true"
-    >
-      <div
-        class="modal-dialog modal-dialog-centered modal-dialog-scrollable"
-        role="document"
-      >
+      aria-hidden="true">
+
+      <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+
         <div class="modal-content">
+
           <div class="modal-header">
-            <h4 class="modal-title" id="modal_label">Tambah Supplier</h4>
+            <h4 class="modal-title" id="modal_label">
+              Tambah Jasa
+            </h4>
+
             <button
               type="button"
               class="close"
-              data-bs-dismiss="modal"
-              aria-label="Close"
-            >
+              data-bs-dismiss="modal">
+
               <i data-feather="x"></i>
             </button>
           </div>
 
           <form action="#">
+
             <div class="modal-body">
-              <input type="hidden" id="supplier_id" />
 
-              <label>Nama :</label>
+              <input
+                type="hidden"
+                id="service_id">
+
+              <label>Nama Jasa :</label>
               <input
                 type="text"
-                id="supplier_name"
+                id="service_name"
                 class="form-control"
-                placeholder="Nama Supplier"
-              />
+                placeholder="Nama Jasa">
 
-              <label>Alamat :</label>
+              <label class="mt-3">Biaya Jasa :</label>
               <input
                 type="text"
-                id="supplier_address"
-                class="form-control mt-2"
-                placeholder="Alamat Supplier"
-              />
+                id="service_fee"
+                class="form-control"
+                placeholder="Biaya Jasa">
 
-              <label>No. Telepon :</label>
-              <input
-                type="text"
-                id="supplier_phone"
-                class="form-control mt-2"
-                placeholder="Nomor Telepon"
-              />
+              <label class="mt-3">Keterangan :</label>
+              <textarea
+                id="service_description"
+                class="form-control"
+                rows="3"
+                placeholder="Keterangan"></textarea>
+
             </div>
 
             <div class="modal-footer">
+
               <button
                 type="button"
                 class="btn btn-light-secondary"
-                data-bs-dismiss="modal"
-              >
-                <i class="bx bx-x d-block d-sm-none"></i>
-                <span class="d-none d-sm-block">Tutup</span>
+                data-bs-dismiss="modal">
+
+                <span>Tutup</span>
               </button>
 
-              <button type="button" class="btn btn-primary btn-save">
+              <button
+                type="button"
+                class="btn btn-primary btn-save">
+
                 Simpan
               </button>
+
             </div>
+
           </form>
+
         </div>
+
       </div>
+
     </div>
-    <!--! [End] Modal Form !-->
     <!--! ================================================================ !-->
+    <!--! [End] Modal !-->
+    <!--! ================================================================ !-->
+
   </div>
   <!--! ================================================================ !-->
   <!--! [End] Page Content !-->
@@ -200,6 +228,6 @@
 <script src="{{ url_for('static', filename='javascript/helper/formatter.js') }}"></script>
 <script src="{{ url_for('static', filename='javascript/helper/swal.js') }}"></script>
 <script src="{{ url_for('static', filename='javascript/helper/validators.js') }}"></script>
-<script src="{{ url_for('static', filename='javascript/api/supplier.js') }}"></script>
+<script src="{{ url_for('static', filename='javascript/api/service.js') }}"></script>
 
 {% endblock %}

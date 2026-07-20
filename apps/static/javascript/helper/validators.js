@@ -241,14 +241,17 @@ function validateCategory(category) {
 // **************************************************************
 // SUPPLIER VALIDATION | START
 // **************************************************************
+// **************************************************************
+// SUPPLIER VALIDATION | START
+// **************************************************************
 function validateSupplier(supplier) {
-  if (!required(supplier.supplier_name, "Nama supplier wajib diisi")) return false;
+  if (!required(supplier.name, "Nama supplier wajib diisi")) return false;
 
-  if (!required(supplier.supplier_address, "Alamat wajib diisi")) return false;
+  if (!required(supplier.address, "Alamat wajib diisi")) return false;
 
-  if (!required(supplier.supplier_phone, "Nomor telepon wajib diisi")) return false;
+  if (!required(supplier.phone, "Nomor telepon wajib diisi")) return false;
 
-  if (!phone(supplier.supplier_phone)) return false;
+  if (!phone(supplier.phone)) return false;
 
   return true;
 }
@@ -279,4 +282,21 @@ function validateProduct(product) {
 }
 // **************************************************************
 // PRODUCT VALIDATION | END
+// **************************************************************
+
+// **************************************************************
+// SERVICE VALIDATION | START
+// **************************************************************
+function validateService(service) {
+
+  if (!required(service.name, "Nama jasa wajib diisi")) return false;
+
+  if (!required(service.service_fee, "Biaya jasa wajib diisi")) return false;
+
+  if (!price(service.service_fee, "Biaya jasa tidak valid")) return false;
+
+  return true;
+}
+// **************************************************************
+// SERVICE VALIDATION | END
 // **************************************************************
