@@ -105,13 +105,13 @@ class ProductModels():
             # Log Activity Record ---------------------------------------- Finish
 
             # Return Response ========================================
-            return success(status_code=200)
+            return success(status_code=201)
 
         except Exception as e:
             return bad_request(str(e))
     # CREATE PRODUCT ============================================================ End
 
-        # READ PRODUCT ============================================================ Begin
+    # READ PRODUCT ============================================================ Begin
     def read_product(user_role, workshop_id):
         try:
             # Access Validation ---------------------------------------- Start
@@ -162,6 +162,7 @@ class ProductModels():
                     "category": product.categories.category,
                     "product_name": product.product_name,
                     "stock": product.stock,
+                    "minimum_stock": product.minimum_stock,
                     "purchase_price": product.purchase_price,
                     "selling_price": product.selling_price,
                     "created_at": created_at,

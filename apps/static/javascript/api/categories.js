@@ -39,16 +39,25 @@ function renderTable() {
                 <td>${index + 1}</td>
                 <td>${category.category_name}</td>
                 <td>
-                    <button
-                        class="btn btn-warning btn-sm btn-edit" 
-                        data-bs-toggle="modal" 
-                        data-bs-target="#category_modal"
-                        data-id="${category.category_id}"> Edit
-                    </button>
-                    <button
-                        class="btn btn-danger btn-sm btn-delete"
-                        data-id="${category.category_id}"> Hapus
-                    </button>
+                    <div class="action-buttons">
+                      <button
+                          class="btn btn-outline-warning btn-sm btn-action btn-edit"
+                          data-bs-toggle="modal"
+                          data-bs-target="#category_modal"
+                          data-id="${category.category_id}"
+                          title="Edit">
+        
+                          <i class="bi bi-pencil-fill"></i>
+                      </button>
+        
+                      <button
+                          class="btn btn-outline-danger btn-sm btn-action btn-delete"
+                          data-id="${category.category_id}"
+                          title="Hapus">
+        
+                          <i class="bi bi-trash-fill"></i>
+                      </button>
+                    </div>
                 </td>
             </tr>
         `;
@@ -83,7 +92,7 @@ async function saveCategory() {
     swalClose();
   }
 
-  if (result.status_code === 200) {
+  if (result.status_code === 201 || result.status_code === 200) {
     await swalSuccess(result.message);
 
     closeModal("category_modal");
@@ -104,37 +113,58 @@ document.querySelector(".btn-save").addEventListener("click", saveCategory);
 // **************************************************************
 // UPDATE & DELETE CATEGORY | START
 // **************************************************************
-document.getElementById("category_table").addEventListener("click", handleTableClick);
+document.getElementById("table1").addEventListener("click", handleTableClick);
+
 async function handleTableClick(e) {
-  const id = Number(e.target.dataset.id);
-  if (e.target.classList.contains("btn-edit")) {
-    // proses edit
-    const category = categoriesData.find((c) => c.category_id === id);
+    const editBtn = e.target.closest(".btn-edit");
+    const deleteBtn = e.target.closest(".btn-delete");
 
-    form.title.textContent = "Ubah Kategori";
-    form.id.value = category.category_id;
-    form.name.value = category.category_name;
-  } else if (e.target.classList.contains("btn-delete")) {
-    // proses delete
-    const confirmDelete = await swalDelete();
+    if (editBtn) {
+        const id = Number(editBtn.dataset.id);
 
-    if (!confirmDelete.isConfirmed) {
-      return;
+        const category = categoriesData.find(
+            item => item.category_id === id
+        );
+
+        if (!category) return;
+
+        form.title.textContent = "Ubah Kategori";
+        form.id.value = category.category_id;
+        form.name.value = category.category_name;
+
+        return;
     }
-    swalLoading();
-    
-    const result = await deleteRequest("/category/delete", {category_id: id,});
-    console.log(result)
-    swalClose();
 
-    if (result.status_code === 200) {
-      await swalSuccess(result.message);
+    if (deleteBtn) {
+        const id = Number(deleteBtn.dataset.id);
 
-      await reloadTable(loadCategories, renderTable);
-    } else {
-      await swalError(result.message);
+        const confirmDelete = await swalDelete();
+
+        if (!confirmDelete.isConfirmed) return;
+
+        let result;
+
+        try {
+            swalLoading();
+
+            result = await deleteRequest(
+                "/category/delete",
+                {
+                    category_id: id
+                }
+            );
+        } finally {
+            swalClose();
+        }
+
+        if (result.status_code === 200 || result.status_code === 201) {
+            await swalSuccess(result.message);
+
+            await reloadTable(loadCategories, renderTable);
+        } else {
+            await swalError(result.message);
+        }
     }
-  }
 }
 // **************************************************************
 // UPDATE & DELETE CATEGORY | END

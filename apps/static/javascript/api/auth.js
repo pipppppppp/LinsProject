@@ -101,6 +101,7 @@ if (signin) {
 // SIGN UP PROCESS | START
 // **************************************************************
 const reg_form = {
+  owner_name: document.getElementById("owner_name"),
   username: document.getElementById("username"),
   email: document.getElementById("email"),
   password: document.getElementById("password"),
@@ -111,12 +112,13 @@ const reg_form = {
 };
 function signup_process(e) {
   e.preventDefault();
-  const { username, email, password, retype_password, workshop_name, workshop_phone, workshop_address } = reg_form;
+  const {owner_name, username, email, password, retype_password, workshop_name, workshop_phone, workshop_address } = reg_form;
 
   // Set API Request Configuration
   const API = "/auth/signup/account";
   const my_headers = new Headers();
   const raw = JSON.stringify({
+    owner_name: owner_name.value,
     username: username.value,
     email: email.value,
     password: password.value,

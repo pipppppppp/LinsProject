@@ -15,9 +15,14 @@ const form = {
   category: document.getElementById("product_category"),
   name: document.getElementById("product_name"),
   stock: document.getElementById("product_stock"),
+  minimum_stock: document.getElementById("product_minimum_stock"),
   purchase: document.getElementById("product_purchase"),
   price: document.getElementById("product_price"),
 };
+
+// Formatter Setup -----------------------------------------------
+formatThousands(form.purchase);
+formatThousands(form.price);
 
 // Variable Setup
 let productsData = [];
@@ -33,7 +38,7 @@ let categoriesData = [];
 // Load Product -------------------------------------------------
 async function loadProducts() {
   const result = await getRequest("/product/view");
-  
+
   productsData = result.data;
 }
 
@@ -71,34 +76,51 @@ function renderCategoryOptions() {
 
 // Render Table -------------------------------------------------
 function renderTable() {
-
   const table = document.getElementById("product_table");
-  
+
   let html = "";
 
   productsData.forEach((product, index) => {
+    let status = "";
+
+    if (product.stock === 0) {
+      status = `<span class="badge bg-danger">Habis</span>`;
+    } else if (product.stock <= product.minimum_stock) {
+      status = `<span class="badge bg-warning text-dark">Menipis</span>`;
+    } else {
+      status = `<span class="badge bg-success">Aman</span>`;
+    }
+
     html += `
       <tr>
         <td>${index + 1}</td>
         <td>${product.product_name}</td>
         <td>${product.category}</td>
         <td>${formatNumber(product.stock)}</td>
+        <td>${formatNumber(product.minimum_stock)}</td>
         <td>${formatRupiah(product.purchase_price)}</td>
         <td>${formatRupiah(product.selling_price)}</td>
+        <td>${status}</td>
         <td>
-          <button
-            class="btn btn-warning btn-sm btn-edit"
-            data-bs-toggle="modal"
-            data-bs-target="#product_modal"
-            data-id="${product.id}">
-            Edit
-          </button>
+            <div class="action-buttons">
+              <button
+                  class="btn btn-outline-warning btn-sm btn-action btn-edit"
+                  data-bs-toggle="modal"
+                  data-bs-target="#product_modal"
+                  data-id="${product.id}"
+                  title="Edit">
 
-          <button
-            class="btn btn-danger btn-sm btn-delete"
-            data-id="${product.id}">
-            Hapus
-          </button>
+                  <i class="bi bi-pencil-fill"></i>
+              </button>
+
+              <button
+                  class="btn btn-outline-danger btn-sm btn-action btn-delete"
+                  data-id="${product.id}"
+                  title="Hapus">
+
+                  <i class="bi bi-trash-fill"></i>
+              </button>
+            </div>
         </td>
       </tr>
     `;
@@ -119,13 +141,19 @@ async function saveProduct() {
     category_id: form.category.value,
     product_name: formatTitle(form.name.value),
     stock: form.stock.value,
-    purchase: form.purchase.value,
-    price: form.price.value,
+    minimum_stock: form.minimum_stock.value,
+    purchase: removeThousands(form.purchase.value),
+    price: removeThousands(form.price.value),
   };
 
   // VALIDATION ==================================================
   if (!validateProduct(product)) return;
 
+  // FORMAT DATA ==================================================
+  product.stock = Number(product.stock);
+  product.minimum_stock = Number(product.minimum_stock);
+  product.purchase = Number(product.purchase);
+  product.price = Number(product.price);
   let result;
 
   try {
@@ -140,12 +168,12 @@ async function saveProduct() {
     swalClose();
   }
 
-  if (result.status_code === 200) {
+  if (result.status_code === 201 || result.status_code === 200) {
     await swalSuccess(result.message);
 
     closeModal("product_modal");
 
-    clearValue(form.id, form.category, form.name, form.stock, form.purchase, form.price);
+    clearValue(form.id, form.category, form.name, form.stock, form.minimum_stock, form.purchase, form.price);
 
     form.title.textContent = "Tambah Barang";
 
@@ -163,12 +191,14 @@ document.querySelector(".btn-save").addEventListener("click", saveProduct);
 // **************************************************************
 // UPDATE & DELETE PRODUCT | START
 // **************************************************************
-document.getElementById("product_table").addEventListener("click", handleTableClick);
+document.getElementById("table1").addEventListener("click", handleTableClick);
 
 async function handleTableClick(e) {
-  const id = Number(e.target.dataset.id);
-  if (e.target.classList.contains("btn-edit")) {
-    // Edit Product ========================================
+  const editBtn = e.target.closest(".btn-edit");
+  const deleteBtn = e.target.closest(".btn-delete");
+
+  if (editBtn) {
+    const id = Number(editBtn.dataset.id);
 
     const product = productsData.find((item) => item.id === id);
 
@@ -180,15 +210,19 @@ async function handleTableClick(e) {
     form.category.value = product.category_id;
     form.name.value = product.product_name;
     form.stock.value = product.stock;
-    form.purchase.value = product.purchase_price;
-    form.price.value = product.selling_price;
-  } else if (e.target.classList.contains("btn-delete")) {
-    // Delete Product ========================================
+    form.minimum_stock.value = product.minimum_stock;
+    form.purchase.value = formatNumber(product.purchase_price);
+    form.price.value = formatNumber(product.selling_price);
+
+    return;
+  }
+
+  if (deleteBtn) {
+    const id = Number(deleteBtn.dataset.id);
+
     const confirmDelete = await swalDelete();
 
-    if (!confirmDelete.isConfirmed) {
-      return;
-    }
+    if (!confirmDelete.isConfirmed) return;
 
     let result;
 
@@ -202,7 +236,7 @@ async function handleTableClick(e) {
       swalClose();
     }
 
-    if (result.status_code === 200) {
+    if (result.status_code === 200 || result.status_code === 201) {
       await swalSuccess(result.message);
 
       await reloadTable(loadProducts, renderTable);
@@ -221,8 +255,9 @@ async function handleTableClick(e) {
 function resetForm() {
   form.title.textContent = "Tambah Barang";
 
-  clearValue(form.id, form.name, form.stock, form.purchase, form.price);
+  clearValue(form.id, form.name, form.stock, form.minimum_stock, form.purchase, form.price);
 
+  form.minimum_stock.value = 5;
   form.category.value = "";
 }
 // **************************************************************

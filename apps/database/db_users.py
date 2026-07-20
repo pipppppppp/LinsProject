@@ -11,6 +11,7 @@ from .. import db
 class Users(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     username = db.Column(db.String(100), nullable=False)
+    owner_name = db.Column(db.String(100), nullable=False)
     email = db.Column(db.String(50), nullable=False)
     password = db.Column(db.Text, nullable=False)
     role = db.Column(db.String(3), nullable=False, server_default='1', comment="0=Administrator, 1=Owner, 2=Cashier")

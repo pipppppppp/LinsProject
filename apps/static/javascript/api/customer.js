@@ -3,8 +3,7 @@
 // **************************************************************
 document.addEventListener("DOMContentLoaded", init);
 async function init() {
-  await loadCustomers();
-  renderTable();
+  await reloadTable(loadCustomers, renderTable);
 }
 
 // Form ID Setup
@@ -20,14 +19,16 @@ const form = {
 // **************************************************************
 
 // **************************************************************
-// GET SPPLIER | START
+// GET CUSTOMER | START
 // **************************************************************
 // Variable Setup -------------------------------------------------
 let customersData = [];
 
 // Load Data -------------------------------------------------
 async function loadCustomers() {
-  customersData = await getRequest("/customer/view");
+  const result = await getRequest("/customer/view");
+
+  customersData = result.data;
 }
 // **************************************************************
 // GET CUSTOMER | END
@@ -47,19 +48,33 @@ function renderTable() {
                 <td>${customer.customer_address}</td>
                 <td>${customer.customer_phone}</td>
                 <td>
-                    <button
-                        class="btn btn-warning btn-sm btn-edit"
-                        data-bs-toggle="modal"
-                        data-bs-target="#customer_modal"
-                        data-id="${customer.customer_id}">
-                        Edit
-                    </button>
+                    <div class="action-buttons">
+                      <button
+                          class="btn btn-outline-warning btn-sm btn-action btn-edit"
+                          data-bs-toggle="modal"
+                          data-bs-target="#customer_modal"
+                          data-id="${customer.id}"
+                          title="Edit">
+        
+                          <i class="bi bi-pencil-fill"></i>
+                      </button>
+        
+                      <button
+                          class="btn btn-outline-danger btn-sm btn-action btn-delete"
+                          data-id="${customer.id}"
+                          title="Hapus">
+        
+                          <i class="bi bi-trash-fill"></i>
+                      </button>
 
-                    <button
-                        class="btn btn-danger btn-sm btn-delete"
-                        data-id="${customer.customer_id}">
-                        Hapus
-                    </button>
+                      <button
+                          class="btn btn-outline-info btn-sm btn-action btn-vehicle"
+                          data-id="${customer.id}"
+                          title="Data Kendaraan">
+
+                          <i class="bi bi-bicycle"></i>
+                      </button>
+                    </div>
                 </td>
             </tr>
         `;
@@ -76,7 +91,7 @@ function renderTable() {
 // **************************************************************
 async function saveCustomer() {
   const customer = {
-    customer_id: form.id.value,
+    id: form.id.value,
     customer_name: formatTitle(form.name.value),
     customer_address: form.address.value.trim(),
     customer_phone: formatPhone(form.phone.value),
@@ -85,27 +100,27 @@ async function saveCustomer() {
   // VALIDATION ==================================================
   if (!validateCustomer(customer)) return;
 
-  swalLoading();
-
   let result;
 
   try {
     swalLoading();
 
-    if (!customer.customer_id) {
+    if (!customer.id) {
       result = await postRequest("/customer/add", customer);
     } else {
-      result = await putRequest(`/customer/edit/${customer.customer_id}`, customer);
+      result = await putRequest(`/customer/edit/${customer.id}`, customer);
     }
   } finally {
     swalClose();
   }
 
-  if (result.status) {
+  if (result.status_code === 201 || result.status_code === 200) {
     await swalSuccess(result.message);
 
     closeModal("customer_modal");
     clearValue(form.id, form.name, form.address, form.phone);
+    form.title.textContent = "Tambah Pelanggan";
+
     await reloadTable(loadCustomers, renderTable);
   } else {
     await swalError(result.message);
@@ -119,37 +134,76 @@ document.querySelector(".btn-save").addEventListener("click", saveCustomer);
 // **************************************************************
 // UPDATE & DELETE CUSTOMER | START
 // **************************************************************
-document.getElementById("customer_table").addEventListener("click", handleTableClick);
+document.getElementById("table1").addEventListener("click", handleTableClick);
 async function handleTableClick(e) {
-  const id = Number(e.target.dataset.id);
-  if (e.target.classList.contains("btn-edit")) {
-    // proses edit
-    const customer = customersData.find((s) => s.customer_id === id);
+  const editBtn = e.target.closest(".btn-edit");
+  const deleteBtn = e.target.closest(".btn-delete");
+  const vehicleBtn = e.target.closest(".btn-vehicle");
 
-    form.title.textContent = "Ubah Customer";
-    form.id.value = customer.customer_id;
+  if (editBtn) {
+    const id = Number(editBtn.dataset.id);
+
+    const customer = customersData.find((item) => item.id === id);
+    if (!customer) return;
+
+    form.title.textContent = "Ubah Pelanggan";
+    form.id.value = customer.id;
     form.name.value = customer.customer_name;
     form.address.value = customer.customer_address;
     form.phone.value = customer.customer_phone;
-  } else if (e.target.classList.contains("btn-delete")) {
-    // proses delete
+    return;
+  }
+
+  if (deleteBtn) {
+    const id = Number(deleteBtn.dataset.id);
+
     const confirmDelete = await swalDelete();
-    if (!confirmDelete.isConfirmed) {
-      return;
+    if (!confirmDelete.isConfirmed) return;
+
+    let result;
+
+    try {
+      swalLoading();
+      result = await deleteRequest(`/customer/delete/${id}`);
+    } finally {
+      swalClose();
     }
-    swalLoading();
-    const result = await deleteRequest(`/customer/delete/${id}`);
-    swalClose();
 
-    if (result.status) {
+    if (result.status_code === 200) {
       await swalSuccess(result.message);
-
       await reloadTable(loadCustomers, renderTable);
     } else {
       await swalError(result.message);
     }
   }
+
+  if (vehicleBtn) {
+    const id = Number(vehicleBtn.dataset.id);
+
+    window.location.href = `/vehicle/${id}`;
+    return;
+  }
 }
 // **************************************************************
 // UPDATE & DELETE CUSTOMER | END
+// **************************************************************
+
+// **************************************************************
+// RESET FORM | START
+// **************************************************************
+function resetForm() {
+  form.title.textContent = "Tambah Pelanggan";
+
+  clearValue(form.id, form.name, form.address, form.phone);
+}
+// **************************************************************
+// RESET FORM | END
+// **************************************************************
+
+// **************************************************************
+// MODAL EVENT | START
+// **************************************************************
+document.getElementById("customer_modal").addEventListener("hidden.bs.modal", resetForm);
+// **************************************************************
+// MODAL EVENT | END
 // **************************************************************

@@ -1,5 +1,5 @@
 from flask import Blueprint, request, render_template, session, redirect, url_for
-
+from flask_jwt_extended import jwt_required, get_jwt
 
 from ..models.customer import CustomerModels
 from ...utilities.responseHelpers import bad_request
@@ -17,14 +17,9 @@ customer = Blueprint(
 # CUSTOMER PAGE ============================================================ Begin
 # [GET] https://127.0.0.1:5000/customer/
 @customer.get('/')
+@jwt_required()
 def index():
     try:
-        if 'user_id' not in session:
-            return redirect(url_for('auth.signin_page'))
-
-        if session.get('role') != 1:
-            return redirect(url_for('dashboard.index'))
-
         return render_template(
             title='Customer - POS Bengkel',
             template_name_or_list='customer.html',
@@ -38,12 +33,15 @@ def index():
 # ADD CUSTOMER DATA ============================================================ Begin
 # [POST] https://127.0.0.1:5000/customer/add
 @customer.post('/add')
+@jwt_required()
 def create_customer():
     try:
+        role = str(get_jwt()["role"])
+        ws_id = str(get_jwt()["ws_id"])
 
         body = request.json
 
-        response = CustomerModels.add_customer(body)
+        response = CustomerModels.create_customer(role, ws_id, body)
 
         return response
 
@@ -54,10 +52,13 @@ def create_customer():
 # GET CUSTOMER DATA ============================================================ Begin
 # GET https://127.0.0.1:5000/customer/view
 @customer.get('/view')
-def get_customer():
+@jwt_required()
+def read_customer():
     try:
+        role = str(get_jwt()["role"])
+        ws_id = str(get_jwt()["ws_id"])
 
-        response = CustomerModels.view_customer()
+        response = CustomerModels.read_customer(role, ws_id)
 
         return response
 
@@ -69,12 +70,15 @@ def get_customer():
 # UPDATE CUSTOMER DATA ============================================================ Begin
 # [PUT] https://127.0.0.1:5000/customer/edit/<id>
 @customer.put('/edit/<int:id>')
+@jwt_required()
 def update_customer(id):
     try:
+        role = str(get_jwt()["role"])
+        ws_id = str(get_jwt()["ws_id"])
 
         body = request.json
 
-        response = CustomerModels.edit_customer(body, id)
+        response = CustomerModels.update_customer(role, ws_id, id, body)
 
         return response
 
@@ -86,10 +90,13 @@ def update_customer(id):
 # DELETE CUSTOMER DATA ============================================================ Begin
 # [DELETE] https://127.0.0.1:5000/customer/delete/<id>
 @customer.delete('/delete/<int:id>')
+@jwt_required()
 def delete_customer(id):
     try:
+        role = str(get_jwt()["role"])
+        ws_id = str(get_jwt()["ws_id"])
 
-        response = CustomerModels.delete_customer(id)
+        response = CustomerModels.delete_customer(role, ws_id, id)
 
         return response
 

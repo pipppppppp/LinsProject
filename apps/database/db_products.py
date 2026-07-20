@@ -6,6 +6,7 @@ class Products(db.Model):
     category_id = db.Column(db.Integer, db.ForeignKey("categories.id"))
     product_name = db.Column(db.String(100), nullable=False)
     stock = db.Column(db.Integer,nullable=False, server_default='0')
+    minimum_stock = db.Column(db.Integer,nullable=False,default=5)
     purchase_price = db.Column(db.Integer, nullable=False)
     selling_price = db.Column(db.Integer,nullable=False)
     created_at = db.Column(db.BigInteger, nullable=False)

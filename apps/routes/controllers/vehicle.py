@@ -1,4 +1,5 @@
-from flask import Blueprint, request, render_template, session, redirect, url_for
+from flask import Blueprint, request, render_template
+from flask_jwt_extended import jwt_required, get_jwt
 
 from ..models.vehicle import VehicleModels
 from ...utilities.responseHelpers import bad_request
@@ -15,44 +16,34 @@ vehicle = Blueprint(
 
 # VEHICLE PAGE ============================================================ Begin
 # [GET] http://127.0.0.1:5000/vehicle/
-@vehicle.get('/')
-def index():
+@vehicle.get('/<int:customer_id>')
+@jwt_required()
+def index(customer_id):
     try:
-        # Session Validation ========================================
-        if 'user_id' not in session:
-            return redirect(
-                url_for('auth.signin_page')
-            )
-
-        # Role Validation ===========================================
-        if session.get('role') != 1:
-            return redirect(
-                url_for('dashboard.index')
-            )
-
-        # Return Page ===============================================
         return render_template(
             title='Kendaraan - POS Bengkel',
             template_name_or_list='vehicle.html',
             active_menu="customer",
+            customer_id=customer_id
         )
 
-    except Exception:
-        return render_template(
-            title="Error 404 - POS Bengkel",
-            template_name_or_list='errorPages/404.html')
+    except Exception as e:
+        return bad_request(str(e))
 # VEHICLE PAGE ============================================================ End
 
 
 # VIEW VEHICLE DATA ======================================================= Begin
 # [GET] http://127.0.0.1:5000/vehicle/view/<customer_id>
 @vehicle.get('/view/<int:customer_id>')
-def get_vehicle(customer_id):
+@jwt_required()
+def read_vehicle(customer_id):
     try:
-        # Request Process ========================================
-        response = VehicleModels.view_vehicle(customer_id)
 
-        # Return Data ============================================
+        role = str(get_jwt()["role"])
+        ws_id = str(get_jwt()["ws_id"])
+
+        response = VehicleModels.read_vehicle(role, ws_id, customer_id)
+
         return response
 
     except Exception as e:
@@ -63,15 +54,16 @@ def get_vehicle(customer_id):
 # ADD VEHICLE DATA ======================================================== Begin
 # [POST] http://127.0.0.1:5000/vehicle/add
 @vehicle.post('/add')
+@jwt_required()
 def create_vehicle():
     try:
-        # Request Data ===========================================
+        role = str(get_jwt()["role"])
+        ws_id = str(get_jwt()["ws_id"])
+        
         body = request.json
-
-        # Request Process ========================================
-        response = VehicleModels.add_vehicle(body)
-
-        # Return Data ============================================
+        print(body)
+        print(type(body))
+        response = VehicleModels.create_vehicle(role, ws_id, body)
         return response
 
     except Exception as e:
@@ -79,34 +71,18 @@ def create_vehicle():
 # ADD VEHICLE DATA ======================================================== End
 
 
-# DETAIL VEHICLE DATA ===================================================== Begin
-# [GET] http://127.0.0.1:5000/vehicle/detail/<id>
-@vehicle.get('/detail/<int:id>')
-def detail_vehicle(id):
-    try:
-        # Request Process ========================================
-        response = VehicleModels.detail_vehicle(id)
-
-        # Return Data ============================================
-        return response
-
-    except Exception as e:
-        return bad_request(str(e))
-# DETAIL VEHICLE DATA ===================================================== End
-
-
 # UPDATE VEHICLE DATA ===================================================== Begin
 # [PUT] http://127.0.0.1:5000/vehicle/edit/<id>
 @vehicle.put('/edit/<int:id>')
+@jwt_required()
 def update_vehicle(id):
     try:
-        # Request Data ===========================================
+        role = str(get_jwt()["role"])
+        ws_id = str(get_jwt()["ws_id"])
+
         body = request.json
 
-        # Request Process ========================================
-        response = VehicleModels.edit_vehicle(body, id)
-
-        # Return Data ============================================
+        response = VehicleModels.update_vehicle(role, ws_id, id, body)
         return response
 
     except Exception as e:
@@ -117,12 +93,13 @@ def update_vehicle(id):
 # DELETE VEHICLE DATA ===================================================== Begin
 # [DELETE] http://127.0.0.1:5000/vehicle/delete/<id>
 @vehicle.delete('/delete/<int:id>')
+@jwt_required()
 def delete_vehicle(id):
     try:
-        # Request Process ========================================
-        response = VehicleModels.delete_vehicle(id)
+        role = str(get_jwt()["role"])
+        ws_id = str(get_jwt()["ws_id"])
 
-        # Return Data ============================================
+        response = VehicleModels.delete_vehicle(role, ws_id, id)
         return response
 
     except Exception as e:

@@ -1,157 +1,323 @@
-from flask import session
-
-from ... import db
-from ...database.db_customers import Customers
-from ...utilities.validators import CustomerValidator
-from ...utilities.responseHelpers import bad_request
-
+from datetime import datetime
 import time
 
-# CATEGORY MODEL CLASS ============================================================ Begin
+from ... import db
+from ...database.db_workshops import Workshops
+from ...database.db_customers import Customers
+from ...utilities.validators import role_validator, customer_validator
+
+from apps.utilities.responseHelpers import *
+from apps.utilities.utilities import split_date_time
+
+
+# CUSTOMER MODEL CLASS ============================================================ Begin
 class CustomerModels():
-    # CREATE CATEGORY ============================================================ Begin
-    def add_customer(datas):
+    # CREATE CUSTOMER ============================================================ Begin
+    def create_customer(user_role, workshop_id, datas):
         try:
-            # Validation Data ---------------------------------------- Start
-            validator = CustomerValidator().validate(datas, session["workshop_id"])
-            if validator:
-                return {
-                    "status": False,
-                    "message": validator
-                }
-            # Validation Data ---------------------------------------- Finish
-            now = int(time.time())
+            # Access Validation ---------------------------------------- Start
+            access = role_validator(user_role)
+            if not access:
+                return authorization_error()
+            # Access Validation ---------------------------------------- Finish
+
+            # Check Request Body ---------------------------------------- Start
+            if datas is None:
+                return invalid_params()
+
+            required_data = [
+                "customer_name",
+                "customer_address",
+                "customer_phone"
+            ]
+
+            for req in required_data:
+                if req not in datas:
+                    return parameter_error(
+                        f"Missing {req} in request body."
+                    )
+            # Check Request Body ---------------------------------------- Finish
+            
+           # Initialize Data Input ---------------------------------------- Start
+            customer_name = datas["customer_name"].strip()
+            customer_address = datas["customer_address"].strip()
+            customer_phone = datas["customer_phone"]
+            # Initialize Data Input ---------------------------------------- Finish
+
+            # Data Validation ---------------------------------------- Start
+            checker_result = customer_validator(
+                customer_name,
+                customer_address,
+                customer_phone,
+                workshop_id
+            )
+
+            if len(checker_result) != 0:
+                return defined_error(
+                    checker_result,
+                    "Defined Error",
+                    499
+                )
+            # Data Validation ---------------------------------------- Finish
+            
+            # Check Workshop ---------------------------------------- Start
+            workshop = Workshops.query.filter_by(
+                id=workshop_id,
+                is_delete=0
+            ).first()
+
+            if not workshop:
+                return not_found(
+                    "Workshop could not be found."
+                )
+            # Check Workshop ---------------------------------------- Finish
+            
+            timestamp = int(time.time() * 1000)
 
             # Insert Data ---------------------------------------- Start
             data = Customers(
-                workshop_id=session["workshop_id"],
-                customer_name=datas["customer_name"],
-                customer_address=datas["customer_address"],
-                customer_phone=datas["customer_phone"],
-                created_at=now,
-                updated_at=now
+                workshop_id=workshop_id,
+                customer_name=customer_name,
+                customer_address=customer_address,
+                customer_phone=customer_phone,
+                created_at=timestamp,
+                updated_at=timestamp
             )
 
-            db.session.add(data)
-            db.session.commit()
+            try:
+                db.session.add(data)
+                db.session.commit()
+
+            except Exception as e:
+                db.session.rollback()
+                return parameter_error(str(e))
             # Insert Data ---------------------------------------- Finish
 
             # Return Response ======================================== 
             # return success(statusCode=201)
-            return {
-                "status": True,
-                "message": "Data berhasil ditambahkan"
-            }
+            return success(
+                status_code=201
+            )
         
         except Exception as e:
             db.session.rollback()
             return bad_request(str(e))
-    # CREATE CATEGORY ============================================================ End
+    # CREATE CUSTOMER ============================================================ End
 
-    # GET ALL CATEGORY ============================================================ Begin
-    def view_customer():
+    # READ CUSTOMER ============================================================ Begin
+    def read_customer(user_role, workshop_id):
         try:
+            # Access Validation ---------------------------------------- Start
+            access = role_validator(user_role)
+            if not access:
+                return authorization_error()
+            # Access Validation ---------------------------------------- Finish
+
             # Get Data ---------------------------------------- Start
-            customer = Customers.query.filter_by(
-                workshop_id=session["workshop_id"],
+            customers = Customers.query.filter_by(
+                workshop_id=workshop_id,
                 is_delete=0
             ).all()
             # Get Data ---------------------------------------- Finish
             
+            # Initialize Data ---------------------------------------- Start
+            data = []
+
+            for customer in customers:
+
+                created_at = split_date_time(
+                    datetime.fromtimestamp(customer.created_at / 1000)
+                )
+
+                updated_at = split_date_time(
+                    datetime.fromtimestamp(customer.updated_at / 1000)
+                )
+
+                deleted_at = None
+
+                if customer.deleted_at:
+                    deleted_at = split_date_time(
+                        datetime.fromtimestamp(customer.deleted_at / 1000)
+                    )
+
+                data.append({
+                    "id": customer.id,
+                    "customer_name": customer.customer_name,
+                    "customer_address": customer.customer_address,
+                    "customer_phone": customer.customer_phone,
+                    "created_at": created_at,
+                    "updated_at": updated_at,
+                    "deleted_at": deleted_at
+                })
+            # Initialize Data ---------------------------------------- Finish
             # Response Data ---------------------------------------- Start
-            response = []
-            for item in customer:
-                data = {
-                    "customer_id" : item.id,
-                    "customer_name" : item.customer_name,
-                    "customer_address" : item.customer_address,
-                    "customer_phone" : item.customer_phone,
-                }
-                response.append(data)
-            # Response Data ---------------------------------------- Finish
-            
-            # Return Response ======================================== 
-            return response
+            return success_data(
+                data=data,
+                status_code=200
+            )
         
         except Exception as e:
             return bad_request(str(e))
-    # GET ALL CATEGORY ============================================================ End
+    # READ CUSTOMER ============================================================ End
 
-    # UPDATE CATEGORY ============================================================ Begin
-    def edit_customer(datas, id):
+    # UPDATE CUSTOMER ============================================================ Begin
+    def update_customer(user_role, workshop_id, id, datas):
         try:
+            # Access Validation ---------------------------------------- Start
+            access = role_validator(user_role)
 
-            # Validation Data ---------------------------------------- Start
-            validator = CustomerValidator().validate(datas, session["workshop_id"], is_create=False)
-            if validator:
-                return {
-                    "status": False,
-                    "message": validator
-                }
-            # Validation Data ---------------------------------------- Finish
-            
-            # Update Data ---------------------------------------- Start
-            data = Customers.query.filter_by(
-                id=id,
-                workshop_id=session["workshop_id"],
+            if not access:
+                return authorization_error()
+            # Access Validation ---------------------------------------- Finish
+
+            # Check Request Body ---------------------------------------- Start
+            if datas is None:
+                return invalid_params()
+
+            required_data = [
+                "customer_name",
+                "customer_address",
+                "customer_phone"
+            ]
+
+            for req in required_data:
+                if req not in datas:
+                    return parameter_error(
+                        f"Missing {req} in request body."
+                    )
+            # Check Request Body ---------------------------------------- Finish
+
+            # Initialize Data Input ---------------------------------------- Start
+            customer_name = datas["customer_name"].strip()
+            customer_address = datas["customer_address"].strip()
+            customer_phone = datas["customer_phone"]
+            # Initialize Data Input ---------------------------------------- Finish
+
+            # Data Validation ---------------------------------------- Start
+            checker_result = customer_validator(
+                customer_name,
+                customer_address,
+                customer_phone,
+                workshop_id,
+                id
+            )
+
+            if len(checker_result) != 0:
+                return defined_error(
+                    checker_result,
+                    "Defined Error",
+                    499
+                )
+            # Data Validation ---------------------------------------- Finish
+
+            # Check Workshop ---------------------------------------- Start
+            workshop = Workshops.query.filter_by(
+                id=workshop_id,
                 is_delete=0
             ).first()
 
-            if data is None:
-                return {
-                    "status": False,
-                    "message": "Customer/Member tidak ditemukan"
-                }
-            data.customer_name = datas["customer_name"]
-            data.customer_address = datas["customer_address"]
-            data.customer_phone = datas["customer_phone"]
-            data.updated_at = int(time.time())
+            if not workshop:
+                return not_found(
+                    "Workshop could not be found."
+                )
+            # Check Workshop ---------------------------------------- Finish
 
-            db.session.commit()
+            # Check Customer ---------------------------------------- Start
+            data = Customers.query.filter_by(
+                id=id,
+                workshop_id=workshop_id,
+                is_delete=0
+            ).first()
+
+            if not data:
+                return not_found(
+                    "Customer could not be found."
+                )
+            # Check Customer ---------------------------------------- Finish
+
+            # Update Data ---------------------------------------- Start
+            timestamp = int(time.time() * 1000)
+
+            data.customer_name = customer_name
+            data.customer_address = customer_address
+            data.customer_phone = customer_phone
+            data.updated_at = timestamp
+
+            try:
+                db.session.commit()
+
+            except Exception as e:
+                db.session.rollback()
+                return parameter_error(str(e))
             # Update Data ---------------------------------------- Finish
 
-            # Return Response ======================================== 
-            return {
-                "status": True,
-                "message": "Data Member berhasil diupdate"
-            }
-            
+            # Return Response ========================================
+            return success(
+                status_code=200
+            )
+
         except Exception as e:
             db.session.rollback()
             return bad_request(str(e))
-    # UPDATE CATEGORY ============================================================ End
-
-    # DELETE CATEGORY ============================================================ Begin
-    def delete_customer(id):
+    # UPDATE CUSTOMER ============================================================ End
+    
+    # DELETE CUSTOMER ============================================================ Begin
+    def delete_customer(user_role, workshop_id, id):
         try:
-            # Delete Data ---------------------------------------- Start
-            data = Customers.query.filter_by(
-                id=id,
-                workshop_id=session["workshop_id"],
+            # Access Validation ---------------------------------------- Start
+            access = role_validator(user_role)
+
+            if not access:
+                return authorization_error()
+            # Access Validation ---------------------------------------- Finish
+
+            # Check Workshop ---------------------------------------- Start
+            workshop = Workshops.query.filter_by(
+                id=workshop_id,
                 is_delete=0
             ).first()
-            if data is None:
-                return {
-                    "status": False,
-                    "message": "Customer/Member tidak ditemukan"
-                }
+
+            if not workshop:
+                return not_found(
+                    "Workshop could not be found."
+                )
+            # Check Workshop ---------------------------------------- Finish
+
+            # Check Customer ---------------------------------------- Start
+            data = Customers.query.filter_by(
+                id=id,
+                workshop_id=workshop_id,
+                is_delete=0
+            ).first()
+
+            if not data:
+                return not_found(
+                    "Customer could not be found."
+                )
+            # Check Customer ---------------------------------------- Finish
+
+            # Delete Data ---------------------------------------- Start
+            timestamp = int(time.time() * 1000)
 
             data.is_delete = 1
-            data.deleted_at = int(time.time())
+            data.deleted_at = timestamp
+            data.updated_at = timestamp
 
-            db.session.commit()
+            try:
+                db.session.commit()
+
+            except Exception as e:
+                db.session.rollback()
+                return parameter_error(str(e))
             # Delete Data ---------------------------------------- Finish
 
-            # Return Response ======================================== 
-            # return success(message="Deleted!")
-            return {
-                "status": True,
-                "message": "Data Member berhasil dihapus"
-            }
-            
+            # Return Response ========================================
+            return success(
+                status_code=200
+            )
+
         except Exception as e:
             db.session.rollback()
             return bad_request(str(e))
-    # DELETE CATEGORY ============================================================ End
-
-# CATEGORY MODEL CLASS ============================================================ End
+    # DELETE CUSTOMER ============================================================ End
+# CUSTOMER MODEL CLASS ============================================================ End

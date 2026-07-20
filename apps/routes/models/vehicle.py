@@ -1,196 +1,405 @@
-from flask import session
+from datetime import datetime
+import time
 
 from ... import db
+from ...database.db_workshops import Workshops
+from ...database.db_customers import Customers
 from ...database.db_vehicles import Vehicles
-from ...utilities.validators import VehicleValidator
-from ...utilities.responseHelper import bad_request
 
-import time
+from ...utilities.validators import role_validator, vehicle_validator
+
+from apps.utilities.responseHelpers import *
+from apps.utilities.utilities import split_date_time
 
 
 # VEHICLE MODEL CLASS ============================================================ Begin
 class VehicleModels():
-
     # CREATE VEHICLE ============================================================ Begin
-    def add_vehicle(datas):
+    def create_vehicle(user_role, workshop_id, datas):
         try:
-            # Validation Data ---------------------------------------- Start
-            validator = VehicleValidator().validate(datas, session["workshop_id"])
-            if validator:
-                return {
-                    "status": False,
-                    "message": validator
-                }
-            # Validation Data ---------------------------------------- Finish
+            # Access Validation ---------------------------------------- Start
+            access = role_validator(user_role)
 
-            # Insert Data ---------------------------------------- Start
-            data = Vehicles(
-                workshop_id=session["workshop_id"],
-                customer_id=datas["customer_id"],
-                plate_number=datas["plate_number"],
-                vehicle_brand=datas["vehicle_brand"],
-                vehicle_type=datas["vehicle_type"],
-                vehicle_year=datas["vehicle_year"],
-                vehicle_color=datas["vehicle_color"],
-                created_at=int(time.time()),
-                updated_at=int(time.time())
+            if not access:
+                return authorization_error()
+            # Access Validation ---------------------------------------- Finish
+
+            # Check Request Body ---------------------------------------- Start
+            if datas is None:
+                return invalid_params()
+
+            required_data = [
+                "customer_id",
+                "plate_number",
+                "vehicle_brand",
+                "vehicle_type",
+                "vehicle_year",
+                "vehicle_color"
+            ]
+
+            for req in required_data:
+                if req not in datas:
+                    return parameter_error(
+                        f"Missing {req} in request body."
+                    )
+            # Check Request Body ---------------------------------------- Finish
+
+            # Initialize Data Input ---------------------------------------- Start
+            customer_id = datas["customer_id"]
+            plate_number = datas["plate_number"].strip().upper()
+            vehicle_brand = datas["vehicle_brand"].strip()
+            vehicle_type = datas["vehicle_type"].strip()
+            vehicle_year = datas["vehicle_year"]
+            vehicle_color = datas["vehicle_color"].strip()
+            # Initialize Data Input ---------------------------------------- Finish
+
+            # Data Validation ---------------------------------------- Start
+            checker_result = vehicle_validator(
+                customer_id,
+                plate_number,
+                vehicle_brand,
+                vehicle_type,
+                vehicle_year,
+                vehicle_color,
+                workshop_id
             )
 
-            db.session.add(data)
-            db.session.commit()
+            if len(checker_result) != 0:
+                return defined_error(
+                    checker_result,
+                    "Defined Error",
+                    499
+                )
+            # Data Validation ---------------------------------------- Finish
+
+            # Check Workshop ---------------------------------------- Start
+            workshop = Workshops.query.filter_by(
+                id=workshop_id,
+                is_delete=0
+            ).first()
+
+            if not workshop:
+                return not_found(
+                    "Workshop could not be found."
+                )
+            # Check Workshop ---------------------------------------- Finish
+
+            # Check Customer ---------------------------------------- Start
+            customer = Customers.query.filter_by(
+                id=customer_id,
+                workshop_id=workshop_id,
+                is_delete=0
+            ).first()
+
+            if not customer:
+                return not_found(
+                    "Customer could not be found."
+                )
+            # Check Customer ---------------------------------------- Finish
+
+            # Insert Data ---------------------------------------- Start
+            timestamp = int(time.time() * 1000)
+
+            data = Vehicles(
+                workshop_id=workshop_id,
+                customer_id=customer_id,
+                plate_number=plate_number,
+                vehicle_brand=vehicle_brand,
+                vehicle_type=vehicle_type,
+                vehicle_year=vehicle_year,
+                vehicle_color=vehicle_color,
+                created_at=timestamp,
+                updated_at=timestamp
+            )
+
+            try:
+                db.session.add(data)
+                db.session.commit()
+
+            except Exception as e:
+                db.session.rollback()
+                return parameter_error(str(e))
             # Insert Data ---------------------------------------- Finish
 
-            return {
-                "status": True,
-                "message": "Data kendaraan berhasil ditambahkan"
-            }
-
+            # Return Response ========================================
+            return success(
+                status_code=201
+            )
         except Exception as e:
             db.session.rollback()
             return bad_request(str(e))
     # CREATE VEHICLE ============================================================ End
 
-
-    # GET ALL VEHICLE ============================================================ Begin
-    def view_vehicle(customer_id):
+    # READ VEHICLE ============================================================ Begin
+    def read_vehicle(user_role, workshop_id, customer_id):
         try:
+            # Access Validation ---------------------------------------- Start
+            access = role_validator(user_role)
+
+            if not access:
+                return authorization_error()
+            # Access Validation ---------------------------------------- Finish
+
+            # Check Workshop ---------------------------------------- Start
+            workshop = Workshops.query.filter_by(
+                id=workshop_id,
+                is_delete=0
+            ).first()
+
+            if not workshop:
+                return not_found(
+                    "Workshop could not be found."
+                )
+            # Check Workshop ---------------------------------------- Finish
+
+            # Check Customer ---------------------------------------- Start
+            customer = Customers.query.filter_by(
+                id=customer_id,
+                workshop_id=workshop_id,
+                is_delete=0
+            ).first()
+
+            if not customer:
+                return not_found(
+                    "Customer could not be found."
+                )
+            # Check Customer ---------------------------------------- Finish
+
             # Get Data ---------------------------------------- Start
             vehicles = Vehicles.query.filter_by(
-                workshop_id=session["workshop_id"],
+                workshop_id=workshop_id,
                 customer_id=customer_id,
                 is_delete=0
             ).all()
             # Get Data ---------------------------------------- Finish
 
+            # Initialize Data ---------------------------------------- Start
+            data = []
+
+            for vehicle in vehicles:
+
+                created_at = split_date_time(
+                    datetime.fromtimestamp(vehicle.created_at / 1000)
+                )
+
+                updated_at = split_date_time(
+                    datetime.fromtimestamp(vehicle.updated_at / 1000)
+                )
+
+                deleted_at = None
+
+                if vehicle.deleted_at:
+                    deleted_at = split_date_time(
+                        datetime.fromtimestamp(vehicle.deleted_at / 1000)
+                    )
+
+                data.append({
+                    "id": vehicle.id,
+                    "customer_id": vehicle.customer_id,
+                    "plate_number": vehicle.plate_number,
+                    "vehicle_brand": vehicle.vehicle_brand,
+                    "vehicle_type": vehicle.vehicle_type,
+                    "vehicle_year": vehicle.vehicle_year,
+                    "vehicle_color": vehicle.vehicle_color,
+                    "created_at": created_at,
+                    "updated_at": updated_at,
+                    "deleted_at": deleted_at
+                })
+            # Initialize Data ---------------------------------------- Finish
+
             # Response Data ---------------------------------------- Start
-            response = []
-
-            for rsl in vehicles:
-                data = {
-                    "vehicle_id": rsl.id,
-                    "customer_id": rsl.customer_id,
-                    "plate_number": rsl.plate_number,
-                    "vehicle_brand": rsl.vehicle_brand,
-                    "vehicle_type": rsl.vehicle_type,
-                    "vehicle_year": rsl.vehicle_year,
-                    "vehicle_color": rsl.vehicle_color,
-                }
-
-                response.append(data)
-
-            # Response Data ---------------------------------------- Finish
-
-            return response
+            return success_data(
+                data=data,
+                status_code=200
+            )
 
         except Exception as e:
             return bad_request(str(e))
-    # GET ALL VEHICLE ============================================================ End
-
-
-    # GET DETAIL VEHICLE ============================================================ Begin
-    def detail_vehicle(id):
-        try:
-
-            vehicle = Vehicles.query.filter_by(
-                id=id,
-                workshop_id=session["workshop_id"],
-                is_delete=0
-            ).first()
-
-            if vehicle is None:
-                return {
-                    "status": False,
-                    "message": "Data kendaraan tidak ditemukan"
-                }
-
-            return {
-                "vehicle_id": vehicle.id,
-                "customer_id": vehicle.customer_id,
-                "plate_number": vehicle.plate_number,
-                "vehicle_brand": vehicle.vehicle_brand,
-                "vehicle_type": vehicle.vehicle_type,
-                "vehicle_year": vehicle.vehicle_year,
-                "vehicle_color": vehicle.vehicle_color,
-            }
-
-        except Exception as e:
-            return bad_request(str(e))
-    # GET DETAIL VEHICLE ============================================================ End
-
+    # READ VEHICLE ============================================================ End
 
     # UPDATE VEHICLE ============================================================ Begin
-    def edit_vehicle(datas, id):
+    def update_vehicle(user_role, workshop_id, id, datas):
         try:
-            # Validation Data ---------------------------------------- Start
-            validator = VehicleValidator().validate(datas, session["workshop_id"], is_create=False)
-            if validator:
-                return {
-                    "status": False,
-                    "message": validator
-                }
-            # Validation Data ---------------------------------------- Finish
-            data = Vehicles.query.filter_by(
-                id=id,
-                workshop_id=session["workshop_id"],
+            # Access Validation ---------------------------------------- Start
+            access = role_validator(user_role)
+
+            if not access:
+                return authorization_error()
+            # Access Validation ---------------------------------------- Finish
+
+            # Check Request Body ---------------------------------------- Start
+            if datas is None:
+                return invalid_params()
+
+            required_data = [
+                "customer_id",
+                "plate_number",
+                "vehicle_brand",
+                "vehicle_type",
+                "vehicle_year",
+                "vehicle_color"
+            ]
+
+            for req in required_data:
+                if req not in datas:
+                    return parameter_error(
+                        f"Missing {req} in request body."
+                    )
+            # Check Request Body ---------------------------------------- Finish
+
+            # Initialize Data Input ---------------------------------------- Start
+            customer_id = datas["customer_id"]
+            plate_number = datas["plate_number"].strip().upper()
+            vehicle_brand = datas["vehicle_brand"].strip()
+            vehicle_type = datas["vehicle_type"].strip()
+            vehicle_year = datas["vehicle_year"]
+            vehicle_color = datas["vehicle_color"].strip()
+            # Initialize Data Input ---------------------------------------- Finish
+
+            # Data Validation ---------------------------------------- Start
+            checker_result = vehicle_validator(
+                customer_id,
+                plate_number,
+                vehicle_brand,
+                vehicle_type,
+                vehicle_year,
+                vehicle_color,
+                workshop_id,
+                id
+            )
+
+            if len(checker_result) != 0:
+                return defined_error(
+                    checker_result,
+                    "Defined Error",
+                    499
+                )
+            # Data Validation ---------------------------------------- Finish
+
+            # Check Workshop ---------------------------------------- Start
+            workshop = Workshops.query.filter_by(
+                id=workshop_id,
                 is_delete=0
             ).first()
 
-            if data is None:
-                return {
-                    "status": False,
-                    "message": "Data kendaraan tidak ditemukan"
-                }
+            if not workshop:
+                return not_found(
+                    "Workshop could not be found."
+                )
+            # Check Workshop ---------------------------------------- Finish
 
-            data.customer_id = datas["customer_id"]
-            data.plate_number = datas["plate_number"]
-            data.vehicle_brand = datas["vehicle_brand"]
-            data.vehicle_type = datas["vehicle_type"]
-            data.vehicle_year = datas["vehicle_year"]
-            data.vehicle_color = datas["vehicle_color"]
-            data.updated_at = int(time.time())
+            # Check Customer ---------------------------------------- Start
+            customer = Customers.query.filter_by(
+                id=customer_id,
+                workshop_id=workshop_id,
+                is_delete=0
+            ).first()
 
-            db.session.commit()
+            if not customer:
+                return not_found(
+                    "Customer could not be found."
+                )
+            # Check Customer ---------------------------------------- Finish
 
-            return {
-                "status": True,
-                "message": "Data kendaraan berhasil diupdate"
-            }
+            # Check Vehicle ---------------------------------------- Start
+            data = Vehicles.query.filter_by(
+                id=id,
+                workshop_id=workshop_id,
+                is_delete=0
+            ).first()
+
+            if not data:
+                return not_found(
+                    "Vehicle could not be found."
+                )
+            # Check Vehicle ---------------------------------------- Finish
+
+            # Update Data ---------------------------------------- Start
+            timestamp = int(time.time() * 1000)
+
+            data.customer_id = customer_id
+            data.plate_number = plate_number
+            data.vehicle_brand = vehicle_brand
+            data.vehicle_type = vehicle_type
+            data.vehicle_year = vehicle_year
+            data.vehicle_color = vehicle_color
+            data.updated_at = timestamp
+
+            try:
+                db.session.commit()
+
+            except Exception as e:
+                db.session.rollback()
+                return parameter_error(str(e))
+            # Update Data ---------------------------------------- Finish
+
+            # Return Response ========================================
+            return success(
+                status_code=200
+            )
 
         except Exception as e:
             db.session.rollback()
             return bad_request(str(e))
     # UPDATE VEHICLE ============================================================ End
-
-
+    
     # DELETE VEHICLE ============================================================ Begin
-    def delete_vehicle(id):
+    def delete_vehicle(user_role, workshop_id, id):
         try:
+            # Access Validation ---------------------------------------- Start
+            access = role_validator(user_role)
 
-            data = Vehicles.query.filter_by(
-                id=id,
-                workshop_id=session["workshop_id"],
+            if not access:
+                return authorization_error()
+            # Access Validation ---------------------------------------- Finish
+
+            # Check Workshop ---------------------------------------- Start
+            workshop = Workshops.query.filter_by(
+                id=workshop_id,
                 is_delete=0
             ).first()
 
-            if data is None:
-                return {
-                    "status": False,
-                    "message": "Data kendaraan tidak ditemukan"
-                }
+            if not workshop:
+                return not_found(
+                    "Workshop could not be found."
+                )
+            # Check Workshop ---------------------------------------- Finish
+
+            # Check Vehicle ---------------------------------------- Start
+            data = Vehicles.query.filter_by(
+                id=id,
+                workshop_id=workshop_id,
+                is_delete=0
+            ).first()
+
+            if not data:
+                return not_found(
+                    "Vehicle could not be found."
+                )
+            # Check Vehicle ---------------------------------------- Finish
+
+            # Delete Data ---------------------------------------- Start
+            timestamp = int(time.time() * 1000)
 
             data.is_delete = 1
-            data.deleted_at = int(time.time())
+            data.deleted_at = timestamp
+            data.updated_at = timestamp
 
-            db.session.commit()
+            try:
+                db.session.commit()
 
-            return {
-                "status": True,
-                "message": "Data kendaraan berhasil dihapus"
-            }
+            except Exception as e:
+                db.session.rollback()
+                return parameter_error(str(e))
+            # Delete Data ---------------------------------------- Finish
+
+            # Return Response ========================================
+            return success(
+                status_code=200
+            )
 
         except Exception as e:
             db.session.rollback()
             return bad_request(str(e))
-    # DELETE VEHICLE ============================================================ End
-
+        # DELETE VEHICLE ============================================================ End
 # VEHICLE MODEL CLASS ============================================================ End

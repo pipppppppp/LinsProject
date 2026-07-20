@@ -63,7 +63,7 @@ class CategoryModels():
             # # Log Activity Record ---------------------------------------- Finish
 
             # # Return Response ======================================== 
-            return success(status_code=200)
+            return success(status_code=201)
         
         except Exception as e:
             return bad_request(str(e))

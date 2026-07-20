@@ -15,12 +15,14 @@ from apps.utilities.utilities import *
 # VALIDATION
 
 # AUTH VALIDATION ============================================================ Begin
-def signup_validator(username, email, password, repassword, workshop_name, workshop_address, workshop_phone):
+def signup_validator(owner_name, username, email, password, repassword, workshop_name, workshop_address, workshop_phone):
     checker_result = []
 
     # Check Null Value ---------------------------------------- Start
-    if username == "":
+    if owner_name == "":
         checker_result.append(f"Nama tidak boleh kosong")
+    if username == "":
+        checker_result.append(f"Username tidak boleh kosong")
     if email == "":
         checker_result.append(f"Email tidak boleh kosong")
     if password == "":
@@ -36,9 +38,12 @@ def signup_validator(username, email, password, repassword, workshop_name, works
     # Check Null Value ---------------------------------------- Finish
 
     # Sanitize String Content ---------------------------------------- Start
-    sanitizeName, charName = sanitize_all_char(username)
+    sanitizeName, charName = sanitize_all_char(owner_name)
     if sanitizeName:
         checker_result.append(f"Nama tidak boleh mengandung karakter {charName}")
+    sanitizeName, charName = sanitize_all_char(username)
+    if sanitizeName:
+        checker_result.append(f"Username tidak boleh mengandung karakter {charName}")
     sanitizeEmail, charEmail = sanitize_email_char(email)
     if sanitizeEmail:
         checker_result.append(f"Email tidak boleh mengandung karakter {charEmail}")
@@ -221,134 +226,173 @@ def category_validator(category, workshop_id):
 # CATEGORY VALIDATION ============================================================ End
 
 # CUSTOMER VALIDATION ============================================================ Begin
-class CustomerValidator:
-          
-    def validate(self, datas, workshop_id, is_create=True):
-      
-        customer_name = datas["customer_name"]
-        customer_address = datas["customer_address"]
-        customer_phone = datas["customer_phone"]
+def customer_validator(
+    customer_name,
+    customer_address,
+    customer_phone,
+    workshop_id,
+    customer_id=None
+):
+    check_result = []
 
-        check_result = []
+    # Check Null Value ---------------------------------------- Start
+    if customer_name == "":
+        check_result.append("Nama pelanggan tidak boleh kosong.")
 
-        # Check Null Value ---------------------------------------- Start
-        if customer_name == "":
-                check_result.append("Nama tidak boleh kosong.")
-        if customer_address == "":
-                check_result.append("Alamat tidak boleh kosong.")
-        if customer_phone == "":
-                check_result.append("No telepon tidak boleh kosong.")
-        # Check Null Value ---------------------------------------- Finish
+    if customer_address == "":
+        check_result.append("Alamat pelanggan tidak boleh kosong.")
 
-        # Sanitize String Content ---------------------------------------- Start
-        sanitize_wsname, char_wsname = sanitize_all_char(customer_name)
-        if sanitize_wsname:
-                check_result.append(f"Nama tidak boleh mengandung karakter {char_wsname}")
-        sanitize_wsphone, char_wsphone = sanitize_phone_char(customer_phone)
-        if sanitize_wsphone:
-                check_result.append(f"No telepon tidak boleh mengandung karakter {char_wsphone}")
-        # Sanitize String Content ---------------------------------------- Finish
+    if customer_phone == "":
+        check_result.append("No telepon tidak boleh kosong.")
+    # Check Null Value ---------------------------------------- Finish
 
-        # Check Field Content ---------------------------------------- Start
-        if string_checker(customer_name):
-                check_result.append("Nama pelanggan tidak valid.")
-        if phone_checker(customer_phone):
-                check_result.append(f"No telepon tidak valid.")
-        # Check Field Content ---------------------------------------- Finish
+    # Sanitize String Content ---------------------------------------- Start
+    sanitize_name, char_name = sanitize_all_char(customer_name)
+    if sanitize_name:
+        check_result.append(
+            f"Nama pelanggan tidak boleh mengandung karakter {char_name}"
+        )
 
-        # Check Duplicate Customer ---------------------------------------- Start
-        if is_create:
-                result = Customers.query.filter_by(
-                    workshop_id=workshop_id,
-                    customer_name=customer_name,
-                    is_delete=0
-                    ).first()
-                if result:
-                    check_result.append("Nama sudah terdaftar")
-        # Check Duplicate Customer ---------------------------------------- Finish
-        return check_result
+    sanitize_phone, char_phone = sanitize_phone_char(customer_phone)
+    if sanitize_phone:
+        check_result.append(
+            f"No telepon tidak boleh mengandung karakter {char_phone}"
+        )
+    # Sanitize String Content ---------------------------------------- Finish
+
+    # Check Field Content ---------------------------------------- Start
+    if string_checker(customer_name):
+        check_result.append("Nama pelanggan tidak valid.")
+
+    if phone_checker(customer_phone):
+        check_result.append("No telepon tidak valid.")
+    # Check Field Content ---------------------------------------- Finish
+
+    # Check Duplicate Customer ---------------------------------------- Start
+    query = Customers.query.filter(
+        Customers.workshop_id == workshop_id,
+        Customers.customer_name == customer_name.strip(),
+        Customers.is_delete == 0
+    )
+
+    if customer_id is not None:
+        query = query.filter(
+            Customers.id != customer_id
+        )
+
+    result = query.first()
+
+    if result:
+        check_result.append("Nama pelanggan sudah terdaftar.")
+    # Check Duplicate Customer ---------------------------------------- Finish
+
+    return check_result
 # CUSTOMER VALIDATION ============================================================ End
 
 # VEHICLE VALIDATION ============================================================ Begin
-class VehicleValidator:
-          
-    def validate(self, datas, workshop_id, is_create=True):
-      
-        plate_number = datas["plate_number"]
-        vehicle_brand = datas["vehicle_brand"]
-        vehicle_type = datas["vehicle_type"]
-        vehicle_year = datas["vehicle_year"]
-        vehicle_color = datas["vehicle_color"]
-        customer_id = datas["customer_id"]
+def vehicle_validator(
+    customer_id,
+    plate_number,
+    vehicle_brand,
+    vehicle_type,
+    vehicle_year,
+    vehicle_color,
+    workshop_id,
+    vehicle_id=None
+):
+    check_result = []
 
-        check_result = []
+    # Check Null Value ---------------------------------------- Start
+    if customer_id == "":
+        check_result.append("Pelanggan tidak boleh kosong.")
 
-        # Check Null Value ---------------------------------------- Start
-        if plate_number == "":
-                check_result.append("Plat nomor kendaraan tidak boleh kosong.")
-        if vehicle_brand == "":
-                check_result.append("Merek kendaraan tidak boleh kosong.")
-        if vehicle_type == "":
-                check_result.append("Tipe kendaraan tidak boleh kosong.")
-        if vehicle_year == "":
-                check_result.append("Tahun kendaraan tidak boleh kosong.")
-        if vehicle_color == "":
-                check_result.append("Warna kendaraan tidak boleh kosong.")
-        # Check Null Value ---------------------------------------- Finish
+    if plate_number == "":
+        check_result.append("Plat nomor kendaraan tidak boleh kosong.")
 
-        # Sanitize String Content ---------------------------------------- Start
-        sanitize_plate, char_plate = sanitize_plate_char(plate_number)
-        if sanitize_plate:
-                check_result.append(f"Plat nomor tidak boleh mengandung karakter {char_plate}")
-        sanitize_brand, char_brand = sanitize_all_char(vehicle_brand)
-        if sanitize_brand:
-                check_result.append(f"Merk kendaraan tidak boleh mengandung karakter {char_brand}")
-        sanitize_type, char_type = sanitize_all_char(vehicle_type)
-        if sanitize_type:
-                check_result.append(f"Tipe kendaraan tidak boleh mengandung karakter {char_type}")
-        sanitize_color, char_color = sanitize_all_char(vehicle_color)
-        if sanitize_color:
-                check_result.append(f"Warna kendaraan tidak boleh mengandung karakter {char_color}")
-        # Sanitize String Content ---------------------------------------- Finish
+    if vehicle_brand == "":
+        check_result.append("Merek kendaraan tidak boleh kosong.")
 
-        # Check Field Content ---------------------------------------- Start
-        if plate_checker(plate_number):
-                check_result.append("Plat nomor tidak valid.")
+    if vehicle_type == "":
+        check_result.append("Tipe kendaraan tidak boleh kosong.")
 
-        if string_checker(vehicle_brand):
-                check_result.append("Merk kendaraan tidak valid.")
+    if vehicle_year == "":
+        check_result.append("Tahun kendaraan tidak boleh kosong.")
 
-        if string_checker(vehicle_type):
-                check_result.append("Tipe kendaraan tidak valid.")
+    if vehicle_color == "":
+        check_result.append("Warna kendaraan tidak boleh kosong.")
+    # Check Null Value ---------------------------------------- Finish
 
-        if vehicle_color != "" and string_checker(vehicle_color):
-                check_result.append("Warna kendaraan tidak valid.")
+    # Sanitize String Content ---------------------------------------- Start
+    sanitize_plate, char_plate = sanitize_plate_char(plate_number)
+    if sanitize_plate:
+        check_result.append(
+            f"Plat nomor tidak boleh mengandung karakter {char_plate}"
+        )
 
-        if vehicle_year != "":
-                if not str(vehicle_year).isdigit():
-                    check_result.append("Tahun kendaraan harus berupa angka.")
-                else:
-                    year = int(vehicle_year)
+    sanitize_brand, char_brand = sanitize_all_char(vehicle_brand)
+    if sanitize_brand:
+        check_result.append(
+            f"Merek kendaraan tidak boleh mengandung karakter {char_brand}"
+        )
 
-                    if year < 1980 or year > datetime.now().year:
-                            check_result.append("Tahun kendaraan tidak valid.")
+    # sanitize_type, char_type = sanitize_all_char(vehicle_type)
+    # if sanitize_type:
+    #     check_result.append(
+    #         f"Tipe kendaraan tidak boleh mengandung karakter {char_type}"
+    #     )
 
-        # Check Field Content ---------------------------------------- Finish
+    sanitize_color, char_color = sanitize_all_char(vehicle_color)
+    if sanitize_color:
+        check_result.append(
+            f"Warna kendaraan tidak boleh mengandung karakter {char_color}"
+        )
+    # Sanitize String Content ---------------------------------------- Finish
 
-        # Check Duplicate Vehicle ---------------------------------------- Start
-        if is_create:
-                result = Vehicles.query.filter_by(
-                    workshop_id=workshop_id,
-                    plate_number=plate_number.strip().upper(),
-                    is_delete=0
-                ).first()
+    # Check Field Content ---------------------------------------- Start
+    if not str(customer_id).isdigit():
+        check_result.append("Pelanggan tidak valid.")
 
-                if result:
-                    check_result.append("Plat nomor sudah terdaftar.")
-        # Check Duplicate Customer ---------------------------------------- Finish
-        return check_result
+    if plate_checker(plate_number):
+        check_result.append("Plat nomor tidak valid.")
+
+    if string_checker(vehicle_brand):
+        check_result.append("Merek kendaraan tidak valid.")
+
+    # if string_checker(vehicle_type):
+    #     check_result.append("Tipe kendaraan tidak valid.")
+
+    if string_checker(vehicle_color):
+        check_result.append("Warna kendaraan tidak valid.")
+
+    if not str(vehicle_year).isdigit():
+        check_result.append("Tahun kendaraan harus berupa angka.")
+    else:
+        year = int(vehicle_year)
+
+        if year < 1980 or year > datetime.now().year:
+            check_result.append("Tahun kendaraan tidak valid.")
+    # Check Field Content ---------------------------------------- Finish
+
+    # Check Duplicate Vehicle ---------------------------------------- Start
+    query = Vehicles.query.filter(
+        Vehicles.workshop_id == workshop_id,
+        Vehicles.plate_number == plate_number.strip().upper(),
+        Vehicles.is_delete == 0
+    )
+
+    if vehicle_id is not None:
+        query = query.filter(
+            Vehicles.id != vehicle_id
+        )
+
+    result = query.first()
+
+    if result:
+        check_result.append("Plat nomor sudah terdaftar.")
+    # Check Duplicate Vehicle ---------------------------------------- Finish
+
+    return check_result
 # VEHICLE VALIDATION ============================================================ End
-
 # PRODUCT VALIDATION ============================================================ Begin
 def product_validator(
     category_id,

@@ -2,9 +2,15 @@
 // REQUIRED VALIDATION | START
 // **************************************************************
 function required(value, message) {
-  if (value.trim() === "") {
-    swalWarning(message);
-    return false;
+
+  if (value === null || value === undefined) {
+      swalWarning(message);
+      return false;
+  }
+
+  if (String(value).trim() === "") {
+      swalWarning(message);
+      return false;
   }
 
   return true;
@@ -198,9 +204,9 @@ function validateCustomer(customer) {
 // VEHICLE VALIDATION | START
 // **************************************************************
 function validateVehicle(vehicle) {
-  if (!required(vehicle.vehicle_plate, "Plat nomor wajib diisi")) return false;
+  if (!required(vehicle.plate_number, "Plat nomor wajib diisi")) return false;
 
-  if (!plate(vehicle.vehicle_plate)) return false;
+  if (!plate(vehicle.plate_number)) return false;
 
   if (!required(vehicle.vehicle_brand, "Merek kendaraan wajib diisi")) return false;
 
@@ -209,6 +215,8 @@ function validateVehicle(vehicle) {
   if (!required(vehicle.vehicle_year, "Tahun kendaraan wajib diisi")) return false;
 
   if (!year(vehicle.vehicle_year)) return false;
+
+  if (!required(vehicle.vehicle_color, "Warna kendaraan wajib diisi")) return false;
 
   return true;
 }

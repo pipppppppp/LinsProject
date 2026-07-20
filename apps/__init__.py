@@ -84,6 +84,7 @@ from.routes.controllers.administrator import administrator
 from .routes.controllers.dashboard import dashboard
 from .routes.controllers.category import category
 from .routes.controllers.customer import customer
+from .routes.controllers.vehicle import vehicle
 from .routes.controllers.workshop import workshop
 from .routes.controllers.product import product
 from .routes.controllers.supplier import supplier
@@ -99,6 +100,7 @@ app.register_blueprint(dashboard)
 app.register_blueprint(category)
 app.register_blueprint(workshop)
 app.register_blueprint(customer)
+app.register_blueprint(vehicle)
 app.register_blueprint(product)
 app.register_blueprint(supplier)
 app.register_blueprint(purchase)

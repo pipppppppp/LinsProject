@@ -20,6 +20,7 @@ class AuthModels():
                 return invalid_params()
             
             required_data = [
+                "owner_name",
                 "username",
                 "email",
                 "password",
@@ -34,6 +35,7 @@ class AuthModels():
             # Validation Request Body ---------------------------------------- Finish
             
             # Initialize Data Input ---------------------------------------- Start
+            owner_name = datas["owner_name"].strip()
             username = datas["username"].strip()
             email = datas["email"].strip()
             password = datas["password"]
@@ -44,7 +46,7 @@ class AuthModels():
             # Initialize Data Input ---------------------------------------- Finish
             
             # Data Validation ---------------------------------------- Start
-            checker_result = signup_validator(username, email, password, retype_password, workshop_name, workshop_address, workshop_phone)
+            checker_result = signup_validator(owner_name, username, email, password, retype_password, workshop_name, workshop_address, workshop_phone)
            
             if len(checker_result) != 0:
                 return defined_error(checker_result, "Bad Request", status_code=400)
@@ -55,6 +57,7 @@ class AuthModels():
             password_encrypt = hash_password(password)
             timestamp = int(round(time.time()*1000))
             user_data = Users(
+                owner_name=owner_name,
                 username=username,
                 email=email,
                 password=password_encrypt,

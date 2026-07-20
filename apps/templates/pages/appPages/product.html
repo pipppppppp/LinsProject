@@ -59,7 +59,9 @@
           <div class="card-body">
             <div class="row">
               <div class="col-sm-12 d-flex justify-content-end">
-                <a href="#" class="btn btn-outline-success" data-bs-toggle="modal" data-bs-target="#product_modal"> Tambah</a>
+                <a href="#" class="btn btn-outline-success" data-bs-toggle="modal" data-bs-target="#product_modal">
+                  <i class="bi bi-plus-lg"></i> Tambah Barang
+                </a>
               </div>
             </div>
           </div>
@@ -81,8 +83,10 @@
                   <th>Nama Barang</th>
                   <th>Kategori</th>
                   <th>Stok</th>
+                  <th>Min. Stok</th>
                   <th>Harga Beli</th>
                   <th>Harga Jual</th>
+                  <th>Status</th>
                   <th>Aksi</th>
                 </tr>
               </thead>
@@ -128,6 +132,8 @@
               <input type="text" id="product_name" class="form-control mt-2" placeholder="Nama Barang"/>
               <label>Stok</label>
               <input type="number" id="product_stock" class="form-control mt-2" placeholder="Stok Barang"/>
+              <label>Stok Minimal</label>
+              <input type="number" id="product_minimum_stock" min="0" value="5" class="form-control mt-2" placeholder="Stok Minimal Barang"/>
               <label>Harga Beli</label>
               <input type="number" id="product_purchase" class="form-control mt-2" placeholder="Harga Beli"/>
               <label>Harga Jual</label>
