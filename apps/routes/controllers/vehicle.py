@@ -1,5 +1,6 @@
 from flask import Blueprint, request, render_template
 from flask_jwt_extended import jwt_required, get_jwt
+from ...database.db_customers import Customers
 
 from ..models.vehicle import VehicleModels
 from ...utilities.responseHelpers import bad_request
@@ -20,11 +21,22 @@ vehicle = Blueprint(
 @jwt_required()
 def index(customer_id):
     try:
+        customer = Customers.query.filter_by(
+            id=customer_id,
+            is_delete=0
+        ).first()
+
+        if customer is None:
+            return bad_request("Customer not found")
+
         return render_template(
             title='Kendaraan - POS Bengkel',
             template_name_or_list='vehicle.html',
             active_menu="customer",
-            customer_id=customer_id
+            customer_id=customer_id,
+            customer_name=customer.customer_name,
+            customer_phone=customer.customer_phone,
+            customer_address=customer.customer_address
         )
 
     except Exception as e:
@@ -61,8 +73,7 @@ def create_vehicle():
         ws_id = str(get_jwt()["ws_id"])
         
         body = request.json
-        print(body)
-        print(type(body))
+
         response = VehicleModels.create_vehicle(role, ws_id, body)
         return response
 

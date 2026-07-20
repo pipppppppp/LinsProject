@@ -34,7 +34,23 @@
       <div class="page-title">
         <div class="row">
           <div class="col-12 col-md-6 order-md-1 order-last">
-            <h3>DATA KENDARAAN</h3>
+            <h3>DATA KENDARAAN</h3> <br>
+            <div class="mb-3">
+              <div class="mb-2">
+                <span class="text-muted d-inline-block" style="width: 110px">Pelanggan</span>
+                <span>: <strong>{{ customer_name }}</strong></span>
+              </div>
+
+              <div class="mb-2">
+                <span class="text-muted d-inline-block" style="width: 110px">No. HP</span>
+                <span>: <strong>{{ customer_phone }}</strong></span>
+              </div>
+
+              <div>
+                <span class="text-muted d-inline-block" style="width: 110px">Alamat</span>
+                <span>: <strong>{{ customer_address }}</strong></span>
+              </div>
+            </div>
             <!-- <p class="text-subtitle text-muted">The default layout</p> -->
           </div>
           <div class="col-12 col-md-6 order-md-2 order-first">
@@ -121,7 +137,7 @@
           <form action="#">
             <div class="modal-body">
               <input type="hidden" id="vehicle_id" />
-              <input type="hidden" id="customer_id"  value="{{ customer_id }}"/>
+              <input type="hidden" id="customer_id" value="{{ customer_id }}" />
               <label>Plat Nomor : </label>
               <input type="text" id="plate_number" class="form-control" placeholder="Plat Nomor Kendaraan" />
               <label>Merek : </label>
