@@ -333,3 +333,80 @@ function validateCashier(cashier) {
 // **************************************************************
 // CASHIER VALIDATION | END
 // **************************************************************
+
+// **************************************************************
+// VALIDATE PURCHASE | START
+// **************************************************************
+function validatePurchase(purchase) {
+
+  if (!required(purchase.purchase_date, "Tanggal Pembelian Harus Diisi")) {
+      return false;
+  }
+
+  if (!required(purchase.supplier_id, "Supplier Harus Diisi")) {
+      return false;
+  }
+
+  if (purchase.purchase_details.length === 0) {
+      swalWarning("Minimal tambahkan 1 barang.");
+      return false;
+  }
+
+  for (const item of purchase.purchase_details) {
+
+      if (!item.product_id) {
+          swalWarning("Barang harus dipilih.");
+          return false;
+      }
+
+      if (Number(item.quantity) <= 0) {
+          swalWarning("Jumlah barang tidak valid.");
+          return false;
+      }
+
+      if (Number(item.purchase) <= 0) {
+          swalWarning("Harga beli tidak valid.");
+          return false;
+      }
+
+  }
+
+  return true;
+}
+// **************************************************************
+// VALIDATE PURCHASE | END
+// **************************************************************
+
+// **************************************************************
+// PURCHASE IMPORT VALIDATION | START
+// **************************************************************
+function validatePurchaseImport(purchase) {
+
+  if (!required(purchase.supplier_id, "Supplier wajib dipilih")) {
+    return false;
+  }
+
+  if (!required(purchase.purchase_date, "Tanggal pembelian wajib diisi")) {
+    return false;
+  }
+
+  if (!purchase.file) {
+    swalWarning("File Excel wajib dipilih.");
+    return false;
+  }
+
+  const extension = purchase.file.name
+    .split(".")
+    .pop()
+    .toLowerCase();
+
+  if (extension !== "xlsx") {
+    swalWarning("File harus berformat .xlsx.");
+    return false;
+  }
+
+  return true;
+}
+// **************************************************************
+// PURCHASE IMPORT VALIDATION | END
+// **************************************************************

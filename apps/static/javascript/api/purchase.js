@@ -1,298 +1,196 @@
-function addRow() {
+// **************************************************************
+// BASE INISIALIZATION | START
+// **************************************************************
+document.addEventListener("DOMContentLoaded", init);
 
-    const tbody = document.getElementById(
-        "purchase-items"
-    );
+async function init() {
+  await loadSuppliers();
+  await loadProducts();
+  await loadPurchases();
 
-    let options = "";
+  // Default tanggal hari ini
+  form.purchaseDate.value = new Date().toISOString().split("T")[0];
+  form.importDate.value = new Date().toISOString().split("T")[0];
 
-    itemsData.forEach(item => {
-    
-        options += `
-            <option value="${item.id}">
-                ${item.nama_barang}
-            </option>
-        `;
-    
-    });
+  renderPurchaseTable();
+  const table = document.querySelector("#table1");
 
-    const row = `
-        <tr>
+  if (table) {
+    new simpleDatatables.DataTable(table);
+  }
+}
 
-            <td>
-                <select class="form-control item_id">
+// Form ID Setup
+const form = {
+  purchaseDate: document.getElementById("purchase_date"),
+  supplierId: document.getElementById("supplier_id"),
 
-                    <option value="">
-                        Pilih Barang
-                    </option>
+  importSupplier: document.getElementById("import_supplier"),
+  importDate: document.getElementById("import_purchase_date"),
+  importFile: document.getElementById("import_file"),
 
-                    ${options}
+  grandTotal: document.getElementById("grand_total"),
+};
+// **************************************************************
+// BASE INISIALIZATION | END
+// **************************************************************
 
-                </select>
-            </td>
+// **************************************************************
+// VARIABLE SETUP | START
+// **************************************************************
+let suppliersData = [];
+let productsData = [];
+let purchaseItems = [];
+// **************************************************************
+// VARIABLE SETUP | END
+// **************************************************************
 
-            <td>
-                <input
-                    type="number"
-                    class="form-control qty"
-                    value="1"
-                    oninput="calculateRow(this)">
-            </td>
+// **************************************************************
+// LOAD SUPPLIER | START
+// **************************************************************
+async function loadSuppliers() {
+  const result = await getRequest("/supplier/view");
+  console.log(result);
+  if (result.status_code !== 200) {
+    await swalError(result.message);
+    return;
+  }
 
-            <td>
-                <input
-                    type="number"
-                    class="form-control harga_beli"
-                    value="0"
-                    oninput="calculateRow(this)">
-            </td>
+  suppliersData = result.data;
 
-            <td class="subtotal">
-                0
-            </td>
-
-            <td>
-                <button
-                    class="btn btn-danger btn-sm"
-                    onclick="removeRow(this)">
-                
-                    Hapus
-            
-                </button>
-            </td>
-
-        </tr>
+  let html = `
+        <option value="">
+            Pilih Supplier
+        </option>
     `;
 
-    tbody.insertAdjacentHTML(
-        "beforeend",
-        row
-    );
+  suppliersData.forEach((supplier) => {
+    html += `
+            <option value="${supplier.id}">
+                ${supplier.name}
+            </option>
+        `;
+  });
 
+  form.supplierId.innerHTML = html;
+  form.importSupplier.innerHTML = html;
+}
+// **************************************************************
+// LOAD SUPPLIER | END
+// **************************************************************
+
+// **************************************************************
+// LOAD PRODUCT | START
+// **************************************************************
+async function loadProducts() {
+  const result = await getRequest("/product/view");
+
+  if (result.status_code !== 200) {
+    await swalError(result.message);
+    return;
+  }
+
+  productsData = result.data;
+  //   console.log(productsData)
+}
+// **************************************************************
+// LOAD PRODUCT | END
+// **************************************************************
+
+// **************************************************************
+// PURCHASE ITEM | START
+// **************************************************************
+function addItem() {
+  purchaseItems.push({
+    product_id: "",
+    quantity: 1,
+    unit_cost: 0,
+    subtotal: 0,
+  });
+
+  renderPurchaseTable();
 }
 
-function calculateRow(element){
+function removeItem(index) {
+  purchaseItems.splice(index, 1);
 
-    const row = element.closest("tr");
-
-    const qty = parseInt(
-        row.querySelector(".qty").value || 0
-    );
-
-    const harga = parseInt(
-        row.querySelector(".harga_beli").value || 0
-    );
-
-    const subtotal = qty * harga;
-
-    row.querySelector(".subtotal").innerText = subtotal;
-
-    calculateGrandTotal();
-
+  renderPurchaseTable();
 }
 
-function calculateGrandTotal(){
+// **************************************************************
+// PURCHASE TOTAL | START
+// **************************************************************
+function calculateTotal() {
+  let total = 0;
 
-    let total = 0;
+  purchaseItems.forEach((item) => {
+    item.subtotal = Number(item.quantity) * Number(item.unit_cost);
 
-    document.querySelectorAll(".subtotal")
-        .forEach(item => {
+    total += item.subtotal;
+  });
 
-            total += parseInt(
-                item.innerText || 0
-            );
-
-        });
-
-    document.getElementById(
-        "grand-total"
-    ).innerText = total;
-
+  form.grandTotal.value = formatRupiah(total);
 }
+// **************************************************************
+// PURCHASE TOTAL | END
+// **************************************************************
+// **************************************************************
+// PURCHASE ITEM | END
+// **************************************************************
 
-function removeRow(button){
+// **************************************************************
+// RENDER TABLE | START
+// **************************************************************
+function renderPurchaseTable() {
+  const table = document.getElementById("purchase_detail_table");
 
-    button.closest("tr").remove();
+  if (purchaseItems.length === 0) {
+    table.innerHTML = `
+            <tr id="empty_row">
+                <td colspan="5" class="text-center text-muted">
+                    Belum ada barang.
+                </td>
+            </tr>
+        `;
 
-    calculateGrandTotal();
+    calculateTotal();
 
-}
+    return;
+  }
 
-// IMPORT FILE EXCEL
-async function importExcel() {
+  let html = "";
 
-    const file =
-        document.getElementById(
-            "excel-file"
-        ).files[0];
-    
-    const supplierId =
-        document.getElementById(
-            "supplier_id"
-        ).value;
-    
-    const tanggal =
-        document.getElementById(
-            "tanggal"
-        ).value;
-    
-    if (!supplierId) {
+  purchaseItems.forEach((item, index) => {
+    item.subtotal = Number(item.quantity) * Number(item.unit_cost);
 
-        Swal.fire({
-        
-            icon: 'warning',
-    
-            title: 'Supplier Belum Dipilih',
-    
-            text: 'Silakan pilih supplier terlebih dahulu'
-        
-        });
-        
-        return;
-    }
-        
-    if (!tanggal) {
-        
-        Swal.fire({
-        
-            icon: 'warning',
-        
-            title: 'Tanggal Belum Dipilih',
-        
-            text: 'Silakan pilih tanggal transaksi'
-        
-        });
-        
-        return;
-    }
+    let productOptions = `
+            <option value="">
+                Pilih Barang
+            </option>
+        `;
 
-    if (!file) {
+    productsData.forEach((product) => {
+      productOptions += `
+                <option
+                    value="${product.id}"
+                    ${item.product_id == product.id ? "selected" : ""}>
 
-        alert(
-            "Pilih file excel dulu"
-        );
+                    ${product.product_name}
 
-        return;
-    }
-
-    const formData =
-        new FormData();
-
-    formData.append(
-        "file",
-        file
-    );
-
-    Swal.fire({
-
-        title: 'Memproses File...',
-    
-        allowOutsideClick: false,
-    
-        didOpen: () => {
-    
-            Swal.showLoading();
-    
-        }
-    
+                </option>
+            `;
     });
-    
-    const response =
-        await fetch(
-            "/purchase/import",
-            {
-                method: "POST",
-                body: formData
-            }
-        );
-    
-    Swal.close();
 
-    const result =
-        await response.json();
-
-        if (!result.status) {
-
-            Swal.fire({
-                icon: 'error',
-                title: 'Import Gagal',
-                text: result.message
-            });
-        
-            return;
-        }
-        
-        renderImportedData(
-            result.data
-        );
-        
-        document.getElementById(
-            "excel-file"
-        ).value = "";
-        
-        Swal.fire({
-        
-            icon: 'success',
-        
-            title: 'Import Excel Berhasil',
-        
-            html: `
-                <b>${result.data.length}</b>
-                barang berhasil dimuat ke tabel pembelian
-            `
-        
-        });
-        
-}
-
-// BACA ISI FILE EXCEL
-function renderImportedData(data) {
-
-    const tbody =
-        document.getElementById(
-            "purchase-items"
-        );
-
-    tbody.innerHTML = "";
-
-    data.forEach(item => {
-
-        const itemData =
-            itemsData.find(
-                x =>
-                x.nama_barang ==
-                item.nama_barang
-            );
-
-        if (!itemData) {
-
-            console.error(
-                "Barang tidak ditemukan:",
-                item.nama_barang
-            );
-
-            return;
-        }
-
-        const subtotal =
-            item.qty *
-            item.harga_beli;
-
-        const row = `
+    html += `
             <tr>
 
                 <td>
 
                     <select
-                        class="form-control item_id">
+                        class="form-select product-select"
+                        data-index="${index}">
 
-                        <option
-                            value="${itemData.id}"
-                            selected>
-
-                            ${item.nama_barang}
-
-                        </option>
+                        ${productOptions}
 
                     </select>
 
@@ -302,33 +200,36 @@ function renderImportedData(data) {
 
                     <input
                         type="number"
-                        class="form-control qty"
-                        value="${item.qty}">
+                        class="form-control quantity-input"
+                        data-index="${index}"
+                        value="${item.quantity}"
+                        min="1">
 
                 </td>
 
                 <td>
 
                     <input
-                        type="number"
-                        class="form-control harga_beli"
-                        value="${item.harga_beli}">
-
-                </td>
-
-                <td class="subtotal">
-
-                    ${subtotal}
+                        type="text"
+                        class="form-control purchase-input"
+                        data-index="${index}"
+                        value="${item.unit_cost == 0 ? "" : formatRupiah(item.unit_cost)}">
 
                 </td>
 
                 <td>
 
-                    <button
-                        class="btn btn-danger btn-sm"
-                        onclick="removeRow(this)">
+                    ${formatRupiah(item.subtotal)}
 
-                        Hapus
+                </td>
+
+                <td class="text-center">
+
+                    <button
+                        class="btn btn-outline-danger btn-sm btn-remove-item"
+                        data-index="${index}">
+
+                        <i class="bi bi-trash-fill"></i>
 
                     </button>
 
@@ -336,156 +237,294 @@ function renderImportedData(data) {
 
             </tr>
         `;
+  });
 
-        tbody.insertAdjacentHTML(
-            "beforeend",
-            row
-        );
+  table.innerHTML = html;
 
-    });
-
-    calculateGrandTotal();
-
+  calculateTotal();
 }
+// **************************************************************
+// RENDER TABLE | END
+// **************************************************************
 
+// **************************************************************
+// SAVE PURCHASE | START
+// **************************************************************
 async function savePurchase() {
+  const purchase = {
+    purchase_date: new Date(form.purchaseDate.value).getTime(),
+    supplier_id: form.supplierId.value,
+    purchase_details: purchaseItems,
+  };
 
-    // Ambil supplier yang dipilih
-    const supplierId = document.getElementById(
-        "supplier_id"
-    ).value;
+  // VALIDATION ==================================================
+  if (!validatePurchase(purchase)) return;
 
-    // Ambil tanggal transaksi
-    const tanggal = document.getElementById(
-        "tanggal"
-    ).value;
+  let result;
 
-    // Ambil total pembelian
-    const total = document.getElementById(
-        "grand-total"
-    ).innerText;
+  try {
+    swalLoading();
 
-    // Menyimpan semua detail barang
-    const details = [];
+    result = await postRequest("/purchase/add", purchase);
+  } finally {
+    swalClose();
+  }
 
-    // Loop setiap baris barang
-    document.querySelectorAll(
-        "#purchase-items tr"
-    ).forEach(row => {
-
-        details.push({
-
-            // ID barang
-            item_id: row.querySelector(
-                ".item_id"
-            ).value,
-
-            // Jumlah barang
-            qty: row.querySelector(
-                ".qty"
-            ).value,
-
-            // Harga beli barang
-            harga_beli: row.querySelector(
-                ".harga_beli"
-            ).value,
-
-            // Total per barang
-            subtotal: row.querySelector(
-                ".subtotal"
-            ).innerText
-
-        });
-
-    });
-
-    Swal.fire({
-
-        title: 'Menyimpan Pembelian...',
-    
-        allowOutsideClick: false,
-    
-        didOpen: () => {
-    
-            Swal.showLoading();
-    
-        }
-    
-    });
-
-    // Kirim data ke backend Flask
-    const response = await fetch(
-        "/purchase/add",
-        {
-            method: "POST",
-
-            headers: {
-                "Content-Type": "application/json"
-            },
-
-            body: JSON.stringify({
-
-                supplier_id: supplierId,
-                tanggal: tanggal,
-                total: total,
-                details: details
-
-            })
-        }
-    );
-
-    // Ambil response dari backend
-    const result =
-    await response.json();
-
-Swal.close();
-
-if (result.status) {
-
-    Swal.fire({
-
-        icon: 'success',
-
-        title: 'Berhasil',
-
-        text: result.message
-
-    }).then(() => {
-
-        location.reload();
-
-    });
-
-} else {
-
-    Swal.fire({
-
-        icon: 'error',
-
-        title: 'Gagal',
-
-        text: result.message
-
-    });
-
+  if (result.status_code === 201) {
+    closeModal("purchase_modal");
+    resetForm();
+    await loadPurchases();
+    await swalSuccess(result.message);
+  } else {
+    await swalError(result.message);
+  }
 }
+// **************************************************************
+// SAVE PURCHASE | END
+// **************************************************************
 
-    // Tampilkan hasil di console
-    console.log(result);
+// **************************************************************
+// IMPORT PURCHASE | START
+// **************************************************************
+async function importPurchase() {
+  const purchase = {
+    supplier_id: form.importSupplier.value,
+    purchase_date: form.importDate.value,
+    file: form.importFile.files[0],
+  };
 
+  // VALIDATION ==================================================
+  if (!validatePurchaseImport(purchase)) return;
 
+  const formData = new FormData();
+
+  formData.append("supplier_id", purchase.supplier_id);
+
+  formData.append("purchase_date", new Date(form.importDate.value).getTime());
+
+  formData.append("file", purchase.file);
+
+  let result;
+
+  try {
+    swalLoading();
+
+    result = await uploadRequest("/purchase/import", formData);
+  } finally {
+    swalClose();
+  }
+
+  if (result.status_code === 201) {
+    closeModal("import_purchase_modal");
+
+    clearValue(form.importSupplier, form.importDate, form.importFile);
+
+    resetForm();
+
+    await loadPurchases();
+
+    await swalSuccess(result.message);
+  } else {
+    await swalError(result.message);
+  }
 }
+// **************************************************************
+// IMPORT PURCHASE | END
+// **************************************************************
 
-// select2
-$(document).ready(function () {
+// **************************************************************
+// LOAD PURCHASE | START
+// **************************************************************
+async function loadPurchases() {
+  const result = await getRequest("/purchase/view");
 
-    $('#supplier_id').select2({
+  if (result.status_code !== 200) {
+    await swalError(result.message);
+    return;
+  }
 
-        placeholder: 'Cari Supplier',
+  let html = "";
 
-        width: '100%',
-        minimumInputLength: 1
+  result.data.forEach((purchase, index) => {
+    html += `
+          <tr>
 
-    });
+              <td>${index + 1}</td>
 
+              <td>${purchase.purchase_date.date}</td>
+
+              <td>${purchase.supplier_name}</td>
+
+              <td>${purchase.total_item}</td>
+
+              <td>${formatRupiah(purchase.total)}</td>
+
+              <td>
+
+                  <button
+                      class="btn btn-outline-info btn-sm btn-detail"
+                      data-id="${purchase.id}"
+                      title="Detail Pembelian">
+                  
+                      <i class="bi bi-eye-fill me-2"></i>
+                      Detail
+                  
+                  </button>
+
+              </td>
+
+          </tr>
+      `;
+  });
+
+  document.getElementById("purchase_table").innerHTML = html;
+}
+// **************************************************************
+// LOAD PURCHASE | END
+// **************************************************************
+
+// **************************************************************
+// LOAD PURCHASE DETAIL | START
+// **************************************************************
+async function loadPurchaseDetail(id) {
+  const result = await getRequest(`/purchase/detail/${id}`);
+
+  if (result.status_code !== 200) {
+    await swalError(result.message);
+    return;
+  }
+
+  const data = result.data;
+
+  document.getElementById("detail_supplier").value = data.supplier_name;
+
+  document.getElementById("detail_purchase_date").value = data.purchase_date.date;
+
+  document.getElementById("detail_total").value = formatRupiah(data.total);
+
+  let html = "";
+
+  data.details.forEach((item, index) => {
+    html += `
+          <tr>
+
+              <td>${index + 1}</td>
+
+              <td>${item.product_name}</td>
+
+              <td>${item.quantity}</td>
+
+              <td>${formatRupiah(item.unit_cost)}</td>
+
+              <td>${formatRupiah(item.subtotal)}</td>
+
+          </tr>
+      `;
+  });
+
+  document.getElementById("purchase_detail_body").innerHTML = html;
+
+  openModal("purchase_detail_modal");
+}
+// **************************************************************
+// LOAD PURCHASE DETAIL | END
+// **************************************************************
+
+// **************************************************************
+// RESET FORM | START
+// **************************************************************
+function resetForm() {
+  clearValue(form.purchaseDate, form.supplierId);
+
+  clearValue(form.importSupplier, form.importDate, form.importFile);
+
+  purchaseItems = [];
+
+  form.grandTotal.value = formatRupiah(0);
+
+  // Default tanggal hari ini
+  form.purchaseDate.value = new Date().toISOString().split("T")[0];
+  form.importDate.value = new Date().toISOString().split("T")[0];
+
+  renderPurchaseTable();
+}
+// **************************************************************
+// RESET FORM | END
+// **************************************************************
+
+// **************************************************************
+// EVENT LISTENER | START
+// **************************************************************
+
+// Tambah Barang
+document.getElementById("btn_add_item").addEventListener("click", addItem);
+
+// Simpan Pembelian
+document.getElementById("btn-save").addEventListener("click", savePurchase);
+
+// Import Excel
+document.getElementById("btn_import_purchase").addEventListener("click", importPurchase);
+
+// Event Table
+document.getElementById("purchase_detail_table").addEventListener("input", function (e) {
+  const index = Number(e.target.dataset.index);
+
+  if (e.target.classList.contains("quantity-input")) {
+    purchaseItems[index].quantity = Number(e.target.value) || 1;
+  }
+
+  if (e.target.classList.contains("purchase-input")) {
+    const number = unformatNumber(e.target.value);
+
+    purchaseItems[index].unit_cost = Number(number);
+
+    e.target.value = formatRupiah(number);
+  }
+
+  purchaseItems[index].subtotal = purchaseItems[index].quantity * purchaseItems[index].unit_cost;
+
+  e.target.closest("tr").children[3].innerHTML = formatRupiah(purchaseItems[index].subtotal);
+
+  calculateTotal();
 });
+
+document.getElementById("purchase_detail_table").addEventListener("change", function (e) {
+  const index = Number(e.target.dataset.index);
+
+  if (e.target.classList.contains("product-select")) {
+    const product = productsData.find((item) => item.id == e.target.value);
+
+    if (!product) return;
+
+    purchaseItems[index].product_id = product.id;
+
+    // Ambil harga beli dari Master Barang
+    purchaseItems[index].unit_cost = Number(product.purchase_price);
+
+    // Hitung subtotal
+    purchaseItems[index].subtotal = purchaseItems[index].quantity * purchaseItems[index].unit_cost;
+
+    renderPurchaseTable();
+  }
+});
+
+// Hapus Item
+document.getElementById("purchase_detail_table").addEventListener("click", function (e) {
+  const btn = e.target.closest(".btn-remove-item");
+
+  if (!btn) return;
+
+  removeItem(Number(btn.dataset.index));
+});
+
+// Detail Pembelian
+document.getElementById("purchase_table").addEventListener("click", function (e) {
+  const btn = e.target.closest(".btn-detail");
+
+  if (!btn) return;
+
+  loadPurchaseDetail(btn.dataset.id);
+});
+// **************************************************************
+// EVENT LISTENER | END
+// **************************************************************

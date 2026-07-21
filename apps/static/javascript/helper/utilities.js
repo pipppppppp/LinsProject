@@ -27,15 +27,15 @@ async function getRequest(url) {
 let dataTable = null;
 
 function initDataTable(tableId = "#table1") {
-    const table = document.querySelector(tableId);
+  const table = document.querySelector(tableId);
 
-    if (!table) return;
+  if (!table) return;
 
-    if (dataTable) {
-        dataTable.destroy();
-    }
+  if (dataTable) {
+    dataTable.destroy();
+  }
 
-    dataTable = new simpleDatatables.DataTable(table);
+  dataTable = new simpleDatatables.DataTable(table);
 }
 // **************************************************************
 // DATATABLE | END
@@ -63,6 +63,27 @@ async function postRequest(url, data) {
 }
 // **************************************************************
 // POST REQUEST | END
+// **************************************************************
+
+// **************************************************************
+// UPLOAD REQUEST | START
+// **************************************************************
+async function uploadRequest(url, formData) {
+  try {
+    const response = await fetch(url, {
+      method: "POST",
+      body: formData,
+    });
+
+    return await response.json();
+  } catch (error) {
+    swalError("Tidak dapat terhubung ke server.");
+
+    return null;
+  }
+}
+// **************************************************************
+// UPLOAD REQUEST | END
 // **************************************************************
 
 // **************************************************************
@@ -150,8 +171,8 @@ function closeModal(id) {
 // **************************************************************
 async function reloadTable(loadData, renderData) {
   if (dataTable) {
-      dataTable.destroy();
-      dataTable = null;
+    dataTable.destroy();
+    dataTable = null;
   }
 
   await loadData();
@@ -159,7 +180,7 @@ async function reloadTable(loadData, renderData) {
   renderData();
 
   setTimeout(() => {
-      initDataTable();
+    initDataTable();
   }, 100);
 }
 // **************************************************************

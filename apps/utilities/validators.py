@@ -172,6 +172,34 @@ def signin_validator(usermail, password):
     return checkResult, token
 # AUTH VALIDATION ============================================================ End
 
+# EXCEL FILE VALIDATION ============================================================ Begin
+def excel_file_validator(file):
+    check_result = []
+
+    # Check Null Value ---------------------------------------- Start
+    if file is None:
+        check_result.append("File is required.")
+        return check_result
+    # Check Null Value ---------------------------------------- Finish
+
+    # Check File Name ---------------------------------------- Start
+    if file.filename == "":
+        check_result.append("File name cannot be empty.")
+        return check_result
+    # Check File Name ---------------------------------------- Finish
+
+    # Check File Extension ---------------------------------------- Start
+    extension = file.filename.rsplit(".", 1)[-1].lower()
+
+    if extension != "xlsx":
+        check_result.append(
+            "Only .xlsx files are allowed."
+        )
+    # Check File Extension ---------------------------------------- Finish
+
+    return check_result
+# EXCEL FILE VALIDATION ============================================================ End
+
 # WORKSHOP VALIDATION ============================================================ Begin
 def workshop_validator(user_id, name, address, phone, is_create=True):
     checker_result = []
@@ -406,6 +434,7 @@ def vehicle_validator(
 
     return check_result
 # VEHICLE VALIDATION ============================================================ End
+
 # PRODUCT VALIDATION ============================================================ Begin
 def product_validator(
     category_id,
@@ -746,3 +775,189 @@ def user_validator(
 
     return check_result
 # USER VALIDATION ============================================================ End
+
+# PURCHASE VALIDATION ============================================================ Begin
+def purchase_validator(
+    supplier_id,
+    purchase_date,
+    purchase_details,
+    workshop_id,
+    purchase_id=None
+):
+    check_result = []
+
+    # Check Null Value ---------------------------------------- Start
+    if supplier_id == "":
+        check_result.append("Supplier tidak boleh kosong.")
+
+    if purchase_date == "":
+        check_result.append("Tanggal pembelian tidak boleh kosong.")
+
+    if (
+        purchase_details is None or
+        not isinstance(purchase_details, list) or
+        len(purchase_details) == 0
+    ):
+        check_result.append("Detail pembelian tidak boleh kosong.")
+    # Check Null Value ---------------------------------------- Finish
+
+    # Check Field Content ---------------------------------------- Start
+    if supplier_id != "" and not str(supplier_id).isdigit():
+        check_result.append("Supplier tidak valid.")
+
+    if purchase_date != "" and not str(purchase_date).isdigit():
+        check_result.append("Tanggal pembelian tidak valid.")
+    # Check Field Content ---------------------------------------- Finish
+
+    # Check Supplier ---------------------------------------- Start
+    if str(supplier_id).isdigit():
+        supplier = Suppliers.query.filter_by(
+            id=supplier_id,
+            workshop_id=workshop_id,
+            is_delete=0
+        ).first()
+
+        if not supplier:
+            check_result.append("Supplier tidak ditemukan.")
+    # Check Supplier ---------------------------------------- Finish
+
+    # Check Purchase Detail ---------------------------------------- Start
+    if isinstance(purchase_details, list):
+
+        for index, item in enumerate(purchase_details):
+
+            product_id = item.get("product_id", "")
+            quantity = item.get("quantity", "")
+            unit_cost = item.get("unit_cost", "")
+
+            if product_id == "":
+                check_result.append(
+                    f"Produk pada item ke-{index + 1} tidak boleh kosong."
+                )
+                continue
+
+            if not str(product_id).isdigit():
+                check_result.append(
+                    f"Produk pada item ke-{index + 1} tidak valid."
+                )
+                continue
+
+            product = Products.query.filter_by(
+                id=product_id,
+                workshop_id=workshop_id,
+                is_delete=0
+            ).first()
+
+            if not product:
+                check_result.append(
+                    f"Produk pada item ke-{index + 1} tidak ditemukan."
+                )
+                continue
+
+            if quantity == "":
+                check_result.append(
+                    f"Jumlah pada item ke-{index + 1} tidak boleh kosong."
+                )
+
+            elif not str(quantity).isdigit():
+                check_result.append(
+                    f"Jumlah pada item ke-{index + 1} harus berupa angka."
+                )
+
+            elif int(quantity) <= 0:
+                check_result.append(
+                    f"Jumlah pada item ke-{index + 1} harus lebih dari 0."
+                )
+
+            if unit_cost == "":
+                check_result.append(
+                    f"Harga beli pada item ke-{index + 1} tidak boleh kosong."
+                )
+
+            elif not str(unit_cost).isdigit():
+                check_result.append(
+                    f"Harga beli pada item ke-{index + 1} harus berupa angka."
+                )
+
+            elif int(unit_cost) < 0:
+                check_result.append(
+                    f"Harga beli pada item ke-{index + 1} tidak boleh kurang dari 0."
+                )
+    # Check Purchase Detail ---------------------------------------- Finish
+
+    return check_result
+# PURCHASE VALIDATION ============================================================ End
+
+# PURCHASE EXCEL VALIDATION ============================================================ Begin
+def purchase_excel_validator(worksheet):
+    check_result = []
+
+    # Check Empty File ---------------------------------------- Start
+    if worksheet.max_row <= 1:
+        check_result.append(
+            "The uploaded Excel file is empty."
+        )
+
+        return check_result
+    # Check Empty File ---------------------------------------- Finish
+
+    # Check Header ---------------------------------------- Start
+    english = ["Product", "Quantity", "Unit Cost"]
+    indonesia = ["Nama Barang", "Jumlah", "Harga Beli"]
+
+    headers = [
+        str(worksheet.cell(row=1, column=index).value).strip()
+        for index in range(1, 4)
+    ]
+
+    if headers != english and headers != indonesia:
+        check_result.append("Invalid Excel template.")
+
+        return check_result
+    # Check Header ---------------------------------------- Finish
+
+    # Check Rows ---------------------------------------- Start
+    for row in range(2, worksheet.max_row + 1):
+
+        product = worksheet.cell(row=row, column=1).value
+        quantity = worksheet.cell(row=row, column=2).value
+        unit_cost = worksheet.cell(row=row, column=3).value
+
+        if not product:
+            check_result.append(
+                f"Row {row}: Product is required."
+            )
+
+        if quantity in [None, ""]:
+            check_result.append(
+                f"Row {row}: Quantity is required."
+            )
+
+        elif not isinstance(quantity, (int, float)):
+            check_result.append(
+                f"Row {row}: Quantity must be numeric."
+            )
+
+        elif quantity <= 0:
+            check_result.append(
+                f"Row {row}: Quantity must be greater than 0."
+            )
+
+        if unit_cost in [None, ""]:
+            check_result.append(
+                f"Row {row}: Unit cost is required."
+            )
+
+        elif not isinstance(unit_cost, (int, float)):
+            check_result.append(
+                f"Row {row}: Unit cost must be numeric."
+            )
+
+        elif unit_cost < 0:
+            check_result.append(
+                f"Row {row}: Unit cost cannot be less than 0."
+            )
+    # Check Rows ---------------------------------------- Finish
+
+    return check_result
+# PURCHASE EXCEL VALIDATION ============================================================ End
