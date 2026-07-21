@@ -1,0 +1,184 @@
+{% extends 'layouts/dashboard_layout.html' %} {% block content %}
+
+<div id="app">
+  <!--! ================================================================ !-->
+  <!--! [Start] Navigation Section !-->
+  <!--! ================================================================ !-->
+  {% include 'components/nav_dashboard.html' %}
+  <!--! ================================================================ !-->
+  <!--! [End] Navigation Section !-->
+  <!--! ================================================================ !-->
+
+  <!--! ================================================================ !-->
+  <!--! [Start] Page Content !-->
+  <!--! ================================================================ !-->
+  <div id="main">
+    <!--! ================================================================ !-->
+    <!--! [Start] Burger Button !-->
+    <!--! ================================================================ !-->
+    <header class="mb-3">
+      <a href="#" class="burger-btn d-block d-xl-none">
+        <i class="bi bi-justify fs-3"></i>
+      </a>
+    </header>
+    <!--! ================================================================ !-->
+    <!--! [End] Burger Button !-->
+    <!--! ================================================================ !-->
+
+    <!--! ================================================================ !-->
+    <!--! [Start] Main Content !-->
+    <!--! ================================================================ !-->
+    <div class="page-heading">
+      <!--! ================================================================ !-->
+      <!--! [Start] Header !-->
+      <!--! ================================================================ !-->
+      <div class="page-title">
+        <div class="row">
+          <div class="col-12 col-md-6 order-md-1 order-last">
+            <h3>MANAJEMEN KASIR</h3>
+          </div>
+
+          <div class="col-12 col-md-6 order-md-2 order-first">
+            <nav aria-label="breadcrumb" class="breadcrumb-header float-start float-lg-end">
+              <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                  <a href="{{ url_for('dashboard.index') }}">Dashboard</a>
+                </li>
+                <li class="breadcrumb-item active" aria-current="page">Manajemen Kasir</li>
+              </ol>
+            </nav>
+          </div>
+        </div>
+      </div>
+      <!--! ================================================================ !-->
+      <!--! [End] Header !-->
+      <!--! ================================================================ !-->
+
+      <!--! ================================================================ !-->
+      <!--! [Start] Title !-->
+      <!--! ================================================================ !-->
+      <section class="section">
+        <div class="card">
+          <div class="card-body">
+            <div class="row">
+              <div class="col-sm-12 d-flex justify-content-end">
+                <a href="#" class="btn btn-outline-success" data-bs-toggle="modal" data-bs-target="#cashier_modal">
+                  <i class="bi bi-plus-lg"></i>
+                  Tambah Kasir
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+      <!--! ================================================================ !-->
+      <!--! [End] Title !-->
+      <!--! ================================================================ !-->
+
+      <!--! ================================================================ !-->
+      <!--! [Start] Content !-->
+      <!--! ================================================================ !-->
+      <section class="section">
+        <div class="card">
+          <div class="card-body">
+            <table class="table table-striped" id="table1">
+              <thead>
+                <tr>
+                  <th>No</th>
+                  <th>Nama</th>
+                  <th>Username</th>
+                  <th>Email</th>
+                  <th>Status</th>
+                  <th>Aksi</th>
+                </tr>
+              </thead>
+
+              <tbody id="cashier_table">
+                <!-- Render by Javascript -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+      <!--! ================================================================ !-->
+      <!--! [End] Content !-->
+      <!--! ================================================================ !-->
+
+      <!--! ================================================================ !-->
+      <!--! [Start] Footer !-->
+      <!--! ================================================================ !-->
+      {% include 'components/footer_dashboard.html' %}
+      <!--! ================================================================ !-->
+      <!--! [End] Footer !-->
+      <!--! ================================================================ !-->
+
+      <!--! ================================================================ !-->
+      <!--! [Start] Modal Form !-->
+      <!--! ================================================================ !-->
+      <div class="modal fade text-left" id="cashier_modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel33" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h4 class="modal-title" id="modal_label">Tambah Kasir</h4>
+
+              <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                <i data-feather="x"></i>
+              </button>
+            </div>
+
+            <form action="#">
+              <div class="modal-body">
+                <input type="hidden" id="cashier_id" />
+
+                <label>Nama :</label>
+                <input type="text" id="owner_name" class="form-control" placeholder="Nama Lengkap" />
+
+                <label class="mt-2">Username :</label>
+                <input type="text" id="username" class="form-control" placeholder="Username" />
+
+                <label class="mt-2">Email :</label>
+                <input type="email" id="email" class="form-control" placeholder="Email" />
+
+                <label class="mt-2">Password :</label>
+                <input type="password" id="password" class="form-control" placeholder="Password" />
+
+                <label class="mt-2">Role :</label>
+                <select id="role" class="form-select">
+                  <option value="2">Kasir</option>
+                </select>
+
+                <label class="mt-2">Status :</label>
+                <select id="is_active" class="form-select">
+                  <option value="1">Aktif</option>
+                  <option value="0">Nonaktif</option>
+                </select>
+              </div>
+
+              <div class="modal-footer">
+                <button type="button" class="btn btn-light-secondary" data-bs-dismiss="modal">
+                  <i class="bx bx-x d-block d-sm-none"></i>
+                  <span class="d-none d-sm-block"> Tutup </span>
+                </button>
+
+                <button type="button" class="btn btn-primary btn-save">Simpan</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+      <!--! ================================================================ !-->
+      <!--! [End] Modal Form !-->
+      <!--! ================================================================ !-->
+    </div>
+    <!--! ================================================================ !-->
+    <!--! [End] Page Content !-->
+    <!--! ================================================================ !-->
+  </div>
+  <script src="{{ url_for('static', filename='javascript/helper/utilities.js') }}"></script>
+  <script src="{{ url_for('static', filename='javascript/helper/formatter.js') }}"></script>
+  <script src="{{ url_for('static', filename='javascript/helper/swal.js') }}"></script>
+  <script src="{{ url_for('static', filename='javascript/helper/validators.js') }}"></script>
+  <script src="{{ url_for('static', filename='javascript/api/cashier_management.js') }}"></script>
+
+  {% endblock %}
+</div>

@@ -80,6 +80,7 @@ def index():
 # Blueprint Section ==============================##
 # Import
 from .routes.controllers.auth import auth
+from .routes.controllers.cashier_management import cashier_management
 from.routes.controllers.administrator import administrator
 from .routes.controllers.dashboard import dashboard
 from .routes.controllers.category import category
@@ -95,6 +96,7 @@ from .routes.controllers.report import report
 
 # Register
 app.register_blueprint(auth)
+app.register_blueprint(cashier_management)
 app.register_blueprint(administrator)
 app.register_blueprint(dashboard)
 app.register_blueprint(category)

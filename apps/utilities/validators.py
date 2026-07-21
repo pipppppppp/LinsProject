@@ -98,6 +98,17 @@ def administrator_validator(role):
     return access
 # ADMINISTRATOR VALIDATION ============================================================ End
 
+# OWNER VALIDATION ============================================================ Begin
+def owner_validator(role):
+    access = False
+
+    if int(role) == 1:
+        access = True
+
+    return access
+# OWNER VALIDATION ============================================================ End
+
+
 def signin_validator(usermail, password):
     checker_result = []
 
@@ -621,3 +632,117 @@ def service_validator(
 
     return check_result
 # SERVICE VALIDATION ============================================================ End
+
+# USER VALIDATION ============================================================ Begin
+def user_validator(
+    owner_name,
+    username,
+    email,
+    password,
+    role,
+    workshop_id,
+    user_id=None,
+    is_update=False
+):
+    check_result = []
+
+    # Check Null Value ---------------------------------------- Start
+    if owner_name == "":
+        check_result.append("Nama tidak boleh kosong.")
+
+    if username == "":
+        check_result.append("Username tidak boleh kosong.")
+
+    if email == "":
+        check_result.append("Email tidak boleh kosong.")
+
+    if not is_update and password == "":
+        check_result.append("Password tidak boleh kosong.")
+
+    if role == "":
+        check_result.append("Role tidak boleh kosong.")
+    # Check Null Value ---------------------------------------- Finish
+
+    # Sanitize String Content ---------------------------------------- Start
+    sanitize_name, char_name = sanitize_all_char(owner_name)
+    if sanitize_name:
+        check_result.append(
+            f"Nama tidak boleh mengandung karakter {char_name}"
+        )
+
+    sanitize_username, char_username = sanitize_all_char(username)
+    if sanitize_username:
+        check_result.append(
+            f"Username tidak boleh mengandung karakter {char_username}"
+        )
+
+    sanitize_email, char_email = sanitize_email_char(email)
+    if sanitize_email:
+        check_result.append(
+            f"Email tidak boleh mengandung karakter {char_email}"
+        )
+
+    if password != "":
+        sanitize_password, char_password = sanitize_passwd_char(password)
+        if sanitize_password:
+            check_result.append(
+                f"Password tidak boleh mengandung karakter {char_password}"
+            )
+    # Sanitize String Content ---------------------------------------- Finish
+
+    # Check Field Content ---------------------------------------- Start
+    if string_checker(owner_name):
+        check_result.append("Nama tidak valid.")
+
+    if string_checker(username):
+        check_result.append("Username tidak valid.")
+
+    if email_checker(email):
+        check_result.append("Email tidak valid.")
+
+    if password != "":
+        password_check, message = password_checker(password)
+
+        if password_check:
+            check_result.append(message)
+
+    if str(role) not in ["0", "1", "2"]:
+        check_result.append("Role tidak valid.")
+    # Check Field Content ---------------------------------------- Finish
+
+    # Check Duplicate Username ---------------------------------------- Start
+    username_query = Users.query.filter(
+        Users.username == username.strip(),
+        Users.is_delete == 0
+    )
+
+    if user_id is not None:
+        username_query = username_query.filter(
+            Users.id != user_id
+        )
+
+    username_result = username_query.first()
+
+    if username_result:
+        check_result.append("Username sudah digunakan.")
+    # Check Duplicate Username ---------------------------------------- Finish
+
+    # Check Duplicate Email ---------------------------------------- Start
+    email_query = Users.query.filter(
+        Users.email == email.strip(),
+        Users.is_delete == 0
+    )
+
+    if user_id is not None:
+        email_query = email_query.filter(
+            Users.id != user_id
+        )
+
+    email_result = email_query.first()
+
+    if email_result:
+        check_result.append("Email sudah digunakan.")
+    # Check Duplicate Email ---------------------------------------- Finish
+
+    return check_result
+# USER VALIDATION ============================================================ End

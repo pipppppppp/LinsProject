@@ -23,6 +23,20 @@
           </a>
         </li>
         <li class="sidebar-title">MASTER DATA</li>
+        <li class="sidebar-item {% if active_menu == 'workshop_profile' %}active{% endif %}">
+          <a href="{{ url_for('workshop.index') }}" class="sidebar-link">
+            <i class="bi bi-shop"></i>
+            <span>Profil Bengkel</span>
+          </a>
+        </li>
+
+        <li class="sidebar-item {% if active_menu == 'cashier_management' %}active{% endif %}">
+          <a href="{{ url_for('cashier_management.index') }}" class="sidebar-link">
+            <i class="bi bi-person-badge"></i>
+            <span>Manajemen Kasir</span>
+          </a>
+        </li>
+
         <li class="sidebar-item {% if active_menu == 'customer' %}active{% endif %}">
           <a href="{{ url_for('customer.index') }}" class="sidebar-link">
             <i class="bi bi-people"></i>
@@ -36,7 +50,7 @@
           </a>
         </li>
 
-        <li class="sidebar-item {% if active_menu == 'services' %}active{% endif %}">
+        <li class="sidebar-item {% if active_menu == 'service' %}active{% endif %}">
           <a href="{{ url_for('service.index') }}" class="sidebar-link">
             <i class="bi bi-tools"></i>
 
@@ -44,19 +58,19 @@
           </a>
         </li>
 
-        <li class="sidebar-item has-sub {% if active_menu in ['category','item'] %}active{% endif %}">
+        <li class="sidebar-item has-sub {% if active_menu in ['category','product'] %}active{% endif %}">
           <a href="#" class="sidebar-link">
             <i class="bi bi-box-seam"></i>
             <span>Master Barang</span>
           </a>
-
+        
           <ul class="submenu {% if active_menu in ['category','product'] %}active{% endif %}">
             <li class="submenu-item {% if active_menu == 'category' %}active{% endif %}">
-              <a href="{{ url_for('category.index') }}"> Kategori Barang </a>
+              <a href="{{ url_for('category.index') }}">Kategori Barang</a>
             </li>
-
+        
             <li class="submenu-item {% if active_menu == 'product' %}active{% endif %}">
-              <a href="{{ url_for('product.index') }}"> Data Barang </a>
+              <a href="{{ url_for('product.index') }}">Data Barang</a>
             </li>
           </ul>
         </li>
@@ -143,18 +157,18 @@
                   </a>
                 </li>
 
-                <li class="sidebar-item has-sub {% if active_menu in ['category','item'] %}active{% endif %}">
+                <li class="sidebar-item has-sub {% if active_menu in ['category','product'] %}active{% endif %}">
                   <a href="#" class="sidebar-link">
                     <i class="bi bi-box-seam"></i>
                     <span>Master Barang</span>
                   </a>
 
-                  <ul class="submenu {% if active_menu in ['category','item'] %}active{% endif %}">
+                  <ul class="submenu {% if active_menu in ['category','product'] %}active{% endif %}">
                     <li class="submenu-item {% if active_menu == 'category' %}active{% endif %}">
                       <a href="{{ url_for('category.index') }}"> Kategori Barang </a>
                     </li>
 
-                    <li class="submenu-item {% if active_menu == 'item' %}active{% endif %}">
+                    <li class="submenu-item {% if active_menu == 'product' %}active{% endif %}">
                       <a href="{{ url_for('product.index') }}"> Data Barang </a>
                     </li>
                   </ul>

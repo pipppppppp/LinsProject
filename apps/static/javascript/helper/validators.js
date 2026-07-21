@@ -300,3 +300,36 @@ function validateService(service) {
 // **************************************************************
 // SERVICE VALIDATION | END
 // **************************************************************
+
+// **************************************************************
+// CASHIER VALIDATION | START
+// **************************************************************
+function validateCashier(cashier) {
+
+  if (!required(cashier.owner_name, "Nama wajib diisi")) return false;
+
+  if (!required(cashier.username, "Username wajib diisi")) return false;
+
+  if (!required(cashier.email, "Email wajib diisi")) return false;
+
+  if (!email(cashier.email)) return false;
+
+  if (!cashier.id) {
+    if (!required(cashier.password, "Password wajib diisi")) return false;
+
+    if (!password(cashier.password)) return false;
+  } else {
+    if (cashier.password !== "") {
+      if (!password(cashier.password)) return false;
+    }
+  }
+
+  if (!required(cashier.role, "Role wajib dipilih")) return false;
+
+  if (!required(cashier.is_active, "Status wajib dipilih")) return false;
+
+  return true;
+}
+// **************************************************************
+// CASHIER VALIDATION | END
+// **************************************************************
