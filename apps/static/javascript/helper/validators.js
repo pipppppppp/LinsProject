@@ -410,3 +410,35 @@ function validatePurchaseImport(purchase) {
 // **************************************************************
 // PURCHASE IMPORT VALIDATION | END
 // **************************************************************
+
+// **************************************************************
+// PURCHASE REPORT VALIDATION | START
+// **************************************************************
+function validatePurchaseReport(report) {
+
+  if (!required(report.start_date, "Tanggal awal wajib diisi")) {
+      return false;
+  }
+
+  if (!required(report.end_date, "Tanggal akhir wajib diisi")) {
+      return false;
+  }
+
+  if (!number(report.start_date, "Tanggal awal tidak valid")) {
+      return false;
+  }
+
+  if (!number(report.end_date, "Tanggal akhir tidak valid")) {
+      return false;
+  }
+
+  if (Number(report.start_date) > Number(report.end_date)) {
+      swalWarning("Tanggal awal tidak boleh lebih besar dari tanggal akhir.");
+      return false;
+  }
+
+  return true;
+}
+// **************************************************************
+// PURCHASE REPORT VALIDATION | END
+// **************************************************************

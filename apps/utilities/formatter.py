@@ -22,7 +22,7 @@ def format_number(number):
 def format_date(timestamp):
     try:
         return datetime.fromtimestamp(
-            int(timestamp)
+            int(timestamp) / 1000
         ).strftime("%d-%m-%Y")
     except:
         return "-"

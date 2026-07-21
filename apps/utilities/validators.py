@@ -961,3 +961,89 @@ def purchase_excel_validator(worksheet):
 
     return check_result
 # PURCHASE EXCEL VALIDATION ============================================================ End
+
+# REPORT VALIDATION ============================================================ Begin
+def report_validator(
+    start_date,
+    end_date,
+    workshop_id,
+    cashier_id=None,
+    customer_id=None,
+    supplier_id=""
+):
+    check_result = []
+
+    # Check Null Value ---------------------------------------- Start
+    if start_date == "":
+        check_result.append("Tanggal awal tidak boleh kosong.")
+
+    if end_date == "":
+        check_result.append("Tanggal akhir tidak boleh kosong.")
+    # Check Null Value ---------------------------------------- Finish
+
+    # Check Field Content ---------------------------------------- Start
+    if start_date != "" and not str(start_date).isdigit():
+        check_result.append("Tanggal awal tidak valid.")
+
+    if end_date != "" and not str(end_date).isdigit():
+        check_result.append("Tanggal akhir tidak valid.")
+
+    if (
+        str(start_date).isdigit() and
+        str(end_date).isdigit()
+    ):
+        if int(start_date) > int(end_date):
+            check_result.append(
+                "Tanggal awal tidak boleh melebihi tanggal akhir."
+            )
+
+    if (
+        cashier_id is not None and
+        cashier_id != ""
+    ):
+        if not str(cashier_id).isdigit():
+            check_result.append("Kasir tidak valid.")
+
+    if (
+        customer_id is not None and
+        customer_id != ""
+    ):
+        if not str(customer_id).isdigit():
+            check_result.append("Pelanggan tidak valid.")
+    # Check Field Content ---------------------------------------- Finish
+
+    # Check Cashier ---------------------------------------- Start
+    if (
+        cashier_id is not None and
+        cashier_id != "" and
+        str(cashier_id).isdigit()
+    ):
+        cashier = Users.query.filter_by(
+            id=cashier_id,
+            workshop_id=workshop_id,
+            role=2,
+            is_delete=0
+        ).first()
+
+        if not cashier:
+            check_result.append("Kasir tidak ditemukan.")
+    # Check Cashier ---------------------------------------- Finish
+
+    # Check Customer ---------------------------------------- Start
+    if (
+        customer_id is not None and
+        customer_id != "" and
+        str(customer_id).isdigit()
+    ):
+        customer = Customers.query.filter_by(
+            id=customer_id,
+            workshop_id=workshop_id,
+            is_delete=0
+        ).first()
+
+        if not customer:
+            check_result.append("Pelanggan tidak ditemukan.")
+    # Check Customer ---------------------------------------- Finish
+
+    return check_result
+# REPORT VALIDATION ============================================================ End

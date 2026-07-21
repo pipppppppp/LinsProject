@@ -126,19 +126,19 @@ def import_purchase():
         return bad_request(str(e))
 # IMPORT PURCHASE ============================================================ End
 
-@purchase.route("/history")
-@jwt_required()
-def history():
-    try:
+# @purchase.route("/history")
+# @jwt_required()
+# def history():
+#     try:
 
-        return render_template(
-            "purchase_history.html",
-            title="Riwayat Pembelian - POS Bengkel",
-            active_menu="purchase_history",
-        )
+#         return render_template(
+#             "purchase_history.html",
+#             title="Riwayat Pembelian - POS Bengkel",
+#             active_menu="purchase_history",
+#         )
         
-    except Exception as e:
-        return {
-            "status": False,
-            "message": str(e)
-        }, 500
+#     except Exception as e:
+#         return {
+#             "status": False,
+#             "message": str(e)
+#         }, 500

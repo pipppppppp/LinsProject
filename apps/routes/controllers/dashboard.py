@@ -11,7 +11,7 @@ from ...database.db_customers import Customers
 from ...database.db_suppliers import Suppliers
 from ...database.db_purchases import Purchases
 from ...database.db_payment import Payments
-from ...routes.controllers.report import calculate_profit
+from ...routes.controllers.report import *
 
 # BLUEPRINT ================================================== Begin
 dashboard = Blueprint(

@@ -97,85 +97,6 @@
           </ul>
         </li>
         <li class="sidebar-title">LAPORAN</li>
-        <li class="sidebar-item has-sub {% if active_menu in ['purchase_report','sales_report','profit_report','stock_report'] %}active{% endif %}">
-          <a href="#" class="sidebar-link">
-            <i class="bi bi-file-earmark-text"></i>
-            <span>Laporan</span>
-          </a>
-          <ul class="submenu {% if active_menu in ['purchase_report','sales_report','profit_report','stock_report'] %}active{% endif %}">
-            <li class="submenu-item {% if active_menu == 'purchase_report' %}active{% endif %}">
-              <a href="{{ url_for('report.purchase_report') }}"> Laporan Pembelian </a>
-            </li>
-
-            <li class="sidebar-item has-sub {% if active_menu in ['category','item'] %}active{% endif %}">
-              <a href="#" class="sidebar-link">
-                <i class="bi bi-box-seam"></i>
-                <span>Master Barang</span>
-              </a>
-
-              <ul class="submenu {% if active_menu in ['category','item'] %}active{% endif %}">
-                <li class="submenu-item {% if active_menu == 'category' %}active{% endif %}">
-                  <a href="{{ url_for('category.index') }}"> Kategori Barang </a>
-                </li>
-
-                <li class="submenu-item {% if active_menu == 'item' %}active{% endif %}">
-                  <a href="{{ url_for('product.index') }}"> Data Barang </a>
-                </li>
-              </ul>
-            </li>
-
-            <li class="sidebar-title">TRANSAKSI</li>
-            <li class="sidebar-item has-sub {% if active_menu in ['purchase','purchase_history','sales','sales_history'] %}active{% endif %}">
-              <a href="#" class="sidebar-link">
-                <i class="bi bi-cart-check"></i>
-                <span>Transaksi</span>
-              </a>
-
-              <ul class="submenu {% if active_menu in ['purchase','purchase_history','sales','sales_history'] %}active{% endif %}">
-                <li class="submenu-item {% if active_menu == 'purchase' %}active{% endif %}">
-                  <a href="{{ url_for('purchase.index') }}"> Pembelian </a>
-                </li>
-
-                <li class="sidebar-item {% if active_menu == 'services' %}active{% endif %}">
-                  <a href="{{ url_for('service.index') }}" class="sidebar-link">
-                    <i class="bi bi-tools"></i>
-
-                    <span>Jasa Servis</span>
-                  </a>
-                </li>
-
-                <li class="sidebar-item has-sub {% if active_menu in ['category','product'] %}active{% endif %}">
-                  <a href="#" class="sidebar-link">
-                    <i class="bi bi-box-seam"></i>
-                    <span>Master Barang</span>
-                  </a>
-
-                  <ul class="submenu {% if active_menu in ['category','product'] %}active{% endif %}">
-                    <li class="submenu-item {% if active_menu == 'category' %}active{% endif %}">
-                      <a href="{{ url_for('category.index') }}"> Kategori Barang </a>
-                    </li>
-
-                    <li class="submenu-item {% if active_menu == 'product' %}active{% endif %}">
-                      <a href="{{ url_for('product.index') }}"> Data Barang </a>
-                    </li>
-                  </ul>
-                </li>
-
-                <!-- <li class="submenu-item {% if active_menu == 'purchase_history' %}active{% endif %}">
-                  <a href="{{ url_for('purchase.history') }}"> Riwayat Pembelian </a>
-                </li> -->
-
-                <li class="submenu-item {% if active_menu == 'sales' %}active{% endif %}">
-                  <a href="{{ url_for('sales.index') }}"> Penjualan </a>
-                </li>
-
-                <li class="submenu-item {% if active_menu == 'sales_history' %}active{% endif %}">
-                  <a href="{{ url_for('sales.history') }}"> Riwayat Penjualan </a>
-                </li>
-              </ul>
-            </li>
-
-            <li class="sidebar-title">LAPORAN</li>
             <li
               class="sidebar-item has-sub {% if active_menu in ['purchase_report','sales_report','profit_report','stock_report'] %}active{% endif %}"
             >
@@ -183,21 +104,9 @@
                 <i class="bi bi-file-earmark-text"></i>
                 <span>Laporan</span>
               </a>
-              <ul class="submenu {% if active_menu in ['purchase_report','sales_report','profit_report','stock_report'] %}active{% endif %}">
-                <li class="submenu-item {% if active_menu == 'purchase_report' %}active{% endif %}">
-                  <a href="{{ url_for('report.purchase_report') }}"> Laporan Pembelian </a>
-                </li>
-
-                <li class="submenu-item {% if active_menu == 'sales_report' %}active{% endif %}">
-                  <a href="{{ url_for('report.sales_report') }}"> Laporan Penjualan </a>
-                </li>
-
-                <li class="submenu-item {% if active_menu == 'profit_report' %}active{% endif %}">
-                  <a href="{{ url_for('report.profit_page') }}"> Laporan Keuntungan </a>
-                </li>
-
-                <li class="submenu-item {% if active_menu == 'stock_report' %}active{% endif %}">
-                  <a href="{{ url_for('report.stock_report') }}"> Laporan Stok Barang </a>
+              <ul class="submenu {% if active_menu in ['index_rpurchase','sales_report','profit_report','stock_report'] %}active{% endif %}">
+                <li class="submenu-item {% if active_menu == 'index_rpurchase' %}active{% endif %}">
+                  <a href="{{ url_for('report.index_rpurchase') }}"> Laporan Pembelian </a>
                 </li>
               </ul>
             </li>
