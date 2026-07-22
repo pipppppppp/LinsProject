@@ -83,7 +83,7 @@ def signup_validator(owner_name, username, email, password, repassword, workshop
 def role_validator(role):
     access = False
 
-    if int(role) <= 1:
+    if int(role) in [0, 1, 2]:
         access = True
 
     return access
@@ -107,6 +107,16 @@ def owner_validator(role):
 
     return access
 # OWNER VALIDATION ============================================================ End
+
+# CASHIER VALIDATION ============================================================ Begin
+def cashier_validator(role):
+    access = False
+
+    if int(role) == 2:
+        access = True
+
+    return access
+# CASHIER VALIDATION ============================================================ End
 
 
 def signin_validator(usermail, password):
@@ -1047,3 +1057,177 @@ def report_validator(
 
     return check_result
 # REPORT VALIDATION ============================================================ End
+
+# SALE VALIDATION ============================================================ Begin
+def sale_validator(
+    customer_id,
+    vehicle_id,
+    payment,
+    product_details,
+    service_details,
+    workshop_id
+):
+    check_result = []
+
+    # Check Null Value ---------------------------------------- Start
+    if payment == "":
+        check_result.append("Nominal pembayaran tidak boleh kosong.")
+
+    if (
+        (product_details is None or len(product_details) == 0) and
+        (service_details is None or len(service_details) == 0)
+    ):
+        check_result.append(
+            "Minimal harus ada barang atau jasa."
+        )
+    # Check Null Value ---------------------------------------- Finish
+
+    # Check Field Content ---------------------------------------- Start
+    if payment != "" and not str(payment).isdigit():
+        check_result.append("Nominal pembayaran harus berupa angka.")
+    # Check Field Content ---------------------------------------- Finish
+
+    # Check Customer ---------------------------------------- Start
+    if customer_id not in ["", None]:
+
+        if not str(customer_id).isdigit():
+            check_result.append("Pelanggan tidak valid.")
+
+        else:
+            customer = Customers.query.filter_by(
+                id=customer_id,
+                workshop_id=workshop_id,
+                is_delete=0
+            ).first()
+
+            if not customer:
+                check_result.append("Pelanggan tidak ditemukan.")
+    # Check Customer ---------------------------------------- Finish
+
+    # Check Vehicle ---------------------------------------- Start
+    if vehicle_id not in ["", None]:
+
+        if not str(vehicle_id).isdigit():
+            check_result.append("Kendaraan tidak valid.")
+
+        else:
+            query = Vehicles.query.filter_by(
+                id=vehicle_id,
+                workshop_id=workshop_id,
+                is_delete=0
+            )
+
+            if customer_id not in ["", None]:
+                query = query.filter_by(
+                    customer_id=customer_id
+                )
+
+            vehicle = query.first()
+
+            if not vehicle:
+                check_result.append("Kendaraan tidak ditemukan.")
+    # Check Vehicle ---------------------------------------- Finish
+
+    # Check Product Detail ---------------------------------------- Start
+    if isinstance(product_details, list):
+
+        for index, item in enumerate(product_details):
+
+            product_id = item.get("product_id", "")
+            quantity = item.get("quantity", "")
+
+            if product_id == "":
+                check_result.append(
+                    f"Produk pada item ke-{index+1} tidak boleh kosong."
+                )
+                continue
+
+            if not str(product_id).isdigit():
+                check_result.append(
+                    f"Produk pada item ke-{index+1} tidak valid."
+                )
+                continue
+
+            product = Products.query.filter_by(
+                id=product_id,
+                workshop_id=workshop_id,
+                is_delete=0
+            ).first()
+
+            if not product:
+                check_result.append(
+                    f"Produk pada item ke-{index+1} tidak ditemukan."
+                )
+                continue
+
+            if quantity == "":
+                check_result.append(
+                    f"Jumlah produk pada item ke-{index+1} tidak boleh kosong."
+                )
+
+            elif not str(quantity).isdigit():
+                check_result.append(
+                    f"Jumlah produk pada item ke-{index+1} harus berupa angka."
+                )
+
+            elif int(quantity) <= 0:
+                check_result.append(
+                    f"Jumlah produk pada item ke-{index+1} harus lebih dari 0."
+                )
+
+            elif int(quantity) > product.stock:
+                check_result.append(
+                    f"Stok {product.product_name} tidak mencukupi."
+                )
+    # Check Product Detail ---------------------------------------- Finish
+
+
+    # Check Service Detail ---------------------------------------- Start
+    if isinstance(service_details, list):
+
+        for index, item in enumerate(service_details):
+
+            service_id = item.get("service_id", "")
+            quantity = item.get("quantity", "")
+
+            if service_id == "":
+                check_result.append(
+                    f"Jasa pada item ke-{index+1} tidak boleh kosong."
+                )
+                continue
+
+            if not str(service_id).isdigit():
+                check_result.append(
+                    f"Jasa pada item ke-{index+1} tidak valid."
+                )
+                continue
+
+            service = Services.query.filter_by(
+                id=service_id,
+                workshop_id=workshop_id,
+                is_delete=0
+            ).first()
+
+            if not service:
+                check_result.append(
+                    f"Jasa pada item ke-{index+1} tidak ditemukan."
+                )
+                continue
+
+            if quantity == "":
+                check_result.append(
+                    f"Jumlah jasa pada item ke-{index+1} tidak boleh kosong."
+                )
+
+            elif not str(quantity).isdigit():
+                check_result.append(
+                    f"Jumlah jasa pada item ke-{index+1} harus berupa angka."
+                )
+
+            elif int(quantity) <= 0:
+                check_result.append(
+                    f"Jumlah jasa pada item ke-{index+1} harus lebih dari 0."
+                )
+    # Check Service Detail ---------------------------------------- Finish
+    return check_result
+# SALE VALIDATION ============================================================ End

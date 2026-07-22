@@ -48,6 +48,7 @@ for x in list_folder:
 # ========================= DATABASE CONFIGURATION =========================
 from .database import db_users
 from .database import db_workshops
+from .database import db_cashier
 from .database import db_customers
 from .database import db_vehicles
 from .database import db_categories
@@ -83,6 +84,7 @@ from .routes.controllers.auth import auth
 from .routes.controllers.cashier_management import cashier_management
 from.routes.controllers.administrator import administrator
 from .routes.controllers.dashboard import dashboard
+from .routes.controllers.cashier import cashier
 from .routes.controllers.category import category
 from .routes.controllers.customer import customer
 from .routes.controllers.vehicle import vehicle
@@ -99,6 +101,7 @@ app.register_blueprint(auth)
 app.register_blueprint(cashier_management)
 app.register_blueprint(administrator)
 app.register_blueprint(dashboard)
+app.register_blueprint(cashier)
 app.register_blueprint(category)
 app.register_blueprint(workshop)
 app.register_blueprint(customer)

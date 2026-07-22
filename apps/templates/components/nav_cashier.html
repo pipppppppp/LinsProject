@@ -1,0 +1,127 @@
+<!--! ================================================================ !-->
+<!--! [Start] Navigation Section !-->
+<!--! ================================================================ !-->
+<div id="sidebar" class="active">
+
+  <div class="sidebar-wrapper active">
+
+      <div class="sidebar-header">
+
+          <div class="d-flex justify-content-between">
+
+              <div class="logo text-center">
+                  <h4>POS Bengkel</h4>
+              </div>
+
+              <div class="toggler">
+                  <a
+                      href="#"
+                      class="sidebar-hide d-xl-none d-block">
+
+                      <i class="bi bi-x bi-middle"></i>
+
+                  </a>
+              </div>
+
+          </div>
+
+      </div>
+
+      <div class="sidebar-menu">
+
+          <ul class="menu">
+
+              <!-- ======================================================= -->
+              <!-- Dashboard -->
+              <!-- ======================================================= -->
+
+              <li class="sidebar-title">
+                  MENU
+              </li>
+
+              <li class="sidebar-item {% if active_menu == 'dashboard' %}active{% endif %}">
+
+                  <a
+                      href="{{ url_for('cashier.index') }}"
+                      class="sidebar-link">
+
+                      <i class="bi bi-grid-fill"></i>
+
+                      <span>Dashboard</span>
+
+                  </a>
+
+              </li>
+
+              <!-- ======================================================= -->
+              <!-- Transaksi -->
+              <!-- ======================================================= -->
+
+              <li class="sidebar-title">
+                  TRANSAKSI
+              </li>
+
+              <li class="sidebar-item {% if active_menu == 'cashier' %}active{% endif %}">
+
+                  <a
+                      href="{{ url_for('cashier.index') }}"
+                      class="sidebar-link">
+
+                      <i class="bi bi-cart-check-fill"></i>
+
+                      <span>Kasir</span>
+
+                  </a>
+
+              </li>
+
+              <li class="sidebar-item {% if active_menu == 'history' %}active{% endif %}">
+
+                  <a
+                      href="{{ url_for('cashier.history') }}"
+                      class="sidebar-link">
+
+                      <i class="bi bi-clock-history"></i>
+
+                      <span>Riwayat Penjualan</span>
+
+                  </a>
+
+              </li>
+
+              <!-- ======================================================= -->
+              <!-- Akun -->
+              <!-- ======================================================= -->
+
+              <li class="sidebar-title">
+                  AKUN
+              </li>
+
+              <li class="sidebar-item">
+
+                  <a
+                      href="{{ url_for('auth.signout') }}"
+                      class="sidebar-link">
+
+                      <i class="bi bi-box-arrow-right"></i>
+
+                      <span>Logout</span>
+
+                  </a>
+
+              </li>
+
+          </ul>
+
+      </div>
+
+      <button class="sidebar-toggler btn x">
+          <i data-feather="x"></i>
+      </button>
+
+  </div>
+
+</div>
+<!--! ================================================================ !-->
+<!--! [End] Navigation Section !-->
+<!--! ================================================================ !-->

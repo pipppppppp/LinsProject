@@ -1,12 +1,14 @@
 from datetime import datetime
 import time
 
-from ... import db
-from ...database.db_workshops import Workshops
-from ...database.db_users import Users
-from ...utilities.validators import owner_validator, user_validator
+from apps import db
+from apps.database.db_workshops import Workshops
+from apps.database.db_users import Users
+from apps.database.db_cashier import Cashiers
+from apps.utilities.validators import owner_validator, user_validator
 
 from apps.utilities.responseHelpers import *
+from apps.utilities.formatter import format_datetime
 from apps.utilities.utilities import hash_password, split_date_time
 
 
@@ -99,6 +101,16 @@ class CashierManagementModels():
             try:
                 db.session.add(data)
                 db.session.commit()
+                
+                cashier = Cashiers(
+                    user_id=data.id,
+                    workshop_id=workshop_id,
+                    created_at=timestamp,
+                    updated_at=timestamp
+                )
+
+                db.session.add(cashier)
+                db.session.commit()
 
             except Exception as e:
                 db.session.rollback()
@@ -114,7 +126,8 @@ class CashierManagementModels():
             db.session.rollback()
             return bad_request(str(e))
     # CREATE CASHIER ============================================================ End
-        # READ CASHIER ============================================================ Begin
+    
+    # READ CASHIER ============================================================ Begin
     def read_cashier(user_role, workshop_id):
         try:
             # Access Validation ---------------------------------------- Start
@@ -125,8 +138,8 @@ class CashierManagementModels():
             # Access Validation ---------------------------------------- Finish
 
             # Get Data ---------------------------------------- Start
-            cashiers = Users.query.filter_by(
-                role="2",
+            cashiers = Cashiers.query.filter_by(
+                workshop_id=workshop_id,
                 is_delete=0
             ).all()
             # Get Data ---------------------------------------- Finish
@@ -135,29 +148,22 @@ class CashierManagementModels():
             data = []
 
             for cashier in cashiers:
+                user = cashier.users
 
-                created_at = split_date_time(
-                    datetime.fromtimestamp(cashier.created_at / 1000)
-                )
-
-                updated_at = split_date_time(
-                    datetime.fromtimestamp(cashier.updated_at / 1000)
-                )
+                created_at = format_datetime(user.created_at)
+                updated_at = format_datetime(user.updated_at)
 
                 deleted_at = None
-
-                if cashier.deleted_at:
-                    deleted_at = split_date_time(
-                        datetime.fromtimestamp(cashier.deleted_at / 1000)
-                    )
-
+                if user.deleted_at:
+                    deleted_at = format_datetime(user.deleted_at)
+                
                 data.append({
-                    "id": cashier.id,
-                    "owner_name": cashier.owner_name,
-                    "username": cashier.username,
-                    "email": cashier.email,
-                    "role": cashier.role,
-                    "is_active": cashier.is_active,
+                    "id": user.id,
+                    "owner_name": user.owner_name,
+                    "username": user.username,
+                    "email": user.email,
+                    "role": user.role,
+                    "is_active": user.is_active,
                     "created_at": created_at,
                     "updated_at": updated_at,
                     "deleted_at": deleted_at
@@ -174,7 +180,7 @@ class CashierManagementModels():
             return bad_request(str(e))
     # READ CASHIER ============================================================ End
 
-        # UPDATE CASHIER ============================================================ Begin
+    # UPDATE CASHIER ============================================================ Begin
     def update_cashier(user_role, workshop_id, id, datas):
         try:
             # Access Validation ---------------------------------------- Start
@@ -246,16 +252,17 @@ class CashierManagementModels():
             # Check Workshop ---------------------------------------- Finish
 
             # Check Cashier ---------------------------------------- Start
-            data = Users.query.filter_by(
-                id=id,
-                role="2",
+            cashier = Cashiers.query.filter_by(
+                user_id=id,
+                workshop_id=workshop_id,
                 is_delete=0
             ).first()
 
-            if not data:
+            if not cashier:
                 return not_found(
                     "Cashier could not be found."
                 )
+            data = cashier.users
             # Check Cashier ---------------------------------------- Finish
 
             # Update Data ---------------------------------------- Start
@@ -313,20 +320,26 @@ class CashierManagementModels():
             # Check Workshop ---------------------------------------- Finish
 
             # Check Cashier ---------------------------------------- Start
-            data = Users.query.filter_by(
-                id=id,
-                role="2",
+            cashier = Cashiers.query.filter_by(
+                user_id=id,
+                workshop_id=workshop_id,
                 is_delete=0
             ).first()
 
-            if not data:
+            if not cashier:
                 return not_found(
                     "Cashier could not be found."
                 )
+
+            data = cashier.users
             # Check Cashier ---------------------------------------- Finish
 
             # Delete Data ---------------------------------------- Start
             timestamp = int(time.time() * 1000)
+
+            cashier.is_delete = 1
+            cashier.deleted_at = timestamp
+            cashier.updated_at = timestamp
 
             data.is_delete = 1
             data.deleted_at = timestamp

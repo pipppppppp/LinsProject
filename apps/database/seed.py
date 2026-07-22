@@ -12,6 +12,7 @@ def seed_users():
     hashed_password = hash_password("Administrator")
     admin = Users(
         username="Administrator",
+        owner_name="Administrator",
         email="administrator@email.com",
         password=hashed_password,
         role=0,

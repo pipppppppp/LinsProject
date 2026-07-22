@@ -442,3 +442,68 @@ function validatePurchaseReport(report) {
 // **************************************************************
 // PURCHASE REPORT VALIDATION | END
 // **************************************************************
+
+// **************************************************************
+// SALE VALIDATION | START
+// **************************************************************
+function validateSale(sale) {
+
+  // Customer & Vehicle opsional
+
+  if (
+    sale.product_details.length === 0 &&
+    sale.service_details.length === 0
+  ) {
+    swalWarning("Minimal tambahkan 1 barang atau jasa.");
+    return false;
+  }
+
+  for (const item of sale.product_details) {
+
+    if (!item.product_id) {
+      swalWarning("Barang harus dipilih.");
+      return false;
+    }
+
+    if (Number(item.quantity) <= 0) {
+      swalWarning("Jumlah barang tidak valid.");
+      return false;
+    }
+
+    if (!price(item.price, "Harga barang tidak valid.")) {
+      return false;
+    }
+
+  }
+
+  for (const item of sale.service_details) {
+
+    if (!item.service_id) {
+      swalWarning("Jasa harus dipilih.");
+      return false;
+    }
+
+    if (Number(item.quantity) <= 0) {
+      swalWarning("Jumlah jasa tidak valid.");
+      return false;
+    }
+
+    if (!price(item.price, "Biaya jasa tidak valid.")) {
+      return false;
+    }
+
+  }
+
+  if (!required(sale.payment, "Nominal pembayaran wajib diisi")) {
+    return false;
+  }
+
+  if (!price(sale.payment, "Nominal pembayaran tidak valid.")) {
+    return false;
+  }
+
+  return true;
+}
+// **************************************************************
+// SALE VALIDATION | END
+// **************************************************************

@@ -18,6 +18,7 @@ class Workshops(db.Model):
 
     # Relationship
     users = db.relationship("Users", back_populates="workshops")
+    cashiers = db.relationship("Cashiers", back_populates="workshops")
     categories = db.relationship("Categories", back_populates="workshops")
     products = db.relationship("Products", back_populates="workshops")
     customers = db.relationship("Customers", back_populates="workshops")

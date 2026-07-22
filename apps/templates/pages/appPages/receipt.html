@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Struk Pembayaran</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/receipt.css') }}" />
+  </head>
+
+  <body>
+    <!-- ====================================================== -->
+    <!-- HEADER -->
+    <!-- ====================================================== -->
+
+    <div class="header">
+      <h2>{{ payment.workshops.workshop_name }}</h2>
+
+      <p>{{ payment.workshops.workshop_address }}</p>
+
+      <p>{{ payment.workshops.workshop_phone }}</p>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- ====================================================== -->
+    <!-- TRANSACTION INFO -->
+    <!-- ====================================================== -->
+
+    <table>
+      <tr>
+        <td>No. Transaksi</td>
+
+        <td class="text-right">{{ payment.invoice }}</td>
+      </tr>
+
+      <tr>
+        <td>Tanggal</td>
+
+        <td class="text-right">{{ payment_date }}</td>
+      </tr>
+      <tr>
+        <td>Kasir</td>
+
+        <td class="text-right">{{ payment.cashier.owner_name }}</td>
+      </tr>
+      <tr>
+        <td>Pelanggan</td>
+
+        <td class="text-right">{% if payment.customers %} {{ payment.customers.customer_name }} {% else %} Pelanggan Umum {% endif %}</td>
+      </tr>
+
+      <tr>
+        <td>Kendaraan</td>
+
+        <td class="text-right">{% if payment.vehicles %} {{ payment.vehicles.plate_number }} {% else %} - {% endif %}</td>
+      </tr>
+    </table>
+
+    <div class="divider"></div>
+
+    <!-- ====================================================== -->
+    <!-- PRODUCT -->
+    <!-- ====================================================== -->
+
+    {% for item in payment.sale_details %}
+
+    <div class="item">
+      <div class="item-name">{{ item.products.product_name }}</div>
+
+      <table class="item-detail">
+        <tr>
+          <td>{{ item.quantity }} × Rp {{ "{:,.0f}".format(item.unit_price).replace(",", ".") }}</td>
+
+          <td class="text-right">Rp {{ "{:,.0f}".format(item.subtotal).replace(",", ".") }}</td>
+        </tr>
+      </table>
+    </div>
+
+    {% endfor %}
+
+    <!-- ====================================================== -->
+    <!-- SERVICE -->
+    <!-- ====================================================== -->
+
+    {% for item in payment.sale_service_details %}
+
+    <div class="item">
+      <div class="item-name">{{ item.services.name }}</div>
+
+      <table class="item-detail">
+        <tr>
+          <td>{{ item.quantity }} × Rp {{ "{:,.0f}".format(item.service_price).replace(",", ".") }}</td>
+
+          <td class="text-right">Rp {{ "{:,.0f}".format(item.subtotal).replace(",", ".") }}</td>
+        </tr>
+      </table>
+    </div>
+
+    {% endfor %}
+
+    <div class="divider"></div>
+
+    <!-- ====================================================== -->
+    <!-- SUMMARY -->
+    <!-- ====================================================== -->
+
+    <table class="summary">
+      <tr>
+        <td class="label">TOTAL</td>
+
+        <td class="value">Rp {{ "{:,.0f}".format(payment.total).replace(",", ".") }}</td>
+      </tr>
+
+      <tr>
+        <td class="label">BAYAR</td>
+
+        <td class="value">Rp {{ "{:,.0f}".format(payment.paid).replace(",", ".") }}</td>
+      </tr>
+
+      <tr>
+        <td class="label">KEMBALI</td>
+
+        <td class="value">Rp {{ "{:,.0f}".format(payment.change).replace(",", ".") }}</td>
+      </tr>
+    </table>
+
+    <div class="divider"></div>
+
+    <!-- ====================================================== -->
+    <!-- FOOTER -->
+    <!-- ====================================================== -->
+
+    <div class="footer">
+      <strong>Terima Kasih</strong>
+
+      <p>Semoga Perjalanan Anda Aman</p>
+    </div>
+
+    <script>
+      window.onload = function () {
+        window.print();
+      };
+
+      window.onafterprint = function () {
+        window.close();
+      };
+    </script>
+  </body>
+</html>

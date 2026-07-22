@@ -33,7 +33,7 @@ def format_date(timestamp):
 def format_time(timestamp):
     try:
         return datetime.fromtimestamp(
-            int(timestamp)
+            int(timestamp) / 1000
         ).strftime("%H:%M")
     except:
         return "-"

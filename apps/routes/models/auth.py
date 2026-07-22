@@ -3,6 +3,7 @@ import time
 
 from apps import db
 from apps.database.db_users import Users
+from apps.database.db_cashier import Cashiers
 from apps.database.db_workshops import Workshops
 from apps.routes.models.workshop import WorkshopModels
 from apps.utilities.responseHelpers import *
@@ -148,6 +149,22 @@ class AuthModels():
             # Generate File URL ---------------------------------------- Start
             # Generate File URL ---------------------------------------- Finish
             
+            # Get Workshop ID ---------------------------------------- Start
+            if str(result.role) == "1":
+                    ws_id = result.workshops[0].id if result.workshops else None
+
+            elif str(result.role) == "2":
+                cashier = Cashiers.query.filter_by(
+                    user_id=result.id,
+                    is_delete=0
+                ).first()
+
+                ws_id = cashier.workshop_id if cashier else None
+
+            else:
+                ws_id = None
+            # Get Workshop ID ---------------------------------------- Finish
+           
             # Data Payload ---------------------------------------- Start
             # workshop_data = Workshops.query.filter_by(owner_id=result.id, is_delete=0).first()
             jwt_payload = {
@@ -155,7 +172,7 @@ class AuthModels():
                 "email" : result.email,
                 "name" : result.username,
                 "role" : result.role,
-                "ws_id" : result.workshops[0].id if result.workshops else None
+                "ws_id" : ws_id
             }
             # Data Payload ---------------------------------------- Finish
 

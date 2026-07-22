@@ -1,0 +1,143 @@
+/* **************************************************************
+   RECEIPT | START
+************************************************************** */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+@page {
+  size: 80mm auto;
+  margin: 4mm;
+}
+
+body {
+  width: 72mm;
+
+  margin: auto;
+
+  background: #fff;
+
+  color: #000;
+
+  font-family: Consolas, "Courier New", monospace;
+
+  font-size: 12px;
+
+  line-height: 1.5;
+}
+
+.header {
+  text-align: center;
+
+  margin-bottom: 10px;
+}
+
+.header h2 {
+  font-size: 16px;
+
+  margin-bottom: 4px;
+}
+
+.header p {
+  font-size: 11px;
+}
+
+.divider {
+  border-top: 1px dashed #000;
+
+  margin: 8px 0;
+}
+
+table {
+  width: 100%;
+
+  border-collapse: collapse;
+}
+
+td {
+  padding: 2px 0;
+
+  vertical-align: top;
+}
+
+.text-right {
+  text-align: right;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.item {
+  margin-bottom: 8px;
+}
+
+.item-name {
+  font-weight: bold;
+}
+
+.item-detail {
+  width: 100%;
+}
+
+.item-detail td {
+  padding: 0;
+}
+
+.summary {
+  margin-top: 10px;
+}
+
+.summary td {
+  padding: 3px 0;
+}
+
+.summary .label {
+  font-weight: bold;
+}
+
+.summary .value {
+  text-align: right;
+
+  font-weight: bold;
+}
+
+.footer {
+  margin-top: 15px;
+
+  text-align: center;
+}
+
+.footer strong {
+  display: block;
+
+  margin-bottom: 4px;
+}
+
+.footer p {
+  font-size: 11px;
+}
+
+.no-print {
+  margin-top: 15px;
+
+  text-align: center;
+}
+
+@media print {
+  html,
+  body {
+    width: 80mm;
+  }
+
+  .no-print {
+    display: none;
+  }
+}
+
+/* **************************************************************
+ RECEIPT | END
+************************************************************** */

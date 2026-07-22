@@ -4,6 +4,7 @@ class Products(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     workshop_id = db.Column(db.Integer, db.ForeignKey("workshops.id"))
     category_id = db.Column(db.Integer, db.ForeignKey("categories.id"))
+    barcode = db.Column(db.String(100), unique=True, nullable=True)
     product_name = db.Column(db.String(100), nullable=False)
     stock = db.Column(db.Integer,nullable=False, server_default='0')
     minimum_stock = db.Column(db.Integer,nullable=False,default=5)

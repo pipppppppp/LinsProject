@@ -34,8 +34,8 @@ def index():
             return redirect(url_for("administrator.dashboard"))
         elif claims["role"] == 1:
             return render_template("dashboard.html")   # atau dashboard.index
-        # elif claims["role"] == 2:
-        #     return redirect(url_for("cashier.index"))
+        elif claims["role"] == 2:
+            return redirect(url_for("cashier.index"))
         workshop = Workshops.query.filter_by(
             owner_id=claims["id"],
             is_delete=0
