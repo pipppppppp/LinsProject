@@ -2,8 +2,7 @@ from flask_jwt_extended import get_jwt
 from flask import render_template
 from apps import db
 
-from apps.database.db_customers import Customers
-from apps.database.db_vehicles import Vehicles
+
 from apps.database.db_products import Products
 from apps.database.db_services import Services
 from apps.database.db_payment import Payments
@@ -20,68 +19,7 @@ from datetime import datetime
 
 # CASHIER MODEL CLASS ============================================================ Begin
 class CashierModels():
-
-    # GET CUSTOMERS ============================================================ Begin
-    def get_customers(workshop_id):
-        try:
-
-            customers = Customers.query.filter_by(
-                workshop_id=workshop_id,
-                is_delete=0
-            ).order_by(
-                Customers.customer_name.asc()
-            ).all()
-
-            data = []
-
-            for customer in customers:
-
-                data.append({
-                    "id": customer.id,
-                    "customer_name": customer.customer_name,
-                    "customer_phone": customer.customer_phone
-                })
-
-            return success_data(data=data,status_code=200)
-
-        except Exception as e:
-            return bad_request(str(e))
-    # GET CUSTOMERS ============================================================ End
-
-
-
-    # CUSTOMER VEHICLES ============================================================ Begin
-    def customer_vehicles(customer_id, workshop_id):
-        try:
-
-            vehicles = Vehicles.query.filter_by(
-                customer_id=customer_id,
-                workshop_id=workshop_id,
-                is_delete=0
-            ).order_by(
-                Vehicles.plate_number.asc()
-            ).all()
-
-            data = []
-
-            for vehicle in vehicles:
-
-                data.append({
-                    "id": vehicle.id,
-                    "plate_number": vehicle.plate_number,
-                    "vehicle_name": f"{vehicle.vehicle_brand} {vehicle.vehicle_type}",
-                    "vehicle_brand": vehicle.vehicle_brand,
-                    "vehicle_type": vehicle.vehicle_type,
-                    "vehicle_year": vehicle.vehicle_year,
-                    "vehicle_color": vehicle.vehicle_color
-                })
-
-            return success(data)
-
-        except Exception as e:
-            return bad_request(str(e))
-    # CUSTOMER VEHICLES ============================================================ End
-
+          
     # SEARCH ITEM ============================================================ Begin
     def search_items(keyword, workshop_id):
         try:
@@ -361,149 +299,7 @@ class CashierModels():
             return bad_request(str(e))
     # CHECKOUT ============================================================ End
 
-    # HISTORY ============================================================ Begin
-    def history(workshop_id):
-        try:
-
-            payments = Payments.query.filter_by(
-                workshop_id=workshop_id,
-                is_delete=0
-            ).order_by(
-                Payments.payment_date.desc()
-            ).all()
-
-            data = []
-
-            for payment in payments:
-
-                data.append({
-
-                    "id": payment.id,
-
-                    "customer":
-                        payment.customers.customer_name
-                        if payment.customers
-                        else "Pelanggan Umum",
-
-                    "vehicle":
-                        payment.vehicles.plate_number
-                        if payment.vehicles
-                        else "-",
-
-                    "payment_date": payment.payment_date,
-
-                    "total": payment.total,
-
-                    "paid": payment.paid,
-
-                    "change": payment.change
-
-                })
-
-            return success_data(data=data,status_code=200)
-
-        except Exception as e:
-            return bad_request(str(e))
-    # HISTORY ============================================================ End
-
-
-
-    # DETAIL ============================================================ Begin
-    def detail(payment_id, workshop_id):
-        try:
-
-            payment = Payments.query.filter_by(
-                id=payment_id,
-                workshop_id=workshop_id,
-                is_delete=0
-            ).first()
-
-            if not payment:
-                return bad_request(
-                    "Data transaksi tidak ditemukan."
-                )
-
-            products = []
-
-            for item in payment.sale_details:
-
-                products.append({
-
-                    "product_name":
-                        item.products.product_name,
-
-                    "quantity":
-                        item.quantity,
-
-                    "price":
-                        item.unit_price,
-
-                    "subtotal":
-                        item.subtotal
-
-                })
-
-            services = []
-
-            for item in payment.sale_service_details:
-
-                services.append({
-
-                    "service_name":
-                        item.services.name,
-
-                    "quantity":
-                        item.quantity,
-
-                    "price":
-                        item.service_price,
-
-                    "subtotal":
-                        item.subtotal
-
-                })
-
-            return success({
-
-                "payment": {
-
-                    "id": payment.id,
-
-                    "customer":
-                        payment.customers.customer_name
-                        if payment.customers
-                        else "Pelanggan Umum",
-
-                    "vehicle":
-                        payment.vehicles.plate_number
-                        if payment.vehicles
-                        else "-",
-
-                    "payment_date":
-                        payment.payment_date,
-
-                    "total":
-                        payment.total,
-
-                    "paid":
-                        payment.paid,
-
-                    "change":
-                        payment.change
-
-                },
-
-                "products": products,
-
-                "services": services
-
-            })
-
-        except Exception as e:
-            return bad_request(str(e))
-    # DETAIL ============================================================ End
-
-
+    
     # PRINT RECEIPT ============================================================ Begin
     def print_receipt(payment_id, workshop_id):
         try:

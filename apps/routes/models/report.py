@@ -190,6 +190,10 @@ def export_purchase_excel(user_role, workshop_id, datas):
         start_date = datas["start_date"]
         end_date = datas["end_date"]
         supplier_id = datas.get("supplier_id", "")
+        print("START EXPORT")
+        print(datas)
+        print(start_date)
+        print(end_date)
         # Initialize Data Input ---------------------------------------- Finish
 
         # Data Validation ---------------------------------------- Start
@@ -243,7 +247,8 @@ def export_purchase_excel(user_role, workshop_id, datas):
             "Nama Bengkel",
             workshop.workshop_name
         ])
-
+        print(start_date)
+        print(end_date)
         worksheet.append([
             "Periode",
             f"{format_date(start_date)} s.d. {format_date(end_date)}"
@@ -302,6 +307,10 @@ def export_purchase_excel(user_role, workshop_id, datas):
         # Response File ---------------------------------------- Finish
 
     except Exception as e:
+        import traceback
+
+        traceback.print_exc()
+
         raise e
         # return bad_request(str(e))
 # EXPORT PURCHASE EXCEL ============================================================ End

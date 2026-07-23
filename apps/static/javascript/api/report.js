@@ -4,6 +4,11 @@
 document.addEventListener("DOMContentLoaded", init);
 
 async function init() {
+  const today = new Date().toISOString().split("T")[0];
+
+  document.getElementById("start_date").value = today;
+  document.getElementById("end_date").value = today;
+  
   await loadSuppliers();
 }
 
@@ -126,13 +131,15 @@ function renderTable() {
   let html = "";
 
   purchaseReportData.forEach((purchase, index) => {
+    console.log(purchase);
+    console.log(purchase.purchase_date);
     html += `
               <tr>
   
                   <td>${index + 1}</td>
   
                   <td>
-                      ${formatDate(purchase.purchase_date)}
+                      ${purchase.purchase_date.date}
                   </td>
   
                   <td>

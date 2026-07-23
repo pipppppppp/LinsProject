@@ -93,7 +93,7 @@ from .routes.controllers.product import product
 from .routes.controllers.supplier import supplier
 from .routes.controllers.services import service
 from .routes.controllers.purchase import purchase
-from .routes.controllers.sales import sales
+from .routes.controllers.history_sales import history_sales
 from .routes.controllers.report import report
 
 # Register
@@ -110,7 +110,7 @@ app.register_blueprint(product)
 app.register_blueprint(supplier)
 app.register_blueprint(service)
 app.register_blueprint(purchase)
-app.register_blueprint(sales)
+app.register_blueprint(history_sales)
 app.register_blueprint(report)
 # End Blueprint Section ==========================##
 # ====================== END - ROUTE CONFIGURATION ======================

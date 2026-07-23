@@ -367,7 +367,7 @@ async function loadPurchases() {
                       title="Detail Pembelian">
                   
                       <i class="bi bi-eye-fill me-2"></i>
-                      Detail
+                      Detail Pembelian
                   
                   </button>
 

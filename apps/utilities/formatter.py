@@ -19,21 +19,46 @@ def format_number(number):
 
 
 # FORMAT DATE ============================================================ Begin
-def format_date(timestamp):
+# def format_date(timestamp):
+#     try:
+#         return datetime.fromtimestamp(
+#             int(timestamp) 
+#         ).strftime("%d-%m-%Y")
+#     except:
+#         return "-"
+
+# FORMAT DATE ============================================================ Begin
+def format_date(value):
     try:
+        value = str(value)
+
+        # Format YYYY-MM-DD
+        if "-" in value:
+            return datetime.strptime(
+                value,
+                "%Y-%m-%d"
+            ).strftime("%d-%m-%Y")
+
+        # Timestamp
+        timestamp = int(value)
+
+        # JavaScript timestamp (13 digit)
+        if timestamp > 9999999999:
+            timestamp //= 1000
+
         return datetime.fromtimestamp(
-            int(timestamp) / 1000
+            timestamp
         ).strftime("%d-%m-%Y")
-    except:
+
+    except Exception:
         return "-"
 # FORMAT DATE ============================================================ End
-
 
 # FORMAT TIME ============================================================ Begin
 def format_time(timestamp):
     try:
         return datetime.fromtimestamp(
-            int(timestamp) / 1000
+            int(timestamp)
         ).strftime("%H:%M")
     except:
         return "-"
