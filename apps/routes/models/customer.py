@@ -7,7 +7,8 @@ from ...database.db_customers import Customers
 from ...utilities.validators import role_validator, customer_validator
 
 from apps.utilities.responseHelpers import *
-from apps.utilities.utilities import split_date_time
+from apps.utilities.utilities import current_timestamp
+from apps.utilities.formatter import format_date
 
 
 # CUSTOMER MODEL CLASS ============================================================ Begin
@@ -72,7 +73,7 @@ class CustomerModels():
                 )
             # Check Workshop ---------------------------------------- Finish
             
-            timestamp = int(time.time() * 1000)
+            timestamp = current_timestamp()
 
             # Insert Data ---------------------------------------- Start
             data = Customers(
@@ -125,20 +126,14 @@ class CustomerModels():
 
             for customer in customers:
 
-                created_at = split_date_time(
-                    datetime.fromtimestamp(customer.created_at / 1000)
-                )
+                created_at = format_date(customer.created_at)
 
-                updated_at = split_date_time(
-                    datetime.fromtimestamp(customer.updated_at / 1000)
-                )
+                updated_at = format_date(customer.updated_at)
 
                 deleted_at = None
 
                 if customer.deleted_at:
-                    deleted_at = split_date_time(
-                        datetime.fromtimestamp(customer.deleted_at / 1000)
-                    )
+                    deleted_at = format_date(customer.deleted_at)
 
                 data.append({
                     "id": customer.id,
@@ -236,8 +231,7 @@ class CustomerModels():
             # Check Customer ---------------------------------------- Finish
 
             # Update Data ---------------------------------------- Start
-            timestamp = int(time.time() * 1000)
-
+            timestamp = current_timestamp()
             data.customer_name = customer_name
             data.customer_address = customer_address
             data.customer_phone = customer_phone
@@ -297,7 +291,7 @@ class CustomerModels():
             # Check Customer ---------------------------------------- Finish
 
             # Delete Data ---------------------------------------- Start
-            timestamp = int(time.time() * 1000)
+            timestamp = current_timestamp()
 
             data.is_delete = 1
             data.deleted_at = timestamp

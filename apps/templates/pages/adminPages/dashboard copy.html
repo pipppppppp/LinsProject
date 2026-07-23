@@ -1,0 +1,118 @@
+{% extends 'layouts/dashboard_layout.html' %} {% block content %}
+<div id="app">
+  <!--! ================================================================ !-->
+  <!--! [Start] Navigation Section !-->
+  <!--! ================================================================ !-->
+  {% include 'components/nav_dashboard.html' %}
+  <!--! ================================================================ !-->
+  <!--! [End] Navigation Section !-->
+  <!--! ================================================================ !-->
+
+  <!--! ================================================================ !-->
+  <!--! [Start] Main Content !-->
+  <!--! ================================================================ !-->
+  <div id="main">
+    <!--! ================================================================ !-->
+    <!--! [Start] Header !-->
+    <header class="mb-3">
+      <a href="#" class="burger-btn d-block d-xl-none">
+        <i class="bi bi-justify fs-3"></i>
+      </a>
+    </header>
+    <!--! [End] Header !-->
+    <!--! ================================================================ !-->
+
+    <div class="page-content">
+      <section class="row">
+        <div class="col-12">
+          <div class="page-heading mb-4">
+            <h3>Dashboard POS Bengkel</h3>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-md-8">
+            <div class="card shadow-sm">
+              <div class="card-header">
+                <h4>Informasi Sistem</h4>
+              </div>
+
+              <div class="card-body">
+                <p>Sistem Informasi Point Of Sale Bengkel Motor berbasis Flask dan MySQL.</p>
+
+                <ul>
+                  <li>Manajemen Barang</li>
+
+                  <li>Manajemen Supplier</li>
+
+                  <li>Manajemen Pelanggan</li>
+
+                  <li>Transaksi Pembelian</li>
+
+                  <li>Transaksi Penjualan</li>
+
+                  <li>Laporan Stok</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-4">
+            <div class="card shadow-sm">
+              <div class="card-header">
+                <h5>Informasi Akun</h5>
+              </div>
+
+              <div class="card-body">
+                <p>
+                  <strong>Nama Pengguna :</strong>
+                  {{ username }}
+                </p>
+
+                <p>
+                  <strong>Email :</strong>
+                  {{ email }}
+                </p>
+
+                <p>
+                  <strong>Role :</strong>
+                  {{ role_name }}
+                </p>
+
+                <p>
+                  <strong>Status Akun :</strong>
+                  {% if is_active == 1 %}
+                  <span class="badge bg-success">Aktif</span>
+                  {% else %}
+                  <span class="badge bg-warning">Menunggu Verifikasi</span>
+                  {% endif %}
+                </p>
+
+                <p>
+                  <strong>Status Bengkel :</strong>
+                  {% if workshop_status == 1 %}
+                  <span class="badge bg-success">Aktif</span>
+                  {% else %}
+                  <span class="badge bg-warning">Menunggu Verifikasi </span>
+                  {% endif %}
+                </p>
+
+                <a href="{{ url_for('auth.signout') }}" class="btn btn-danger w-100"> Logout </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!--! ================================================================ !-->
+    <!--! [Start] Footer !-->
+    {% include 'components/footer_dashboard.html' %}
+    <!--! [End] Footer !-->
+    <!--! ================================================================ !-->
+  </div>
+  <!--! ================================================================ !-->
+  <!--! [End] Main Content !-->
+  <!--! ================================================================ !-->
+</div>
+{% endblock %}

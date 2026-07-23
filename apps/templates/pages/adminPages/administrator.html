@@ -286,8 +286,13 @@
     </div>
   </div>
 </div>
+  <script src="{{ url_for('static', filename='javascript/helper/utilities.js') }}"></script>
+  <script src="{{ url_for('static', filename='javascript/helper/formatter.js') }}"></script>
+  <script src="{{ url_for('static', filename='javascript/helper/swal.js') }}"></script>
+  <script src="{{ url_for('static', filename='javascript/helper/validators.js') }}"></script>
+  <script src="{{ url_for('static', filename='javascript/api/cashier_management.js') }}"></script>
 
-<script src="{{ url_for('static', filename='javascript/pages/administrator.js') }}"></script>
+<script src="{{ url_for('static', filename='javascript/api/administrator.js') }}"></script>
 <!--! ================================================================ !-->
 <!--! [Start] Footer !-->
 {% include 'components/footer_dashboard.html' %}
@@ -298,4 +303,5 @@
 <!--! [End] Main Content !-->
 <!--! ================================================================ !-->
 </div>
+
 {% endblock %}

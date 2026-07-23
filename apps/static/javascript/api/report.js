@@ -139,7 +139,7 @@ function renderTable() {
                   <td>${index + 1}</td>
   
                   <td>
-                      ${purchase.purchase_date.date}
+                      ${purchase.purchase_date}
                   </td>
   
                   <td>

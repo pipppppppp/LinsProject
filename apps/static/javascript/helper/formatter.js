@@ -122,7 +122,7 @@ function formatDate(timestamp) {
     return "-";
   }
 
-  return new Date(timestamp * 1000).toLocaleDateString("id-ID");
+  return new Date(timestamp).toLocaleDateString("id-ID");
 }
 // **************************************************************
 // FORMAT DATE | END
@@ -135,7 +135,7 @@ function formatDateTime(timestamp) {
   if (!timestamp) {
     return "-";
   }
-  return new Date(timestamp * 1000).toLocaleString("id-ID");
+  return new Date(timestamp).toLocaleString("id-ID");
 }
 // **************************************************************
 // FORMAT DATETIME | END

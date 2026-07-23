@@ -351,7 +351,7 @@ async function loadPurchases() {
 
               <td>${index + 1}</td>
 
-              <td>${purchase.purchase_date.date}</td>
+              <td>${purchase.purchase_date}</td>
 
               <td>${purchase.supplier_name}</td>
 
@@ -398,7 +398,7 @@ async function loadPurchaseDetail(id) {
 
   document.getElementById("detail_supplier").value = data.supplier_name;
 
-  document.getElementById("detail_purchase_date").value = data.purchase_date.date;
+  document.getElementById("detail_purchase_date").value = data.purchase_date;
 
   document.getElementById("detail_total").value = formatRupiah(data.total);
 

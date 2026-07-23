@@ -68,10 +68,16 @@ def format_time(timestamp):
 # FORMAT DATETIME ============================================================ Begin
 def format_datetime(timestamp):
     try:
+        timestamp = int(timestamp)
+
+        if timestamp > 9999999999:
+            timestamp //= 1000
+
         return datetime.fromtimestamp(
-            int(timestamp)
+            timestamp
         ).strftime("%d-%m-%Y %H:%M")
-    except:
+
+    except Exception:
         return "-"
 # FORMAT DATETIME ============================================================ End
 

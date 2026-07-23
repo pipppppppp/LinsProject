@@ -9,7 +9,8 @@ from ...database.db_vehicles import Vehicles
 from ...utilities.validators import role_validator, vehicle_validator
 
 from apps.utilities.responseHelpers import *
-from apps.utilities.utilities import split_date_time
+from apps.utilities.utilities import current_timestamp
+from apps.utilities.formatter import format_date
 
 
 # VEHICLE MODEL CLASS ============================================================ Begin
@@ -98,7 +99,7 @@ class VehicleModels():
             # Check Customer ---------------------------------------- Finish
 
             # Insert Data ---------------------------------------- Start
-            timestamp = int(time.time() * 1000)
+            timestamp = current_timestamp()
 
             data = Vehicles(
                 workshop_id=workshop_id,
@@ -178,20 +179,16 @@ class VehicleModels():
 
             for vehicle in vehicles:
 
-                created_at = split_date_time(
-                    datetime.fromtimestamp(vehicle.created_at / 1000)
-                )
+                created_at = format_date(vehicle.created_at)
 
-                updated_at = split_date_time(
-                    datetime.fromtimestamp(vehicle.updated_at / 1000)
-                )
+                updated_at = format_date(vehicle.updated_at)
+                
 
                 deleted_at = None
 
                 if vehicle.deleted_at:
-                    deleted_at = split_date_time(
-                        datetime.fromtimestamp(vehicle.deleted_at / 1000)
-                    )
+                    deleted_at = format_date(vehicle.deleted_at)
+                    
 
                 data.append({
                     "id": vehicle.id,
@@ -315,7 +312,7 @@ class VehicleModels():
             # Check Vehicle ---------------------------------------- Finish
 
             # Update Data ---------------------------------------- Start
-            timestamp = int(time.time() * 1000)
+            timestamp = current_timestamp()
 
             data.customer_id = customer_id
             data.plate_number = plate_number
@@ -379,7 +376,7 @@ class VehicleModels():
             # Check Vehicle ---------------------------------------- Finish
 
             # Delete Data ---------------------------------------- Start
-            timestamp = int(time.time() * 1000)
+            timestamp = current_timestamp()
 
             data.is_delete = 1
             data.deleted_at = timestamp

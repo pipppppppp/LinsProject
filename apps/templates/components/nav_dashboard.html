@@ -23,7 +23,7 @@
           </a>
         </li>
         <li class="sidebar-title">MASTER DATA</li>
-        <li class="sidebar-item {% if active_menu == 'workshop_profile' %}active{% endif %}">
+        <li class="sidebar-item {% if active_menu == 'workshop' %}active{% endif %}">
           <a href="{{ url_for('workshop.index') }}" class="sidebar-link">
             <i class="bi bi-shop"></i>
             <span>Profil Bengkel</span>
@@ -89,24 +89,31 @@
           </ul>
         </li>
         <li class="sidebar-title">LAPORAN</li>
-            <li
-              class="sidebar-item has-sub {% if active_menu in ['report','history_sales'] %}active{% endif %}"
-            >
-              <a href="#" class="sidebar-link">
-                <i class="bi bi-file-earmark-text"></i>
-                <span>Laporan</span>
-              </a>
-              <ul class="submenu {% if active_menu in ['report','history_sales'] %}active{% endif %}">
-                <li class="submenu-item {% if active_menu == 'report' %}active{% endif %}">
-                  <a href="{{ url_for('report.index_rpurchase') }}"> Laporan Pembelian </a>
-                </li>
-                
-                <li class="submenu-item {% if active_menu == 'history_sales' %}active{% endif %}">
-                  <a href="{{ url_for('history_sales.index') }}">Laporan Penjualan </a>
-                </li>
-              </ul>
+
+        <li class="sidebar-item has-sub {% if active_menu in ['report','history_sales'] %}active{% endif %}">
+          <a href="#" class="sidebar-link">
+            <i class="bi bi-file-earmark-text"></i>
+            <span>Laporan</span>
+          </a>
+
+          <ul class="submenu {% if active_menu in ['report','history_sales'] %}active{% endif %}">
+            <li class="submenu-item {% if active_menu == 'report' %}active{% endif %}">
+              <a href="{{ url_for('report.index_rpurchase') }}">Laporan Pembelian</a>
+            </li>
+
+            <li class="submenu-item {% if active_menu == 'history_sales' %}active{% endif %}">
+              <a href="{{ url_for('history_sales.index') }}">Laporan Penjualan</a>
             </li>
           </ul>
+        </li>
+
+        <li class="sidebar-title">AKUN</li>
+
+        <li class="sidebar-item logout-item">
+          <a href="{{ url_for('auth.signout') }}" class="sidebar-link text-danger">
+            <i class="bi bi-box-arrow-right"></i>
+            <span>Logout</span>
+          </a>
         </li>
       </ul>
     </div>

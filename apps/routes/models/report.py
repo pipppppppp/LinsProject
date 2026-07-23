@@ -5,7 +5,7 @@ from apps import db
 from apps.database.db_workshops import Workshops
 from apps.database.db_purchases import Purchases
 from apps.utilities.responseHelpers import *
-from apps.utilities.utilities import split_date_time
+from apps.utilities.utilities import current_timestamp
 from apps.utilities.validators import role_validator, report_validator
 from apps.utilities.formatter import format_date
 
@@ -59,11 +59,7 @@ def _purchase_report_helper(
 
     for purchase in purchases:
 
-        purchase_date = split_date_time(
-            datetime.fromtimestamp(
-                purchase.purchase_date / 1000
-            )
-        )
+        purchase_date = format_date(purchase.purchase_date)
 
         total_expense += purchase.total
 
@@ -274,7 +270,7 @@ def export_purchase_excel(user_role, workshop_id, datas):
         for item in result["data"]:
 
             worksheet.append([
-                  item["purchase_date"]["date"],
+                  item["purchase_date"],
                   item["supplier_name"],
                   f"Rp {item['total']:,}".replace(",", ".")
             ])
@@ -393,7 +389,7 @@ def export_purchase_pdf(user_role, workshop_id, datas):
         for item in result["data"]:
 
             table_data.append([
-                  item["purchase_date"]["date"],
+                  item["purchase_date"],
                   item["supplier_name"],
                   f"Rp {item['total']:,}".replace(",", ".")
             ])       

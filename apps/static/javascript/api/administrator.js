@@ -44,12 +44,7 @@ async function loadDashboard() {
     const result = await response.json();
 
     if (result.status_code != 200) {
-      Swal.fire({
-        icon: "error",
-        title: result.error,
-        text: result.message,
-      });
-
+      swalError(result.message);
       return;
     }
 
@@ -62,12 +57,7 @@ async function loadDashboard() {
     dashboardCard.totalOwner.textContent = result.data.total_owner;
   } catch (error) {
     console.error(error);
-
-    Swal.fire({
-      icon: "error",
-      title: "Error",
-      text: "Failed to load dashboard summary.",
-    });
+    swalError("Failed to load dashboard summary.");
   }
 }
 
@@ -80,25 +70,21 @@ async function loadDashboard() {
 // **************************************************************
 
 async function loadWorkshop(status = "all") {
-
   try {
+    const response = await fetch(`${API.view}?status=${status}`);
 
-      const response = await fetch(`${API.view}?status=${status}`);
+    const result = await response.json();
 
-      const result = await response.json();
+    if (result.status_code != 200) {
+      return;
+    }
 
-      if(result.status_code != 200){
-          return;
-      }
+    workshopDatas = result.data;
 
-      workshopDatas = result.data;
-
-      renderWorkshopTable(workshopDatas);
-
-  } catch(err){
-      console.error(err);
+    renderWorkshopTable(workshopDatas);
+  } catch (err) {
+    console.error(err);
   }
-
 }
 
 // **************************************************************
@@ -135,7 +121,7 @@ function renderWorkshopTable(datas) {
                   <td>
   
                         <img
-                              src="${data.logo ? `/static/images/profiles/${data.logo}` : "/static/images/profiles/default.png"}"
+                              src="${data.logo ? `/static/images/profiles/${data.logo}` : "/static/images/profiles/default-workshop.png"}"
                               class="workshop-logo">
   
                   </td>
@@ -170,11 +156,7 @@ function renderWorkshopTable(datas) {
   
                   <td>
   
-                        <div>${data.created_at.date}</div>
-
-                        <small class="text-muted">
-                            ${data.created_at.time}
-                        </small>
+                        <div>${data.created_at}</div>
         
                   </td>
   
@@ -312,16 +294,7 @@ function generateActionButton(data) {
 // **************************************************************
 
 async function verifyWorkshop(workshop_id) {
-  const confirm = await Swal.fire({
-    title: "Verify Workshop?",
-    text: "This workshop will be activated.",
-    icon: "question",
-
-    showCancelButton: true,
-
-    confirmButtonText: "Verify",
-    cancelButtonText: "Cancel",
-  });
+  const confirm = await swalConfirm("Verify Workshop?", "This workshop will be activated.", "Verify");
 
   if (!confirm.isConfirmed) {
     return;
@@ -342,11 +315,11 @@ async function verifyWorkshop(workshop_id) {
 
     const result = await response.json();
 
-    Swal.fire({
-      icon: result.status_code == 200 ? "success" : "error",
-      title: result.error,
-      text: result.message,
-    });
+    if (result.status_code == 200) {
+      await swalSuccess(result.message);
+    } else {
+      await swalError(result.message);
+    }
 
     if (result.status_code == 200) {
       refreshAdministrator();
@@ -365,14 +338,7 @@ async function verifyWorkshop(workshop_id) {
 // **************************************************************
 
 async function activateWorkshop(workshop_id) {
-  const confirm = await Swal.fire({
-    title: "Activate Workshop?",
-    icon: "question",
-
-    showCancelButton: true,
-
-    confirmButtonText: "Activate",
-  });
+  const confirm = await swalConfirm("Activate Workshop?", "", "Activate");
 
   if (!confirm.isConfirmed) {
     return;
@@ -393,11 +359,11 @@ async function activateWorkshop(workshop_id) {
 
     const result = await response.json();
 
-    Swal.fire({
-      icon: result.status_code == 200 ? "success" : "error",
-      title: result.error,
-      text: result.message,
-    });
+    if (result.status_code == 200) {
+      await swalSuccess(result.message);
+    } else {
+      await swalError(result.message);
+    }
 
     if (result.status_code == 200) {
       refreshAdministrator();
@@ -416,16 +382,7 @@ async function activateWorkshop(workshop_id) {
 // **************************************************************
 
 async function deactivateWorkshop(workshop_id) {
-  const confirm = await Swal.fire({
-    title: "Deactivate Workshop?",
-    text: "This workshop will be deactivated.",
-    icon: "warning",
-
-    showCancelButton: true,
-
-    confirmButtonText: "Deactivate",
-    cancelButtonText: "Cancel",
-  });
+  const confirm = await swalConfirm("Deactivate Workshop?", "This workshop will be deactivated.", "Deactivate");
 
   if (!confirm.isConfirmed) {
     return;
@@ -446,11 +403,11 @@ async function deactivateWorkshop(workshop_id) {
 
     const result = await response.json();
 
-    Swal.fire({
-      icon: result.status_code == 200 ? "success" : "error",
-      title: result.error,
-      text: result.message,
-    });
+    if (result.status_code == 200) {
+      await swalSuccess(result.message);
+    } else {
+      await swalError(result.message);
+    }
 
     if (result.status_code == 200) {
       refreshAdministrator();
@@ -458,11 +415,7 @@ async function deactivateWorkshop(workshop_id) {
   } catch (error) {
     console.error(error);
 
-    Swal.fire({
-      icon: "error",
-      title: "Error",
-      text: "Failed to deactivate workshop.",
-    });
+    swalError("Failed to deactivate workshop.");
   }
 }
 
@@ -486,11 +439,7 @@ async function detailWorkshop(workshopId) {
 
     // alert(JSON.stringify(result));
     if (result.status_code != 200) {
-      Swal.fire({
-        icon: "error",
-        title: result.error,
-        text: result.message,
-      });
+      swalError(result.message);
 
       return;
     }
@@ -536,7 +485,7 @@ async function detailWorkshop(workshopId) {
 
               <tr>
                   <th>Dibuat</th>
-                  <td>${data.created_at.date_time}</td>
+                  <td>${data.created_at}</td>
               </tr>
 
           </table>
@@ -544,11 +493,7 @@ async function detailWorkshop(workshopId) {
 
     new bootstrap.Modal(document.getElementById("detailWorkshopModal")).show();
   } catch (error) {
-    Swal.fire({
-      icon: "error",
-      title: "Error",
-      text: error.message,
-    });
+    swalError(error.message);
   }
 }
 // **************************************************************
@@ -560,18 +505,7 @@ async function detailWorkshop(workshopId) {
 // **************************************************************
 
 async function deleteWorkshop(workshop_id) {
-  const confirm = await Swal.fire({
-    title: "Delete Workshop?",
-    text: "Deleted data cannot be restored.",
-    icon: "warning",
-
-    showCancelButton: true,
-
-    confirmButtonText: "Delete",
-    cancelButtonText: "Cancel",
-
-    confirmButtonColor: "#dc3545",
-  });
+  const confirm = await swalDelete();
 
   if (!confirm.isConfirmed) {
     return;
@@ -592,11 +526,11 @@ async function deleteWorkshop(workshop_id) {
 
     const result = await response.json();
 
-    Swal.fire({
-      icon: result.status_code == 200 ? "success" : "error",
-      title: result.error,
-      text: result.message,
-    });
+    if (result.status_code == 200) {
+      await swalSuccess(result.message);
+    } else {
+      await swalError(result.message);
+    }
 
     if (result.status_code == 200) {
       refreshAdministrator();
@@ -636,15 +570,10 @@ async function refreshAdministrator() {
 const filterStatus = document.getElementById("filter_status");
 
 if (filterStatus) {
-
-    filterStatus.addEventListener("change", async function () {
-
-        await loadWorkshop(this.value);
-
-    });
-
+  filterStatus.addEventListener("change", async function () {
+    await loadWorkshop(this.value);
+  });
 }
-
 
 const btnRefresh = document.getElementById("btn_refresh");
 
@@ -682,17 +611,15 @@ if (btnRefresh) {
 // **************************************************************
 
 document.addEventListener("DOMContentLoaded", async function () {
-
   await refreshAdministrator();
 
   workshopTable = new simpleDatatables.DataTable("#administratorTable", {
-      searchable:true,
-      paging:true,
-      perPage:5,
-      perPageSelect:[5,10,25,50],
-      fixedHeight:false
+    searchable: true,
+    paging: true,
+    perPage: 5,
+    perPageSelect: [5, 10, 25, 50],
+    fixedHeight: false,
   });
-
 });
 
 // **************************************************************

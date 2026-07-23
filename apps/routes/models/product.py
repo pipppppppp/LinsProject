@@ -6,7 +6,8 @@ from apps.database.db_products import Products
 from apps.database.db_categories import Categories
 from apps.database.db_workshops import Workshops
 from apps.utilities.responseHelpers import *
-from apps.utilities.utilities import split_date_time
+from apps.utilities.utilities import current_timestamp
+from apps.utilities.formatter import format_date
 from apps.utilities.validators import role_validator, product_validator
 
 # PRODUCT MODEL CLASS ============================================================ Begin
@@ -79,7 +80,8 @@ class ProductModels():
             # Check Workshop ---------------------------------------- Finish
 
             # Insert Data ---------------------------------------- Start
-            timestamp = int(time.time() * 1000)
+            timestamp = current_timestamp()
+
 
             data = Products(
                 workshop_id=workshop.id,
@@ -141,20 +143,13 @@ class ProductModels():
             data = []
 
             for product in products:
-                created_at = split_date_time(
-                    datetime.fromtimestamp(product.created_at / 1000)
-                )
-
-                updated_at = split_date_time(
-                    datetime.fromtimestamp(product.updated_at / 1000)
-                )
+                created_at = format_date(product.created_at)
+                updated_at = format_date(product.updated_at)
 
                 deleted_at = None
 
                 if product.deleted_at:
-                    deleted_at = split_date_time(
-                        datetime.fromtimestamp(product.deleted_at / 1000)
-                    )
+                    deleted_at = format_date(product.deleted_at)
 
                 data.append({
                     "id": product.id,
@@ -268,7 +263,8 @@ class ProductModels():
             product.stock = stock
             product.purchase_price = purchase_price
             product.selling_price = selling_price
-            product.updated_at = int(time.time() * 1000)
+            product.updated_at = current_timestamp()
+
 
             try:
                 db.session.commit()
@@ -311,9 +307,10 @@ class ProductModels():
             # Check Product ---------------------------------------- Finish
 
             # Delete Product ---------------------------------------- Start
+            timestamp = current_timestamp()
             product.is_delete = 1
-            product.deleted_at = int(time.time() * 1000)
-            product.updated_at = int(time.time() * 1000)
+            product.deleted_at = timestamp
+            product.updated_at = timestamp
 
             try:
                 db.session.commit()

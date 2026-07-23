@@ -10,7 +10,8 @@ from ...database.db_purchase_details import PurchaseDetails
 from openpyxl import load_workbook
 from ...utilities.validators import role_validator, purchase_validator, excel_file_validator, purchase_excel_validator
 from apps.utilities.responseHelpers import *
-from apps.utilities.utilities import split_date_time
+from apps.utilities.utilities import current_timestamp
+from apps.utilities.formatter import format_date
 
 
 # PURCHASE MODEL CLASS ============================================================ Begin
@@ -91,7 +92,7 @@ class PurchaseModels():
             # Check Supplier ---------------------------------------- Finish
 
             # Initialize Transaction ---------------------------------------- Start
-            timestamp = int(time.time() * 1000)
+            timestamp = current_timestamp()
             total = 0
             # Initialize Transaction ---------------------------------------- Finish
 
@@ -202,32 +203,14 @@ class PurchaseModels():
 
             for purchase in purchases:
 
-                created_at = split_date_time(
-                    datetime.fromtimestamp(
-                        purchase.created_at / 1000
-                    )
-                )
-
-                updated_at = split_date_time(
-                    datetime.fromtimestamp(
-                        purchase.updated_at / 1000
-                    )
-                )
-
+                created_at = format_date(purchase.created_at)
+                updated_at = format_date(purchase.updated_at)
                 deleted_at = None
 
                 if purchase.deleted_at:
-                    deleted_at = split_date_time(
-                        datetime.fromtimestamp(
-                            purchase.deleted_at / 1000
-                        )
-                    )
-
-                purchase_date = split_date_time(
-                    datetime.fromtimestamp(
-                        purchase.purchase_date / 1000
-                    )
-                )
+                    deleted_at = format_date(purchase.deleted_at)
+                    
+                purchase_date = format_date(purchase.purchase_date)
 
                 total_item = PurchaseDetails.query.filter_by(
                     purchase_id=purchase.id
@@ -296,11 +279,7 @@ class PurchaseModels():
             # Initialize Detail ---------------------------------------- Finish
 
             # Initialize Header ---------------------------------------- Start
-            purchase_date = split_date_time(
-                datetime.fromtimestamp(
-                    purchase.purchase_date / 1000
-                )
-            )
+            purchase_date = format_date(purchase.purchase_date)
 
             data = {
                 "id": purchase.id,
@@ -409,7 +388,7 @@ class PurchaseModels():
                 )
             # Check Supplier ---------------------------------------- Finish
 
-            timestamp = int(time.time() * 1000)
+            timestamp = current_timestamp()
             total = 0
 
             # Rollback Old Stock ---------------------------------------- Start
@@ -538,7 +517,7 @@ class PurchaseModels():
                 )
             # Check Purchase ---------------------------------------- Finish
 
-            timestamp = int(time.time() * 1000)
+            timestamp = current_timestamp()
 
             # Rollback Stock ---------------------------------------- Start
             for detail in purchase.purchase_details:

@@ -1,4 +1,5 @@
 {% extends 'layouts/dashboard_layout.html' %} {% block content %}
+
 <div id="app">
   <!--! ================================================================ !-->
   <!--! [Start] Navigation Section !-->
@@ -9,110 +10,303 @@
   <!--! ================================================================ !-->
 
   <!--! ================================================================ !-->
-  <!--! [Start] Main Content !-->
+  <!--! [Start] Page Content !-->
   <!--! ================================================================ !-->
   <div id="main">
     <!--! ================================================================ !-->
-    <!--! [Start] Header !-->
+    <!--! [Start] Burger Button !-->
+    <!--! ================================================================ !-->
     <header class="mb-3">
       <a href="#" class="burger-btn d-block d-xl-none">
         <i class="bi bi-justify fs-3"></i>
       </a>
     </header>
-    <!--! [End] Header !-->
+    <!--! ================================================================ !-->
+    <!--! [End] Burger Button !-->
     <!--! ================================================================ !-->
 
-    <div class="page-content">
-      <section class="row">
-        <div class="col-12">
-          <div class="page-heading mb-4">
-            <h3>Dashboard POS Bengkel</h3>
+    <!--! ================================================================ !-->
+    <!--! [Start] Main Content !-->
+    <!--! ================================================================ !-->
+    <div class="page-heading">
+      <!--! ================================================================ !-->
+      <!--! [Start] Header !-->
+      <!--! ================================================================ !-->
+      <div class="page-title">
+        <div class="row">
+          <div class="col-12 col-md-6 order-md-1 order-last">
+            <h3>DASHBOARD OWNER</h3>
+          </div>
+
+          <div class="col-12 col-md-6 order-md-2 order-first">
+            <nav aria-label="breadcrumb" class="breadcrumb-header float-start float-lg-end">
+              <ol class="breadcrumb">
+                <li class="breadcrumb-item active">Dashboard</li>
+              </ol>
+            </nav>
           </div>
         </div>
+      </div>
+      <!--! ================================================================ !-->
+      <!--! [End] Header !-->
+      <!--! ================================================================ !-->
 
+      <!--! ================================================================ !-->
+      <!--! [Start] Summary Card !-->
+      <!--! ================================================================ !-->
+      <section class="section">
         <div class="row">
-          <div class="col-md-8">
-            <div class="card shadow-sm">
-              <div class="card-header">
-                <h4>Informasi Sistem</h4>
-              </div>
-
+          <div class="col-xl-4 col-md-6 col-sm-12">
+            <div class="card">
               <div class="card-body">
-                <p>Sistem Informasi Point Of Sale Bengkel Motor berbasis Flask dan MySQL.</p>
+                <h6>Total Penjualan</h6>
 
-                <ul>
-                  <li>Manajemen Barang</li>
-
-                  <li>Manajemen Supplier</li>
-
-                  <li>Manajemen Pelanggan</li>
-
-                  <li>Transaksi Pembelian</li>
-
-                  <li>Transaksi Penjualan</li>
-
-                  <li>Laporan Stok</li>
-                </ul>
+                <h3 id="total_payments">Rp 0</h3>
               </div>
             </div>
           </div>
 
-          <div class="col-md-4">
-            <div class="card shadow-sm">
-              <div class="card-header">
-                <h5>Informasi Akun</h5>
-              </div>
-
+          <div class="col-xl-4 col-md-6 col-sm-12">
+            <div class="card">
               <div class="card-body">
-                <p>
-                  <strong>Nama Pengguna :</strong>
-                  {{ username }}
-                </p>
+                <h6>Total Pembelian</h6>
 
-                <p>
-                  <strong>Email :</strong>
-                  {{ email }}
-                </p>
+                <h3 id="total_purchase">Rp 0</h3>
+              </div>
+            </div>
+          </div>
 
-                <p>
-                  <strong>Role :</strong>
-                  {{ role_name }}
-                </p>
+          <div class="col-xl-4 col-md-6 col-sm-12">
+            <div class="card">
+              <div class="card-body">
+                <h6>Total Transaksi</h6>
 
-                <p>
-                  <strong>Status Akun :</strong>
-                  {% if is_active == 1 %}
-                  <span class="badge bg-success">Aktif</span>
-                  {% else %}
-                  <span class="badge bg-warning">Menunggu Verifikasi</span>
-                  {% endif %}
-                </p>
+                <h3 id="total_transaction">0</h3>
+              </div>
+            </div>
+          </div>
 
-                <p>
-                  <strong>Status Bengkel :</strong>
-                  {% if workshop_status == 1 %}
-                  <span class="badge bg-success">Aktif</span>
-                  {% else %}
-                  <span class="badge bg-warning">Menunggu Verifikasi </span>
-                  {% endif %}
-                </p>
+          <div class="col-xl-4 col-md-6 col-sm-12">
+            <div class="card">
+              <div class="card-body">
+                <h6>Total Customer</h6>
 
-                <a href="{{ url_for('auth.signout') }}" class="btn btn-danger w-100"> Logout </a>
+                <h3 id="total_customer">0</h3>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-xl-4 col-md-6 col-sm-12">
+            <div class="card">
+              <div class="card-body">
+                <h6>Total Barang</h6>
+
+                <h3 id="total_product">0</h3>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-xl-4 col-md-6 col-sm-12">
+            <div class="card">
+              <div class="card-body">
+                <h6>Total Jasa</h6>
+
+                <h3 id="total_service">0</h3>
               </div>
             </div>
           </div>
         </div>
       </section>
-    </div>
+      <!--! ================================================================ !-->
+      <!--! [End] Summary Card !-->
+      <!--! ================================================================ !-->
+      <!--! ================================================================ !-->
+      <!--! [Start] Sales & Purchase Chart !-->
+      <!--! ================================================================ !-->
+      <section class="section">
+        <div class="row">
+          <!-- Sales Chart -->
+          <div class="col-lg-6 col-12">
+            <div class="card">
+              <div class="card-header">
+                <h4>Grafik Penjualan</h4>
+              </div>
 
+              <div class="card-body">
+                <div id="payment_chart"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Purchase Chart -->
+          <div class="col-lg-6 col-12">
+            <div class="card">
+              <div class="card-header">
+                <h4>Grafik Pembelian</h4>
+              </div>
+
+              <div class="card-body">
+                <div id="purchase_chart"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+      <!--! ================================================================ !-->
+      <!--! [End] Sales & Purchase Chart !-->
+      <!--! ================================================================ !-->
+      <!--! ================================================================ !-->
+      <!--! [Start] Dashboard Tables !-->
+      <!--! ================================================================ !-->
+      <section class="section">
+        <div class="row">
+          <!--! ================================================================ !-->
+          <!--! [Start] Top Product !-->
+          <!--! ================================================================ !-->
+          <div class="col-lg-6 col-12">
+            <div class="card">
+              <div class="card-header">
+                <h4>Top Produk</h4>
+              </div>
+
+              <div class="card-body">
+                <table class="table table-striped">
+                  <thead>
+                    <tr>
+                      <th>No</th>
+                      <th>Produk</th>
+                      <th>Total Terjual</th>
+                    </tr>
+                  </thead>
+
+                  <tbody id="top_product_table">
+                    <!-- Set by Javascript -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+          <!--! ================================================================ !-->
+          <!--! [End] Top Product !-->
+          <!--! ================================================================ !-->
+
+          <!--! ================================================================ !-->
+          <!--! [Start] Top Service !-->
+          <!--! ================================================================ !-->
+          <div class="col-lg-6 col-12">
+            <div class="card">
+              <div class="card-header">
+                <h4>Top Jasa</h4>
+              </div>
+
+              <div class="card-body">
+                <table class="table table-striped">
+                  <thead>
+                    <tr>
+                      <th>No</th>
+                      <th>Jasa</th>
+                      <th>Total Digunakan</th>
+                    </tr>
+                  </thead>
+
+                  <tbody id="top_service_table">
+                    <!-- Set by Javascript -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+          <!--! ================================================================ !-->
+          <!--! [End] Top Service !-->
+          <!--! ================================================================ !-->
+
+          <!--! ================================================================ !-->
+          <!--! [Start] Low Stock !-->
+          <!--! ================================================================ !-->
+          <div class="col-lg-6 col-12">
+            <div class="card">
+              <div class="card-header">
+                <h4>Stok Menipis</h4>
+              </div>
+
+              <div class="card-body">
+                <table class="table table-striped">
+                  <thead>
+                    <tr>
+                      <th>No</th>
+                      <th>Barang</th>
+                      <th>Stok</th>
+                    </tr>
+                  </thead>
+
+                  <tbody id="low_stock_table">
+                    <!-- Set by Javascript -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+          <!--! ================================================================ !-->
+          <!--! [End] Low Stock !-->
+          <!--! ================================================================ !-->
+
+          <!--! ================================================================ !-->
+          <!--! [Start] Recent Transaction !-->
+          <!--! ================================================================ !-->
+          <div class="col-lg-6 col-12">
+            <div class="card">
+              <div class="card-header">
+                <h4>Transaksi Terbaru</h4>
+              </div>
+
+              <div class="card-body">
+                <table class="table table-striped">
+                  <thead>
+                    <tr>
+                      <th>Invoice</th>
+                      <th>Pelanggan</th>
+                      <th>Total</th>
+                    </tr>
+                  </thead>
+
+                  <tbody id="recent_transaction_table">
+                    <!-- Set by Javascript -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+          <!--! ================================================================ !-->
+          <!--! [End] Recent Transaction !-->
+          <!--! ================================================================ !-->
+        </div>
+      </section>
+      <!--! ================================================================ !-->
+      <!--! [End] Dashboard Tables !-->
+      <!--! ================================================================ !-->
+      <!--! ================================================================ !-->
+      <!--! [Start] Footer !-->
+      <!--! ================================================================ !-->
+      {% include 'components/footer_dashboard.html' %}
+      <!--! ================================================================ !-->
+      <!--! [End] Footer !-->
+      <!--! ================================================================ !-->
+    </div>
     <!--! ================================================================ !-->
-    <!--! [Start] Footer !-->
-    {% include 'components/footer_dashboard.html' %}
-    <!--! [End] Footer !-->
+    <!--! [End] Main Content !-->
     <!--! ================================================================ !-->
   </div>
   <!--! ================================================================ !-->
-  <!--! [End] Main Content !-->
+  <!--! [End] Page Content !-->
   <!--! ================================================================ !-->
+
+  <script src="{{ url_for('static', filename='javascript/helper/utilities.js') }}"></script>
+  <script src="{{ url_for('static', filename='javascript/helper/formatter.js') }}"></script>
+  <script src="{{ url_for('static', filename='javascript/helper/swal.js') }}"></script>
+  <script src="{{ url_for('static', filename='javascript/helper/validators.js') }}"></script>
+
+  <script src="{{ url_for('static', filename='javascript/api/dashboard.js') }}"></script>
+  <script src="{{ url_for('static', filename='javascript/pages/dashboard.js') }}"></script>
+
+  {% endblock %}
 </div>
-{% endblock %}

@@ -6,8 +6,9 @@ from apps.database.db_categories import Categories
 from apps.database.db_products import Products
 from apps.database.db_workshops import Workshops
 from apps.utilities.responseHelpers import *
-from apps.utilities.utilities import split_date_time
 from apps.utilities.validators import role_validator, category_validator
+from apps.utilities.utilities import current_timestamp
+from apps.utilities.formatter import format_date
 
 
 # CATEGORY MODEL CLASS ============================================================ Begin
@@ -42,7 +43,7 @@ class CategoryModels():
             if not result:
                 return not_found("Workshop could not be found.")
             # Initialize
-            timestamp = int(time.time()*1000)
+            timestamp = current_timestamp()
             data = Categories(
                 workshop_id=result.id,
                 category=category,
@@ -82,7 +83,7 @@ class CategoryModels():
             # Response Data ---------------------------------------- Start
             response = []
             for res in result:
-                created_at = split_date_time(datetime.fromtimestamp(res.created_at/1000))
+                created_at = format_date(res.created_at)
                 data = {
                     "category_id" : res.id,
                     "workshop_id" : res.workshop_id,
@@ -140,7 +141,7 @@ class CategoryModels():
             # Update Data ---------------------------------------- Start
             # Initialize
             result.category = category
-            result.updated_at = int(time.time()*1000)
+            result.updated_at = current_timestamp()
 
             # Save Data
             try:
@@ -190,7 +191,7 @@ class CategoryModels():
             
             # Delete Data ---------------------------------------- Start
             # Initialize
-            timestamp = int(time.time()*1000)
+            timestamp = current_timestamp()
             result.is_delete = 1
             result.deleted_at = timestamp
             # Delete Data ---------------------------------------- Finish

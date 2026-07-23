@@ -48,6 +48,16 @@ def saving_upload_image(file, folder_path):
 
         return filename
 
+##########################################################################################################
+# CURRENT TIMESTAMP | START
+from datetime import datetime
+
+
+def current_timestamp():
+    """
+    Return current Unix timestamp in milliseconds.
+    """
+    return int(datetime.now().timestamp() * 1000)
 
 ##########################################################################################################
 # RANDOM CHARACTER

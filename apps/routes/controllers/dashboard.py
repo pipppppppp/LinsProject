@@ -4,14 +4,15 @@ from flask_jwt_extended import jwt_required, get_jwt
 
 from datetime import datetime, timedelta
 
-from ...database.db_workshops import Workshops
-from ...database.db_users import Users
-from ...database.db_products import Products
-from ...database.db_customers import Customers
-from ...database.db_suppliers import Suppliers
-from ...database.db_purchases import Purchases
-from ...database.db_payment import Payments
-from ...routes.controllers.report import *
+from apps.database.db_workshops import Workshops
+from apps.database.db_users import Users
+from apps.database.db_products import Products
+from apps.database.db_customers import Customers
+from apps.database.db_suppliers import Suppliers
+from apps.database.db_purchases import Purchases
+from apps.database.db_payment import Payments
+from ..models.dashboard import DashboardModels
+from apps.routes.controllers.report import *
 
 # BLUEPRINT ================================================== Begin
 dashboard = Blueprint(
@@ -46,8 +47,7 @@ def index():
             1: "Owner",
             2: "Kasir"
         }
-        print(workshop.is_active)
-        print(type(workshop.is_active)) 
+
         return render_template(
             "dashboard.html",
             title="Dashboard POS Bengkel",
@@ -59,160 +59,153 @@ def index():
             is_active=1,
             workshop_status=workshop.is_active if workshop else 0
         )
-        # Return Page ======================================== 
-        # return redirect(url_for('dashboard'))
-        # if 'user_id' not in session:
-    
-        #     return redirect(
-        #         url_for('auth.signin_page')
-        #     )
+    except Exception as e:
+        return bad_request(str(e))
+# DASHBOARD PAGE ============================================================ End
 
-        # Total data
-        # total_items = Products.query.filter_by(
-        #     is_delete=0
-        # ).count()
+# DASHBOARD SUMMARY ============================================================ Begin
+# [GET] https://127.0.0.1:5000/dashboard/summary
+@dashboard.get('/summary')
+@jwt_required()
+def dashboard_summary():
+    try:
+        role = str(get_jwt()["role"])
+        ws_id = str(get_jwt()["ws_id"])
 
-        # total_customers = Customers.query.filter_by(
-        #     is_delete=0
-        # ).count()
+        response = DashboardModels.dashboard_summary(role, ws_id)
 
-        # total_suppliers = Suppliers.query.filter_by(
-        #     is_delete=0
-        # ).count()
-
-        # total_transactions = (
-        #     Purchases.query.filter_by(is_delete=0).count()
-        #     +
-        #     Payment.query.filter_by(is_delete=0).count()
-        # )
-
-        # low_stock = Products.query.filter(
-        #     Products.stok <= 5
-        # ).all()
-
-        # =====================================
-        # DASHBOARD SUMMARY
-        # =====================================
-
-        # now = datetime.now()
-
-        # start_today = datetime(
-        #     now.year,
-        #     now.month,
-        #     now.day
-        # )
-
-        # end_today = start_today + timedelta(
-        #     days=1
-        # )
-
-        # sales_today = Payment.query.filter(
-        #     Payment.tanggal.between(
-        #         int(start_today.timestamp()),
-        #         int(end_today.timestamp())
-        #     )
-        # ).all()
-
-        # penjualan_hari_ini = sum(
-        #     sale.total
-        #     for sale in sales_today
-        # )
-
-        # purchases_today = Purchases.query.filter(
-        #     Purchases.tanggal.between(
-        #         int(start_today.timestamp()),
-        #         int(end_today.timestamp())
-        #     )
-        # ).all()
-
-        # pembelian_hari_ini = sum(
-        #     purchase.total
-        #     for purchase in purchases_today
-        # )
-
-        # start_month = datetime(
-        #     now.year,
-        #     now.month,
-        #     1
-        # )
-
-        # if now.month == 12:
-
-        #     end_month = datetime(
-        #         now.year + 1,
-        #         1,
-        #         1
-        #     )
-
-        # else:
-
-        #     end_month = datetime(
-        #         now.year,
-        #         now.month + 1,
-        #         1
-        #     )
-
-        # sales_month = Payment.query.filter(
-        #     Payment.tanggal.between(
-        #         int(start_month.timestamp()),
-        #         int(end_month.timestamp())
-        #     )
-        # ).all()
-
-        # sale_ids = [
-        #     sale.id
-        #     for sale in sales_month
-        # ]
-
-        # profit = calculate_profit(
-        #     sale_ids
-        # )
-
-        # omset_bulan = profit["omset"]
-        # laba_bulan = profit["laba_bersih"]
-       
-
-        # =====================================
-        # END DASHBOARD SUMMARY
-        # =====================================
-
-        # return render_template(
-
-        #     title='Dashboard POS Bengkel',
-
-        #     template_name_or_list='dashboard.html',
-
-        #     active_menu="dashboard",
-
-        #     username=session.get('username'),
-
-        #     total_items=total_items,
-
-        #     total_customers=total_customers,
-
-        #     total_suppliers=total_suppliers,
-
-        #     total_transactions=total_transactions,
-
-        #     low_stock=low_stock,
-
-        #     penjualan_hari_ini=penjualan_hari_ini,
-
-        #     pembelian_hari_ini=pembelian_hari_ini,
-
-        #     omset_bulan=omset_bulan,
-
-        #     laba_bulan=laba_bulan
-        # )
+        return response
 
     except Exception as e:
-        # return bad_request(str(e))
-        # return "gagal boss! Durung dadi:)"
-        # return render_template(
-        #     title="Error $04 - Aplikasi e Hel",
-        #     template_name_or_list='errorPages/404.html'
-        # )
-        
-        print("ERROR DASHBOARD =", e)
-        raise e
-# DASHBOARD PAGE ============================================================ End
+        return bad_request(str(e))
+# DASHBOARD SUMMARY ============================================================ End
+
+# SALES CHART ============================================================ Begin
+# [POST] https://127.0.0.1:5000/dashboard/payment-chart
+@dashboard.post('/payment-chart')
+@jwt_required()
+def payment_chart():
+    try:
+        role = str(get_jwt()["role"])
+        ws_id = str(get_jwt()["ws_id"])
+
+        body = request.json
+
+        response = DashboardModels.payments_chart(
+            role,
+            ws_id,
+            body["start_date"],
+            body["end_date"]
+        )
+
+        return response
+
+    except Exception as e:
+        return bad_request(str(e))
+# SALES CHART ============================================================ End
+
+# PURCHASE CHART ============================================================ Begin
+# [POST] https://127.0.0.1:5000/dashboard/purchase-chart
+@dashboard.post('/purchase-chart')
+@jwt_required()
+def purchase_chart():
+    try:
+        role = str(get_jwt()["role"])
+        ws_id = str(get_jwt()["ws_id"])
+
+        body = request.json
+
+        response = DashboardModels.purchase_chart(
+            role,
+            ws_id,
+            body["start_date"],
+            body["end_date"]
+        )
+
+        return response
+
+    except Exception as e:
+        return bad_request(str(e))
+# PURCHASE CHART ============================================================ End
+
+# TOP PRODUCTS ============================================================ Begin
+# [POST] https://127.0.0.1:5000/dashboard/top-products
+@dashboard.post('/top-products')
+@jwt_required()
+def top_products():
+    try:
+        role = str(get_jwt()["role"])
+        ws_id = str(get_jwt()["ws_id"])
+
+        body = request.json
+
+        response = DashboardModels.top_products(
+            role,
+            ws_id,
+            body["start_date"],
+            body["end_date"]
+        )
+
+        return response
+
+    except Exception as e:
+        return bad_request(str(e))
+# TOP PRODUCTS ============================================================ End
+
+# TOP SERVICES ============================================================ Begin
+# [POST] https://127.0.0.1:5000/dashboard/top-services
+@dashboard.post('/top-services')
+@jwt_required()
+def top_services():
+    try:
+        role = str(get_jwt()["role"])
+        ws_id = str(get_jwt()["ws_id"])
+
+        body = request.json
+
+        response = DashboardModels.top_services(
+            role,
+            ws_id,
+            body["start_date"],
+            body["end_date"]
+        )
+
+        return response
+
+    except Exception as e:
+        return bad_request(str(e))
+# TOP SERVICES ============================================================ End
+
+# LOW STOCK ============================================================ Begin
+# [GET] https://127.0.0.1:5000/dashboard/low-stock
+@dashboard.get('/low-stock')
+@jwt_required()
+def low_stock():
+    try:
+        role = str(get_jwt()["role"])
+        ws_id = str(get_jwt()["ws_id"])
+
+        response = DashboardModels.low_stock(role, ws_id)
+
+        return response
+
+    except Exception as e:
+        return bad_request(str(e))
+# LOW STOCK ============================================================ End
+
+# RECENT TRANSACTIONS ============================================================ Begin
+# [GET] https://127.0.0.1:5000/dashboard/recent-transactions
+@dashboard.get('/recent-transactions')
+@jwt_required()
+def recent_transactions():
+    try:
+        role = str(get_jwt()["role"])
+        ws_id = str(get_jwt()["ws_id"])
+
+        response = DashboardModels.recent_transactions(role, ws_id)
+
+        return response
+
+    except Exception as e:
+        return bad_request(str(e))
+# RECENT TRANSACTIONS ============================================================ End

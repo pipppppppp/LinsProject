@@ -7,7 +7,8 @@ from ...database.db_suppliers import Suppliers
 from ...utilities.validators import role_validator, supplier_validator
 
 from apps.utilities.responseHelpers import *
-from apps.utilities.utilities import split_date_time
+from apps.utilities.utilities import current_timestamp
+from apps.utilities.formatter import format_date
 
 
 # SUPPLIER MODEL CLASS ============================================================ Begin
@@ -74,7 +75,7 @@ class SupplierModels():
             # Check Workshop ---------------------------------------- Finish
 
             # Insert Data ---------------------------------------- Start
-            timestamp = int(time.time() * 1000)
+            timestamp = current_timestamp()
 
             data = Suppliers(
                 workshop_id=workshop_id,
@@ -126,20 +127,17 @@ class SupplierModels():
 
             for supplier in suppliers:
 
-                created_at = split_date_time(
-                    datetime.fromtimestamp(supplier.created_at / 1000)
-                )
+                created_at = format_date(supplier.created_at)
+                
 
-                updated_at = split_date_time(
-                    datetime.fromtimestamp(supplier.updated_at / 1000)
-                )
+                updated_at = format_date(supplier.updated_at)
+                
 
                 deleted_at = None
 
                 if supplier.deleted_at:
-                    deleted_at = split_date_time(
-                        datetime.fromtimestamp(supplier.deleted_at / 1000)
-                    )
+                    deleted_at = format_date(supplier.deleted_at)
+                    
 
                 data.append({
                     "id": supplier.id,
@@ -239,7 +237,7 @@ class SupplierModels():
             # Check Supplier ---------------------------------------- Finish
 
             # Update Data ---------------------------------------- Start
-            timestamp = int(time.time() * 1000)
+            timestamp = current_timestamp()
 
             data.name = name
             data.phone = phone
@@ -301,7 +299,7 @@ class SupplierModels():
             # Check Supplier ---------------------------------------- Finish
 
             # Delete Data ---------------------------------------- Start
-            timestamp = int(time.time() * 1000)
+            timestamp = current_timestamp()
 
             data.is_delete = 1
             data.deleted_at = timestamp

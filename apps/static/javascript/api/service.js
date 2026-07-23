@@ -19,7 +19,6 @@ const form = {
 // BASE INITIALIZATION | END
 // **************************************************************
 
-
 // **************************************************************
 // GET SERVICE | START
 // **************************************************************
@@ -33,7 +32,6 @@ async function loadServices() {
 // **************************************************************
 // GET SERVICE | END
 // **************************************************************
-
 
 // **************************************************************
 // RENDER DATA | START
@@ -81,11 +79,15 @@ function renderTable() {
 // RENDER DATA | END
 // **************************************************************
 
-
 // **************************************************************
 // SAVE SERVICE | START
 // **************************************************************
 async function saveService() {
+  console.log(form);
+  console.log(form.id);
+  console.log(form.name);
+  console.log(form.fee);
+  console.log(form.description);
 
   const service = {
     id: form.id.value,
@@ -112,28 +114,18 @@ async function saveService() {
   }
 
   if (result.status_code === 201 || result.status_code === 200) {
-
     await swalSuccess(result.message);
 
     closeModal("service_modal");
 
-    clearValue(
-      form.id,
-      form.name,
-      form.fee,
-      form.description
-    );
+    clearValue(form.id, form.name, form.fee, form.description);
 
     form.title.textContent = "Tambah Jasa";
 
     await reloadTable(loadServices, renderTable);
-
   } else {
-
     await swalError(result.message);
-
   }
-
 }
 
 document.querySelector(".btn-save").addEventListener("click", saveService);
@@ -141,22 +133,19 @@ document.querySelector(".btn-save").addEventListener("click", saveService);
 // SAVE SERVICE | END
 // **************************************************************
 
-
 // **************************************************************
 // UPDATE & DELETE SERVICE | START
 // **************************************************************
 document.getElementById("table1").addEventListener("click", handleTableClick);
 
 async function handleTableClick(e) {
-
   const editBtn = e.target.closest(".btn-edit");
   const deleteBtn = e.target.closest(".btn-delete");
 
   if (editBtn) {
-
     const id = Number(editBtn.dataset.id);
 
-    const service = servicesData.find(item => item.id === id);
+    const service = servicesData.find((item) => item.id === id);
 
     if (!service) return;
 
@@ -171,7 +160,6 @@ async function handleTableClick(e) {
   }
 
   if (deleteBtn) {
-
     const id = Number(deleteBtn.dataset.id);
 
     const confirmDelete = await swalDelete();
@@ -181,56 +169,37 @@ async function handleTableClick(e) {
     let result;
 
     try {
-
       swalLoading();
 
       result = await deleteRequest(`/service/delete/${id}`);
-
     } finally {
-
       swalClose();
-
     }
 
     if (result.status_code === 200) {
-
       await swalSuccess(result.message);
 
       await reloadTable(loadServices, renderTable);
-
     } else {
-
       await swalError(result.message);
-
     }
-
   }
-
 }
 // **************************************************************
 // UPDATE & DELETE SERVICE | END
 // **************************************************************
 
-
 // **************************************************************
 // RESET FORM | START
 // **************************************************************
 function resetForm() {
-
   form.title.textContent = "Tambah Jasa";
 
-  clearValue(
-    form.id,
-    form.name,
-    form.fee,
-    form.description
-  );
-
+  clearValue(form.id, form.name, form.fee, form.description);
 }
 // **************************************************************
 // RESET FORM | END
 // **************************************************************
-
 
 // **************************************************************
 // FORMAT INPUT | START
@@ -240,13 +209,10 @@ formatThousands(form.fee);
 // FORMAT INPUT | END
 // **************************************************************
 
-
 // **************************************************************
 // MODAL EVENT | START
 // **************************************************************
-document
-  .getElementById("service_modal")
-  .addEventListener("hidden.bs.modal", resetForm);
+document.getElementById("service_modal").addEventListener("hidden.bs.modal", resetForm);
 // **************************************************************
 // MODAL EVENT | END
 // **************************************************************

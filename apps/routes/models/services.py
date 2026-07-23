@@ -7,7 +7,8 @@ from ...database.db_services import Services
 from ...utilities.validators import role_validator, service_validator
 
 from apps.utilities.responseHelpers import *
-from apps.utilities.utilities import split_date_time
+from apps.utilities.utilities import current_timestamp
+from apps.utilities.formatter import format_date
 
 
 # SERVICE MODEL CLASS ============================================================ Begin
@@ -73,7 +74,7 @@ class ServiceModels():
                 )
             # Check Workshop ---------------------------------------- Finish
 
-            timestamp = int(time.time() * 1000)
+            timestamp = current_timestamp()
 
             # Insert Data ---------------------------------------- Start
             data = Services(
@@ -125,20 +126,16 @@ class ServiceModels():
 
             for service in services:
 
-                created_at = split_date_time(
-                    datetime.fromtimestamp(service.created_at / 1000)
-                )
+                created_at = format_date(service.created_at)
 
-                updated_at = split_date_time(
-                    datetime.fromtimestamp(service.updated_at / 1000)
-                )
+                updated_at = format_date(service.updated_at)
+                
 
                 deleted_at = None
 
                 if service.deleted_at:
-                    deleted_at = split_date_time(
-                        datetime.fromtimestamp(service.deleted_at / 1000)
-                    )
+                    deleted_at = format_date(service.deleted_at)
+                
 
                 data.append({
                     "id": service.id,
@@ -235,7 +232,7 @@ class ServiceModels():
             # Check Service ---------------------------------------- Finish
 
             # Update Data ---------------------------------------- Start
-            timestamp = int(time.time() * 1000)
+            timestamp = current_timestamp()
 
             data.name = name
             data.service_fee = int(service_fee)
@@ -294,7 +291,7 @@ class ServiceModels():
             # Check Service ---------------------------------------- Finish
 
             # Delete Data ---------------------------------------- Start
-            timestamp = int(time.time() * 1000)
+            timestamp = current_timestamp()
 
             data.is_delete = 1
             data.deleted_at = timestamp

@@ -9,7 +9,7 @@ from apps.utilities.validators import owner_validator, user_validator
 
 from apps.utilities.responseHelpers import *
 from apps.utilities.formatter import format_datetime
-from apps.utilities.utilities import hash_password, split_date_time
+from apps.utilities.utilities import current_timestamp, hash_password
 
 
 # CASHIER MANAGEMENT MODEL CLASS =============================================== Begin
@@ -84,7 +84,7 @@ class CashierManagementModels():
                 )
             # Check Workshop ---------------------------------------- Finish
 
-            timestamp = int(time.time() * 1000)
+            timestamp = current_timestamp()
 
             # Insert Data ---------------------------------------- Start
             data = Users(
@@ -266,7 +266,7 @@ class CashierManagementModels():
             # Check Cashier ---------------------------------------- Finish
 
             # Update Data ---------------------------------------- Start
-            timestamp = int(time.time() * 1000)
+            timestamp = current_timestamp()
 
             data.owner_name = owner_name
             data.username = username
@@ -335,7 +335,7 @@ class CashierManagementModels():
             # Check Cashier ---------------------------------------- Finish
 
             # Delete Data ---------------------------------------- Start
-            timestamp = int(time.time() * 1000)
+            timestamp = current_timestamp()
 
             cashier.is_delete = 1
             cashier.deleted_at = timestamp

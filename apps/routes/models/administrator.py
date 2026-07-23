@@ -6,15 +6,15 @@ from apps.database.db_users import Users
 from apps.database.db_workshops import Workshops
 
 from apps.utilities.responseHelpers import *
-from apps.utilities.utilities import split_date_time
+from apps.utilities.utilities import current_timestamp
 from apps.utilities.validators import administrator_validator
+from apps.utilities.formatter import format_date, format_datetime
 
 
 # ADMINISTRATOR MODEL CLASS ============================================================ Begin
 class AdministratorModels():
 
     # DASHBOARD ============================================================ Begin
-    @staticmethod
     def dashboard(user_role):
         try:
              # Access Validation ---------------------------------------- Start
@@ -69,7 +69,6 @@ class AdministratorModels():
 
 
     # VIEW WORKSHOP ============================================================ Begin
-    @staticmethod
     def read_workshop(user_role, status):
         try:
             # Access Validation ---------------------------------------- Start
@@ -120,9 +119,7 @@ class AdministratorModels():
                     is_delete=0
                 ).first()
 
-                created_at = split_date_time(
-                    datetime.fromtimestamp(workshop.created_at / 1000)
-                )
+                created_at = format_datetime(workshop.created_at)
 
                 data = {
                     "workshop_id": workshop.id,
@@ -151,7 +148,6 @@ class AdministratorModels():
     # VIEW WORKSHOP ============================================================ End
 
     # VERIFY WORKSHOP ============================================================ Begin
-    @staticmethod
     def verify_workshop(user_role, datas):
         try:
             # Access Validation ---------------------------------------- Start
@@ -194,7 +190,7 @@ class AdministratorModels():
             # Check Data ---------------------------------------- Finish
 
             # Update Data ---------------------------------------- Start
-            timestamp = int(time.time() * 1000)
+            timestamp = current_timestamp()
 
             workshop.is_verified = 1
             workshop.updated_at = timestamp
@@ -218,7 +214,6 @@ class AdministratorModels():
     # VERIFY WORKSHOP ============================================================ End
 
     # DETAIL WORKSHOP ============================================================ Begin
-    @staticmethod
     def detail_workshop(role, workshop_id):
 
         # Role Checker ========================================
@@ -261,15 +256,12 @@ class AdministratorModels():
             "logo": workshop_data.logo,
             "is_verified": workshop_data.is_verified,
             "workshop_status": workshop_data.is_active,
-            "created_at": split_date_time(
-                datetime.fromtimestamp(workshop_data.created_at / 1000)
-            )
+            "created_at": format_datetime(workshop_data.created_at)
         })
 
     # DETAIL WORKSHOP ============================================================ End
 
     # ACTIVATE WORKSHOP ============================================================ Begin
-    @staticmethod
     def activate_workshop(user_role, datas):
         try:
             # Access Validation ---------------------------------------- Start
@@ -306,7 +298,7 @@ class AdministratorModels():
 
             # Update Data ---------------------------------------- Start
             workshop.is_active = 1
-            workshop.updated_at = int(time.time() * 1000)
+            workshop.updated_at = current_timestamp()
 
             # Save Data
             try:
@@ -324,7 +316,6 @@ class AdministratorModels():
     # ACTIVATE WORKSHOP ============================================================ End
 
     # DEACTIVATE WORKSHOP ============================================================ Begin
-    @staticmethod
     def deactivate_workshop(user_role, datas):
         try:
             # Access Validation ---------------------------------------- Start
@@ -359,7 +350,7 @@ class AdministratorModels():
 
             # Update Data ---------------------------------------- Start
             workshop.is_active = 0
-            workshop.updated_at = int(time.time() * 1000)
+            workshop.updated_at = current_timestamp()
 
             # Save Data
             try:
@@ -379,7 +370,6 @@ class AdministratorModels():
 
 
     # DELETE WORKSHOP ============================================================ Begin
-    @staticmethod
     def delete_workshop(user_role, datas):
         try:
             # Access Validation ---------------------------------------- Start
@@ -416,7 +406,7 @@ class AdministratorModels():
             # Check Data ---------------------------------------- Finish
 
             # Delete Data ---------------------------------------- Start
-            timestamp = int(time.time() * 1000)
+            timestamp = current_timestamp()
 
             workshop.is_delete = 1
             workshop.deleted_at = timestamp

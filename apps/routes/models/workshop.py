@@ -184,7 +184,7 @@ class WorkshopModels():
             # Data Validation ---------------------------------------- Finish
 
             # Update Data ---------------------------------------- Start
-            timestamp = int(time.time() * 1000)
+            timestamp = current_timestamp()
 
             if logo:
                 filename = saving_upload_image(
