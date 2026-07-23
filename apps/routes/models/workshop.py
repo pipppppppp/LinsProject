@@ -1,14 +1,17 @@
 import time
+import os
+
+from apps.configure.config import STATIC_FOLDER_PATH
 
 from apps import db
 from apps.database.db_workshops import Workshops
 from apps.utilities.responseHelpers import *
-from apps.utilities.validators import role_validator, workshop_validator
+from apps.utilities.validators import role_validator, workshop_validator, email_checker, saving_upload_image
 
 
 # WORKSHOP MODEL CLASS ============================================================ Begin
 class WorkshopModels():
-    # ADD WORKSHOP ============================================================ Begin
+    # CREATE WORKSHOP ============================================================ Begin
     def create_workshop(user_id, user_role, datas):
         try:
             # Access Validation ---------------------------------------- Start
@@ -38,7 +41,7 @@ class WorkshopModels():
             
             # Insert Data ---------------------------------------- Start
             # Initialize
-            timestamp = int(round(time.time()*1000))
+            timestamp = int(time.time()*1000)
             data = Workshops(
                 workshop_name=workshop_name,
                 owner_id=user_id,
@@ -58,80 +61,162 @@ class WorkshopModels():
             # Insert Data ---------------------------------------- Finish
 
             # Return Response ======================================== 
-            return success(status_code=200)
+            return success(status_code=201)
         
         except Exception as e:
-            print("WORKSHOP ERROR:", e)
+            db.session.rollback()
             return bad_request(str(e))
-    # ADD WORKSHOP ============================================================ End
+    # CREATE WORKSHOP ============================================================ End
     
-    # GET WORKSHOP ============================================================ Begin
-    def view_workshop():
+    # READ WORKSHOP ============================================================ Begin
+    def read_workshop(user_role, workshop_id):
         try:
+            # Access Validation ---------------------------------------- Start
+            access = role_validator(user_role)
+
+            if not access:
+                return authorization_error()
+            # Access Validation ---------------------------------------- Finish
+
+            # Check Workshop ---------------------------------------- Start
             workshop = Workshops.query.filter_by(
-                owner_id=session["user_id"],
+                id=workshop_id,
                 is_delete=0
             ).first()
 
-            return workshop
+            if not workshop:
+                return not_found(
+                    "Workshop could not be found."
+                )
+            # Check Workshop ---------------------------------------- Finish
+
+            # Initialize Data ---------------------------------------- Start
+            data = {
+                "id": workshop.id,
+                "workshop_name": workshop.workshop_name,
+                "workshop_address": workshop.workshop_address,
+                "workshop_phone": workshop.workshop_phone,
+                "workshop_email": workshop.workshop_email,
+                "logo": workshop.logo,
+                "is_verified": workshop.is_verified,
+                "is_active": workshop.is_active
+            }
+            # Initialize Data ---------------------------------------- Finish
+
+            # Return Response ========================================
+            return success_data(
+                data=data,
+                status_code=200
+            )
 
         except Exception as e:
             return bad_request(str(e))
-    # GET WORKSHOP ============================================================ End
-
+    # READ WORKSHOP ============================================================ End
 
     # UPDATE WORKSHOP ============================================================ Begin
-    def edit_workshop(datas, logo):
+    def update_workshop(user_role, workshop_id, datas, logo):
         try:
+            # Access Validation ---------------------------------------- Start
+            access = role_validator(user_role)
+
+            if not access:
+                return authorization_error()
+            # Access Validation ---------------------------------------- Finish
+
+            # Check Request Body ---------------------------------------- Start
+            if datas is None:
+                return invalid_params()
+
+            required_data = [
+                "workshop_name",
+                "workshop_address",
+                "workshop_phone",
+                "workshop_email"
+            ]
+
+            for req in required_data:
+                if req not in datas:
+                    return parameter_error(
+                        f"Missing {req} in request body."
+                    )
+            # Check Request Body ---------------------------------------- Finish
+
+            # Initialize Data Input ---------------------------------------- Start
+            workshop_name = datas["workshop_name"].strip()
+            workshop_address = datas["workshop_address"].strip()
+            workshop_phone = datas["workshop_phone"].strip()
+            workshop_email = datas["workshop_email"].strip()
+            # Initialize Data Input ---------------------------------------- Finish
+
+            # Check Workshop ---------------------------------------- Start
             workshop = Workshops.query.filter_by(
-                owner_id=session["user_id"],
+                id=workshop_id,
                 is_delete=0
             ).first()
 
-            if workshop is None:
-                return {
-                    "status": False,
-                    "message": "Profil bengkel tidak ditemukan"
-                }
+            if not workshop:
+                return not_found(
+                    "Workshop could not be found."
+                )
+            # Check Workshop ---------------------------------------- Finish
 
-            workshop.workshop_name = datas["workshop_name"]
-            workshop.workshop_phone = datas["workshop_phone"]
-            workshop.workshop_address = datas["workshop_address"]
-            workshop.workshop_email = datas["workshop_email"]
-            workshop.is_active = datas["is_active"]
+            # Data Validation ---------------------------------------- Start
+            checker_result = workshop_validator(
+                workshop.owner_id,
+                workshop_name,
+                workshop_address,
+                workshop_phone,
+                False
+            )
 
-            # Upload Logo
-            if logo and logo.filename != "":
+            if workshop_email != "":
+                if email_checker(workshop_email):
+                    checker_result.append(
+                        "Email tidak valid."
+                    )
 
-                filename = secure_filename(logo.filename)
-                ext = os.path.splitext(filename)[1]
-                new_filename = f"{uuid.uuid4().hex}{ext}"
+            if len(checker_result) != 0:
+                return defined_error(
+                    checker_result,
+                    "Defined Error",
+                    499
+                )
+            # Data Validation ---------------------------------------- Finish
 
-                upload_folder = os.path.join(
-                    "apps",
-                    "static",
-                    "uploads",
-                    "workshops"
+            # Update Data ---------------------------------------- Start
+            timestamp = int(time.time() * 1000)
+
+            if logo:
+                filename = saving_upload_image(
+                    logo,
+                    os.path.join(
+                        STATIC_FOLDER_PATH,
+                        "images",
+                        "profiles"
+                    )
                 )
 
-                os.makedirs(upload_folder, exist_ok=True)
+                workshop.logo = filename
 
-                logo.save(
-                    os.path.join(upload_folder, new_filename)
-                )
+            workshop.workshop_name = workshop_name
+            workshop.workshop_address = workshop_address
+            workshop.workshop_phone = workshop_phone
+            workshop.workshop_email = workshop_email
+            workshop.updated_at = timestamp
 
-                workshop.logo = f"images/profiles/{new_filename}"
+            try:
+                db.session.commit()
 
-            workshop.updated_at = int(time.time())
+            except Exception as e:
+                db.session.rollback()
+                return parameter_error(str(e))
+            # Update Data ---------------------------------------- Finish
 
-            db.session.commit()
-
-            return {
-                "status": True,
-                "message": "Profil bengkel berhasil diupdate"
-            }
+            # Return Response ========================================
+            return success(status_code=200)
 
         except Exception as e:
+            db.session.rollback()
             return bad_request(str(e))
     # UPDATE WORKSHOP ============================================================ End
 

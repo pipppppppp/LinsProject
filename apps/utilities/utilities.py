@@ -9,6 +9,9 @@ from .responseHelpers import *
 
 import string, random, hashlib, uuid, re, hashlib, os, cv2, base64, numpy as np
 
+import os
+import uuid
+from werkzeug.utils import secure_filename
 
 ##########################################################################################################
 # FILE MANAGEMENT
@@ -29,6 +32,21 @@ def saving_file(encodedData, fileName):
     arr = np.fromstring(base64.b64decode(encodedData), np.uint8)
     with open(fileName, "wb") as file:
         file.write(arr)
+
+def saving_upload_image(file, folder_path):
+        if file is None:
+            return None
+
+        filename = f"{uuid.uuid4().hex}_{secure_filename(file.filename)}"
+
+        if not os.path.exists(folder_path):
+            os.makedirs(folder_path)
+
+        file_path = os.path.join(folder_path, filename)
+
+        file.save(file_path)
+
+        return filename
 
 
 ##########################################################################################################
