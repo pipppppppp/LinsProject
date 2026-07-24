@@ -71,8 +71,6 @@ async function updateItem() {
     const harga_beli = document.getElementById("edit_harga_beli").value;
     const harga_jual = document.getElementById("edit_harga_jual").value;
 
-    console.log("UPDATE ID =", id);
-
     const response = await fetch(`/item/update/${id}`, {
         method: "PUT",
         headers: {

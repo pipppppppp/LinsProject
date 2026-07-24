@@ -48,7 +48,6 @@ async function loadHistorySales(start_date = "", end_date = "") {
 // RENDER TABLE | START
 // **************************************************************
 function renderTable() {
-  console.log(historySalesData);
   let html = "";
   if (historySalesData.length === 0) {
     html = `
@@ -126,7 +125,6 @@ async function handleTableClick(e) {
     return swalError(result.message);
   }
 
-  // console.log(result.data);
   renderDetail(result.data);
 
   openModal("detail_modal");
@@ -401,8 +399,6 @@ async function exportHistorySalesExcel() {
   if (!response.ok) {
     const error = await response.text();
 
-    console.log(error);
-
     await swalError(error);
 
     return;
@@ -448,8 +444,6 @@ async function exportHistorySalesPDF() {
 
   if (!response.ok) {
     const error = await response.text();
-
-    console.log(error);
 
     await swalError(error);
 

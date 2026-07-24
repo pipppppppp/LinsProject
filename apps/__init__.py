@@ -95,6 +95,7 @@ from .routes.controllers.services import service
 from .routes.controllers.purchase import purchase
 from .routes.controllers.history_sales import history_sales
 from .routes.controllers.report import report
+from .routes.controllers.cash_deposit import cash_deposit
 
 # Register
 app.register_blueprint(auth)
@@ -112,5 +113,6 @@ app.register_blueprint(service)
 app.register_blueprint(purchase)
 app.register_blueprint(history_sales)
 app.register_blueprint(report)
+app.register_blueprint(cash_deposit)
 # End Blueprint Section ==========================##
 # ====================== END - ROUTE CONFIGURATION ======================

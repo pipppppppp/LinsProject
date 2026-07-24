@@ -26,7 +26,6 @@ let categoriesData = [];
 async function loadCategories() {
   const result = await getRequest("/category/view");
   categoriesData = result.data;
-  // console.log(categoriesData);
 }
 
 // Load Data -------------------------------------------------

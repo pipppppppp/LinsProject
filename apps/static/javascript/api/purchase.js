@@ -50,7 +50,7 @@ let purchaseItems = [];
 // **************************************************************
 async function loadSuppliers() {
   const result = await getRequest("/supplier/view");
-  console.log(result);
+  
   if (result.status_code !== 200) {
     await swalError(result.message);
     return;
@@ -91,7 +91,6 @@ async function loadProducts() {
   }
 
   productsData = result.data;
-  //   console.log(productsData)
 }
 // **************************************************************
 // LOAD PRODUCT | END

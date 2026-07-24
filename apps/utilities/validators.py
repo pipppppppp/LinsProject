@@ -1059,14 +1059,7 @@ def report_validator(
 # REPORT VALIDATION ============================================================ End
 
 # SALE VALIDATION ============================================================ Begin
-def sale_validator(
-    customer_id,
-    vehicle_id,
-    payment,
-    product_details,
-    service_details,
-    workshop_id
-):
+def sale_validator(customer_id,vehicle_id,payment,product_details,service_details,workshop_id):
     check_result = []
 
     # Check Null Value ---------------------------------------- Start
@@ -1231,3 +1224,21 @@ def sale_validator(
     # Check Service Detail ---------------------------------------- Finish
     return check_result
 # SALE VALIDATION ============================================================ End
+
+# CASH DEPOSIT VALIDATION ============================================================ Begin
+def cash_deposit_validator(total_deposit):
+    check_result = []
+
+    # Check Null Value
+    if str(total_deposit).strip() == "":
+        check_result.append("Nominal setor tidak boleh kosong.")
+
+    # Check Number
+    elif not str(total_deposit).isdigit():
+        check_result.append("Nominal setor harus berupa angka.")
+
+    elif int(total_deposit) <= 0:
+        check_result.append("Nominal setor harus lebih dari 0.")
+
+    return check_result
+# CASH DEPOSIT VALIDATION ============================================================ End

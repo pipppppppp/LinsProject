@@ -30,11 +30,9 @@ let vehiclesData = [];
 // Load Data -------------------------------------------------
 async function loadVehicles() {
   const customerId = form.customer_id.value;
-  console.log("ELEMENT:", form.customer_id);
-  console.log("VALUE:", form.customer_id?.value);
 
   const result = await getRequest(`/vehicle/view/${customerId}`);
-  console.log(result);
+  
   if (!result) {
       vehiclesData = [];
       return;

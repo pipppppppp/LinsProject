@@ -144,11 +144,6 @@ async function searchItem() {
 
   searchData = response.data || [];
 
-  console.log(searchData);
-  console.log(searchData[0]);
-  console.log("Keyword :", keyword);
-  console.log("Barcode :", searchData[0]?.barcode);
-
   // Barcode ditemukan (langsung add ke cart)
   if (searchData.length === 1 && keyword === searchData[0].barcode) {
     const item = searchData[0];
@@ -503,8 +498,6 @@ async function checkout() {
   };
 
   const response = await postRequest("/cashier/checkout", data);
-
-  console.log(response);
 
   if (response.status_code === 200) {
     showCheckoutModal(response.message);

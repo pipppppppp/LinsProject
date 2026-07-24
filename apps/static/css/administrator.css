@@ -243,3 +243,52 @@ body {
 .administrator-page .page-heading {
   margin-bottom: 30px;
 }
+
+/* ==========================================================
+   SUMMARY CARD ICON CASHIER
+========================================================== */
+
+.text-purple {
+  color: #6f42c1;
+}
+.summary-icon {
+  width: 56px;
+  height: 56px;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.summary-icon i {
+  font-size: 28px;
+  line-height: 1;
+  margin-left: -8px; /* geser sedikit ke kiri */
+  margin-top: -8px; /* geser sedikit ke atas */
+}
+.summary-success {
+  background-color: rgba(25, 135, 84, 0.12);
+}
+
+.summary-primary {
+  background-color: rgba(13, 202, 240, 0.12);
+}
+
+.summary-warning {
+  background-color: rgba(255, 193, 7, 0.12);
+}
+
+.summary-purple {
+  background-color: rgba(111, 66, 193, 0.12);
+}
+
+.summary-info {
+  background: rgba(13, 202, 240, 0.12);
+}
+
+.summary-info i {
+  color: #0dcaf0;
+}

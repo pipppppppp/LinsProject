@@ -74,7 +74,19 @@
                   </a>
 
               </li>
+              <li class="sidebar-item {% if active_menu == 'cash_deposit' %}active{% endif %}">
 
+                <a
+                    href="{{ url_for('cash_deposit.index') }}"
+                    class="sidebar-link">
+
+                    <i class="bi bi-clock-history"></i>
+
+                    <span>Keuangan</span>
+
+                </a>
+
+            </li>
               <li class="sidebar-item {% if active_menu == 'history_sales' %}active{% endif %}">
 
                   <a

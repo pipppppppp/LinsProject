@@ -44,10 +44,6 @@ function signin_process(e) {
   fetch(API, request_options)
     .then((http_response) => http_response.json())
     .then((response) => {
-      console.log(response);
-      console.log("Role:", response.role);
-      console.log("Data:", response.data);
-
       if (response.status_code == 200) {
         swal
           .fire({
@@ -56,9 +52,7 @@ function signin_process(e) {
           })
           .then((result) => {
             const role = response.data.role;
-
-            console.log(role);
-
+            
             if (role == 0) {
               window.location.replace("/administrator/dashboard");
             } else if (role == 1) {

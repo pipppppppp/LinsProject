@@ -507,3 +507,18 @@ function validateSale(sale) {
 // **************************************************************
 // SALE VALIDATION | END
 // **************************************************************
+
+function validateCashDeposit(data) {
+
+  if (!data.total_deposit) {
+      swalWarning("Nominal setor tidak boleh kosong.");
+      return false;
+  }
+
+  if (Number(data.total_deposit) <= 0) {
+      swalWarning("Nominal setor harus lebih dari 0.");
+      return false;
+  }
+
+  return true;
+}

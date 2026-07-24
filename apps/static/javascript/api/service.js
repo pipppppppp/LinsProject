@@ -83,12 +83,6 @@ function renderTable() {
 // SAVE SERVICE | START
 // **************************************************************
 async function saveService() {
-  console.log(form);
-  console.log(form.id);
-  console.log(form.name);
-  console.log(form.fee);
-  console.log(form.description);
-
   const service = {
     id: form.id.value,
     name: formatTitle(form.name.value),

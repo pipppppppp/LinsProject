@@ -131,8 +131,7 @@ function renderTable() {
   let html = "";
 
   purchaseReportData.forEach((purchase, index) => {
-    console.log(purchase);
-    console.log(purchase.purchase_date);
+    
     html += `
               <tr>
   
@@ -193,8 +192,6 @@ async function exportPurchaseExcel() {
     // await swalError("Gagal export Excel.");
     const error = await response.text();
 
-    console.log(error);
-
     await swalError(error);
     return;
   }
@@ -244,8 +241,6 @@ async function exportPurchasePDF() {
   if (!response.ok) {
     // await swalError("Gagal export PDF.");
     const error = await response.text();
-
-    console.log(error);
 
     await swalError(error);
     return;
