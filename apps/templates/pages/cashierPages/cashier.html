@@ -42,7 +42,7 @@
             <nav aria-label="breadcrumb" class="breadcrumb-header float-start float-lg-end">
               <ol class="breadcrumb">
                 <li class="breadcrumb-item">
-                  <a href="{{ url_for('dashboard.index') }}"> Dashboard </a>
+                  <a href="{{ url_for('dashboard_cashier.index') }}"> Dashboard </a>
                 </li>
 
                 <li class="breadcrumb-item active" aria-current="page">Kasir</li>
@@ -64,10 +64,12 @@
           <div class="col-lg-4">
             <div class="card">
               <div class="card-header">
-                <h5 class="card-title">
-                  <i class="bi bi-upc-scan"></i>
+                <h5 class="mb-1">
+                  <i class="bi bi-upc-scan text-primary me-2"></i>
                   Cari Barang
                 </h5>
+
+                <small class="text-muted"> Scan barcode atau ketik nama barang. </small>
               </div>
 
               <div class="card-body">
@@ -80,10 +82,12 @@
           <div class="col-lg-8">
             <div class="card">
               <div class="card-header">
-                <h5 class="card-title">
-                  <i class="bi bi-list-ul"></i>
+                <h5 class="mb-1">
+                  <i class="bi bi-search text-primary me-2"></i>
                   Hasil Pencarian
                 </h5>
+
+                <small class="text-muted"> Pilih barang atau jasa yang akan dimasukkan ke keranjang. </small>
               </div>
 
               <div class="card-body">
@@ -118,13 +122,17 @@
         <div class="card">
           <div class="card-header">
             <div class="d-flex justify-content-between align-items-center">
-              <h5 class="card-title mb-0">
-                <i class="bi bi-cart-check-fill"></i>
-                Keranjang Penjualan
-              </h5>
+              <div>
+                <h5 class="mb-1">
+                  <i class="bi bi-cart-check-fill text-primary me-2"></i>
+                  Keranjang Penjualan
+                </h5>
+
+                <small class="text-muted"> Tambahkan barang atau jasa ke dalam transaksi. </small>
+              </div>
 
               <button type="button" class="btn btn-outline-danger" id="btn_reset">
-                <i class="bi bi-arrow-clockwise"></i>
+                <i class="bi bi-arrow-clockwise me-1"></i>
                 Reset Keranjang
               </button>
             </div>
@@ -137,7 +145,7 @@
 
             <div class="row">
               <div class="col-md-6">
-                <label class="form-label"> Pelanggan </label>
+                <label class="form-label">Pelanggan</label>
 
                 <select id="customer_id" class="form-select">
                   <option value="">Pelanggan Umum</option>
@@ -188,42 +196,48 @@
       <!--! ================================================================ !-->
       <!--! [End] Cashier Section !-->
       <!--! ================================================================ !-->
+
       <!--! ================================================================ !-->
       <!--! [Start] Payment Section !-->
       <!--! ================================================================ !-->
       <section class="section">
         <div class="card">
           <div class="card-header">
-            <h5 class="card-title">
-              <i class="bi bi-cash-stack"></i>
+            <h5 class="mb-1">
+              <i class="bi bi-credit-card-2-front text-primary me-2"></i>
               Pembayaran
             </h5>
+
+            <small class="text-muted"> Selesaikan transaksi pelanggan. </small>
           </div>
 
           <div class="card-body">
-            <div class="row">
-              <!-- Total -->
-              <div class="col-md-4">
-                <label class="form-label"> Total Belanja </label>
+            <!-- Total Belanja -->
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <span class="fw-semibold"> Total Belanja </span>
 
-                <input type="text" id="grand_total" class="form-control" value="0" readonly />
-              </div>
-
-              <!-- Bayar -->
-              <div class="col-md-4">
-                <label class="form-label"> Bayar </label>
-
-                <input type="text" id="payment" name="payment" class="form-control" placeholder="0" />
-              </div>
+              <h4 class="text-primary mb-0" id="grand_total">Rp 0</h4>
             </div>
 
-            <div class="row mt-4">
-              <div class="col-md-12 text-end">
-                <button type="button" class="btn btn-success" id="btn_checkout">
-                  <i class="bi bi-check-circle-fill"></i>
-                  Simpan Transaksi
-                </button>
-              </div>
+            <!-- Nominal Bayar -->
+            <div class="mb-3">
+              <label class="form-label"> Nominal Bayar </label>
+
+              <input type="text" id="payment" class="form-control text-end" placeholder="Masukkan nominal pembayaran" />
+            </div>
+
+            <!-- Kembalian -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+              <span class="fw-semibold"> Kembalian </span>
+
+              <h4 class="text-success mb-0" id="change">Rp 0</h4>
+            </div>
+            <div class="border-top pt-3 mt-3">
+              <button type="button" class="btn btn-success w-100" id="btn_checkout">
+                <i class="bi bi-check-circle-fill me-2"></i>
+
+                Simpan Transaksi
+              </button>
             </div>
           </div>
         </div>

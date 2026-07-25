@@ -1,0 +1,437 @@
+{% extends 'layouts/cashier_layout.html' %} {% block content %}
+
+<div id="app">
+  <!--! ================================================================ !-->
+  <!--! [Start] Navigation Section !-->
+  <!--! ================================================================ !-->
+  {% include 'components/nav_cashier.html' %}
+  <!--! ================================================================ !-->
+  <!--! [End] Navigation Section !-->
+  <!--! ================================================================ !-->
+
+  <!--! ================================================================ !-->
+  <!--! [Start] Page Content !-->
+  <!--! ================================================================ !-->
+  <div id="main">
+    <!--! ================================================================ !-->
+    <!--! [Start] Burger Button !-->
+    <!--! ================================================================ !-->
+    <header class="mb-3">
+      <a href="#" class="burger-btn d-block d-xl-none">
+        <i class="bi bi-justify fs-3"></i>
+      </a>
+    </header>
+    <!--! ================================================================ !-->
+    <!--! [End] Burger Button !-->
+    <!--! ================================================================ !-->
+
+    <!--! ================================================================ !-->
+    <!--! [Start] Main Content !-->
+    <!--! ================================================================ !-->
+    <div class="page-heading">
+      <!--! ================================================================ !-->
+      <!--! [Start] Header !-->
+      <!--! ================================================================ !-->
+      <div class="page-title mb-4">
+        <div class="row align-items-center">
+          <div class="col-lg-6 col-md-12">
+            <h3 class="mb-2">Dashboard Kasir</h3>
+            <p class="mb-1 fw-semibold text-primary" id="greeting_text">Selamat Pagi, Amelia 👋</p>
+            <p class="text-subtitle text-muted mb-0">Ringkasan aktivitas dan transaksi bengkel hari ini.</p>
+          </div>
+
+          <div class="col-lg-6 col-md-12">
+            <div class="d-flex justify-content-end align-items-center gap-5 flex-wrap">
+              <!-- Tanggal -->
+              <div class="d-flex align-items-center">
+                <i class="bi bi-calendar3 text-primary fs-5 me-2"></i>
+
+                <div>
+                  <small class="text-muted d-block">Tanggal</small>
+                  <span id="current_date"></span>
+                </div>
+              </div>
+
+              <!-- Jam -->
+              <div class="d-flex align-items-center">
+                <i class="bi bi-clock text-success fs-5 me-2"></i>
+
+                <div>
+                  <small class="text-muted d-block">Jam</small>
+                  <span id="current_time"></span>
+                </div>
+              </div>
+
+              <!-- Kasir -->
+              <div class="d-flex align-items-center">
+                <div class="avatar avatar-md bg-primary me-2">
+                  <span class="avatar-content">
+                    <i class="bi bi-person-fill"></i>
+                  </span>
+                </div>
+
+                <div>
+                  <div id="cashier_name" class="fw-bold"></div>
+                  <small class="text-muted">Kasir</small>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!--! ================================================================ !-->
+      <!--! [End] Header !-->
+      <!--! ================================================================ !-->
+
+      <!--! ================================================================ !-->
+      <!--! [Start] Summary Card !-->
+      <!--! ================================================================ !-->
+      <section class="section mb-4">
+        <div class="row">
+          <!-- Total Penjualan -->
+          <div class="col-xl-3 col-md-6 col-sm-12">
+            <div class="card">
+              <div class="card-body py-4">
+                <div class="d-flex justify-content-between align-items-center">
+                  <div>
+                    <h6 class="text-muted font-semibold mb-1">Total Penjualan</h6>
+
+                    <h3 class="font-extrabold mb-1" id="total_sales">Rp 0</h3>
+
+                    <small class="text-muted"> Hari Ini </small>
+                  </div>
+
+                  <div class="stats-icon green">
+                    <i class="bi bi-cash-stack"></i>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- Total Transaksi -->
+          <div class="col-xl-3 col-md-6 col-sm-12">
+            <div class="card">
+              <div class="card-body py-4">
+                <div class="d-flex justify-content-between align-items-center">
+                  <div>
+                    <h6 class="text-muted font-semibold mb-1">Total Transaksi</h6>
+
+                    <h3 class="font-extrabold mb-1" id="total_transaction">Rp 0</h3>
+
+                    <small class="text-muted"> Hari Ini </small>
+                  </div>
+
+                  <div class="stats-icon blue">
+                    <i class="bi bi-receipt"></i>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- Customer -->
+          <div class="col-xl-3 col-md-6 col-sm-12">
+            <div class="card">
+              <div class="card-body py-4">
+                <div class="d-flex justify-content-between align-items-center">
+                  <div>
+                    <h6 class="text-muted font-semibold mb-1">Customer Hari Ini</h6>
+
+                    <h3 class="font-extrabold mb-1" id="today_customer">Rp 0</h3>
+
+                    <small class="text-muted"> Hari Ini </small>
+                  </div>
+
+                  <div class="stats-icon purple">
+                    <i class="bi bi-people-fill"></i>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Status Setor -->
+          <div class="col-xl-3 col-md-6 col-sm-12">
+            <div class="card">
+              <div class="card-body py-4">
+                <div class="d-flex justify-content-between align-items-center">
+                  <div>
+                    <h6 class="text-muted font-semibold mb-1">Status Seror Kas</h6>
+
+                    <h3 class="font-extrabold mb-1" id="deposit_status">Rp 0</h3>
+
+                    <small class="text-muted"> Hari Ini </small>
+                  </div>
+
+                  <div class="stats-icon red">
+                    <i class="bi bi-bank"></i>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+      <!--! ================================================================ !-->
+      <!--! [End] Summary Card !-->
+      <!--! ================================================================ !-->
+
+      <!--! ================================================================ !-->
+      <!--! [Start] Dashboard Chart !-->
+      <!--! ================================================================ !-->
+      <section class="section mb-4">
+        <div class="row">
+          <!-- Grafik Penjualan -->
+          <div class="col-xl-8 col-lg-7 col-12 d-flex">
+            <div class="card h-100 w-100">
+              <div class="card-header">
+                <h4>
+                  <i class="bi bi-graph-up-arrow text-success"></i>
+                  Grafik Penjualan Hari Ini
+                </h4>
+              </div>
+
+              <div class="card-body">
+                <div id="payment_chart"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Ringkasan Setor Kas -->
+          <div class="col-xl-4 col-lg-5 col-12 d-flex">
+            <div class="card h-100 w-100">
+              <div class="card-header">
+                <h5 class="mb-0">
+                  <i class="bi bi-wallet2 text-warning me-2"></i>
+                  Ringkasan Setor Kas
+                </h5>
+              </div>
+
+              <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center py-3 border-bottom">
+                  <span class="text-muted">Total Penjualan</span>
+
+                  <span class="fw-bold" id="today_sales"> Rp0 </span>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center py-3 border-bottom">
+                  <span class="text-muted">Sudah Disetor</span>
+
+                  <span class="fw-bold text-success" id="today_deposit"> Rp0 </span>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center py-3 border-bottom">
+                  <span class="text-muted">Sisa Setoran</span>
+
+                  <span class="fw-bold text-danger" id="remaining_deposit"> Rp0 </span>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center pt-3">
+                  <span class="text-muted">Status</span>
+
+                  <span id="deposit_status_text" class="badge bg-warning"> Belum Setor </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+      <!--! ================================================================ !-->
+      <!--! [End] Dashboard Chart !-->
+      <!--! ================================================================ !-->
+
+      <!--! ================================================================ !-->
+      <!--! [Start] Dashboard Tables !-->
+      <!--! ================================================================ !-->
+      <section class="section mb-4">
+        <div class="row">
+          <!--! ================================================================ !-->
+          <!--! [Start] Top Product !-->
+          <!--! ================================================================ !-->
+          <div class="col-xl-6 col-lg-6 col-md-12">
+            <div class="card h-100 w-100">
+              <div class="card-header">
+                <h5 class="mb-0">
+                  <i class="bi bi-box-seam text-primary me-2"></i>
+                  Produk Terlaris
+                </h5>
+              </div>
+
+              <div class="card-body">
+                <div id="top_product_table">
+                  <!-- Render by Javascript -->
+                </div>
+              </div>
+            </div>
+          </div>
+          <!--! ================================================================ !-->
+          <!--! [End] Top Product !-->
+          <!--! ================================================================ !-->
+
+          <!--! ================================================================ !-->
+          <!--! [Start] Top Service !-->
+          <!--! ================================================================ !-->
+          <div class="col-xl-6 col-lg-6 col-md-12">
+            <div class="card h-100 w-100">
+              <div class="card-header">
+                <h5 class="mb-0">
+                  <i class="bi bi-tools text-success me-2"></i>
+                  Jasa Terlaris
+                </h5>
+              </div>
+
+              <div class="card-body">
+                <div id="top_service_table">
+                  <!-- Render by Javascript -->
+                </div>
+              </div>
+            </div>
+          </div>
+          <!--! ================================================================ !-->
+          <!--! [End] Top Service !-->
+          <!--! ================================================================ !-->
+
+          <!--! ================================================================ !-->
+          <!--! [Start] Recent Transaction !-->
+          <!--! ================================================================ !-->
+          <div class="col-xl-8 col-lg-7 col-12 d-flex">
+            <div class="card h-100 w-100">
+              <div class="card-header">
+                <h5 class="mb-0 fw-semibold">
+                  <i class="bi bi-receipt text-primary me-2"></i>
+                  Transaksi Terbaru
+                </h5>
+              </div>
+
+              <div class="card-body">
+                <div id="recent_transaction_table">
+                  <!-- Render by Javascript -->
+                </div>
+              </div>
+            </div>
+          </div>
+          <!--! ================================================================ !-->
+          <!--! [End] Recent Transaction !-->
+          <!--! ================================================================ !-->
+          <!--! ================================================================ !-->
+          <!--! [Start] Low Stock !-->
+          <!--! ================================================================ !-->
+          <div class="col-xl-4 col-lg-5 col-12 d-flex">
+            <div class="card h-100 w-100">
+              <div class="card-header">
+                <h5 class="mb-0 fw-semibold">
+                  <i class="bi bi-exclamation-triangle-fill text-danger me-2"></i>
+                  Stok Menipis
+                </h5>
+              </div>
+
+              <div class="card-body">
+                <div id="low_stock_table"></div>
+              </div>
+            </div>
+          </div>
+          <!--! ================================================================ !-->
+          <!--! [End] Low Stock !-->
+          <!--! ================================================================ !-->
+        </div>
+      </section>
+      <!--! ================================================================ !-->
+      <!--! [End] Dashboard Tables !-->
+      <!--! ================================================================ !-->
+      <!--! ================================================================ !-->
+      <!--! [Start] Shortcut Menu !-->
+      <!--! ================================================================ !-->
+      <!-- <section class="section mb-4">
+        <div class="card">
+          <div class="card-header">
+            <h4>
+              <i class="bi bi-lightning-charge-fill text-warning"></i>
+
+              Shortcut Menu
+            </h4>
+          </div>
+
+          <div class="card-body">
+            <div class="row g-4">
+              
+              <div class="col-xl-3 col-lg-3 col-md-6 col-6">
+                <a href="/cashier" class="card text-center h-100 text-decoration-none">
+                  <div class="card-body">
+                    <div class="stats-icon green mx-auto mb-3">
+                      <i class="bi bi-cart-check"></i>
+                    </div>
+
+                    <h6 class="mb-0">Penjualan</h6>
+                  </div>
+                </a>
+              </div>
+
+             
+              <div class="col-xl-3 col-lg-3 col-md-6 col-6">
+                <a href="/cashier/customer" class="card text-center h-100 text-decoration-none">
+                    <div class="card-body">
+                        <div class="stats-icon blue mx-auto mb-3">
+                            <i class="bi bi-cart-check"></i>
+                        </div>
+            
+                        <h6 class="mb-0">Pelanggan</h6>
+                    </div>
+                </a>
+            </div>
+
+              
+              <div class="col-xl-3 col-lg-3 col-md-6 col-6">
+                <a href="/cash-deposit" class="card text-center h-100 text-decoration-none">
+                  <div class="card-body">
+                    <div class="stats-icon warning mx-auto mb-3">
+                      <i class="bi bi-cart-check"></i>
+                    </div>
+
+                    <h6 class="mb-0">Setor Kas</h6>
+                  </div>
+                </a>
+              </div>
+
+              <div class="col-xl-3 col-lg-3 col-md-6 col-6">
+                <a href="/cashier/history-sales" class="card text-center h-100 text-decoration-none">
+                  <div class="card-body">
+                    <div class="stats-icon purple mx-auto mb-3">
+                      <i class="bi bi-cart-check"></i>
+                    </div>
+
+                    <h6 class="mb-0">Riwayat Penjualan</h6>
+                  </div>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section> -->
+      <!--! ================================================================ !-->
+      <!--! [End] Shortcut Menu !-->
+      <!--! ================================================================ !-->
+      <!--! ================================================================ !-->
+      <!--! [Start] Footer !-->
+      <!--! ================================================================ !-->
+      {% include 'components/footer_dashboard.html' %}
+      <!--! ================================================================ !-->
+      <!--! [End] Footer !-->
+      <!--! ================================================================ !-->
+    </div>
+    <!--! ================================================================ !-->
+    <!--! [End] Main Content !-->
+    <!--! ================================================================ !-->
+  </div>
+  <!--! ================================================================ !-->
+  <!--! [End] Page Content !-->
+  <!--! ================================================================ !-->
+
+  <script src="{{ url_for('static', filename='javascript/helper/utilities.js') }}"></script>
+  <script src="{{ url_for('static', filename='javascript/helper/formatter.js') }}"></script>
+  <script src="{{ url_for('static', filename='javascript/helper/swal.js') }}"></script>
+  <script src="{{ url_for('static', filename='javascript/helper/validators.js') }}"></script>
+
+  <script src="{{ url_for('static', filename='javascript/api/dashboard_cashier.js') }}"></script>
+  <!-- <script src="{{ url_for('static', filename='javascript/pages/dashboard.js') }}"></script> -->
+
+  {% endblock %}
+</div>

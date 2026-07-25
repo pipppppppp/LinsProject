@@ -1,0 +1,114 @@
+{% extends 'layouts/cashier_layout.html' %} {% block content %}
+
+<div id="app">
+  <!--! ================================================================ !-->
+  <!--! [Start] Navigation Section !-->
+  <!--! ================================================================ !-->
+  {% include 'components/nav_cashier.html' %}
+  <!--! ================================================================ !-->
+  <!--! [End] Navigation Section !-->
+  <!--! ================================================================ !-->
+
+  <!--! ================================================================ !-->
+  <!--! [Start] Page Content !-->
+  <!--! ================================================================ !-->
+  <div id="main">
+    <!--! ================================================================ !-->
+    <!--! [Start] Burger Button !-->
+    <!--! ================================================================ !-->
+    <header class="mb-3">
+      <a href="#" class="burger-btn d-block d-xl-none">
+        <i class="bi bi-justify fs-3"></i>
+      </a>
+    </header>
+    <!--! ================================================================ !-->
+    <!--! [End] Burger Button !-->
+    <!--! ================================================================ !-->
+
+    <!--! ================================================================ !-->
+    <!--! [Start] Main Content !-->
+    <!--! ================================================================ !-->
+    <div class="page-heading">
+      <!--! ================================================================ !-->
+      <!--! [Start] Header !-->
+      <div class="page-title">
+        <div class="row">
+          <div class="col-12 col-md-6 order-md-1 order-last">
+            <h3>DATA PELANGGAN</h3>
+            <p class="text-subtitle text-muted">Lihat dan cari data pelanggan bengkel.</p>
+          </div>
+          <div class="col-12 col-md-6 order-md-2 order-first">
+            <nav aria-label="breadcrumb" class="breadcrumb-header float-start float-lg-end">
+              <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{{ url_for('dashboard.index') }}">Dashboard</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Pelanggan</li>
+              </ol>
+            </nav>
+          </div>
+        </div>
+      </div>
+      <!--! [End] Header !-->
+      <!--! ================================================================ !-->
+
+      <!--! ================================================================ !-->
+      <!--! [Start] Title !-->
+      <section class="section">
+        <div class="card">
+          <div class="card-body">
+            <div class="row">
+              <div class="col-sm-12 d-flex justify-content-end">
+                <h5>Daftar Pelanggan</h5>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+      <!--! [End] Title !-->
+      <!--! ================================================================ !-->
+
+      <!--! ================================================================ !-->
+      <!--! [Start] Content !-->
+      <section class="section">
+        <div class="card">
+          <!-- <div class="card-header">Simple Datatable</div> -->
+          <div class="card-body">
+            <table class="table table-striped" id="table1">
+              <thead>
+                <tr>
+                  <th>No</th>
+                  <th>Name</th>
+                  <th>Alamat</th>
+                  <th>Phone</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody id="customer_table">
+                <!-- row table set at javascript -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+      <!--! [End] Content !-->
+      <!--! ================================================================ !-->
+    </div>
+    <!--! ================================================================ !-->
+    <!--! [End] Main Content !-->
+    <!--! ================================================================ !-->
+
+    <!--! ================================================================ !-->
+    <!--! [Start] Footer !-->
+    {% include 'components/footer_dashboard.html' %}
+    <!--! [End] Footer !-->
+    <!--! ================================================================ !-->
+  </div>
+  <!--! ================================================================ !-->
+  <!--! [End] Page Content !-->
+  <!--! ================================================================ !-->
+</div>
+<script src="{{ url_for('static', filename='javascript/helper/utilities.js') }}"></script>
+<script src="{{ url_for('static', filename='javascript/helper/formatter.js') }}"></script>
+<script src="{{ url_for('static', filename='javascript/helper/swal.js') }}"></script>
+<script src="{{ url_for('static', filename='javascript/helper/validators.js') }}"></script>
+<script src="{{ url_for('static', filename='javascript/api/customer.js') }}"></script>
+{% endblock %}

@@ -89,7 +89,13 @@
                       <div>
                         <label class="form-label"> Konfirmasi Password </label>
 
-                        <input type="password" id="retype_password" name="retype_password" class="form-control rounded-3" placeholder="Konfirmasi password" />
+                        <input
+                          type="password"
+                          id="retype_password"
+                          name="retype_password"
+                          class="form-control rounded-3"
+                          placeholder="Konfirmasi password"
+                        />
                       </div>
                     </div>
                     <!-- ====================================================== -->
@@ -108,7 +114,13 @@
                       <div class="mb-3">
                         <label class="form-label"> Nama Bengkel </label>
 
-                        <input type="text" id="workshop_name" name="workshop_name" class="form-control rounded-3" placeholder="Masukkan nama bengkel" />
+                        <input
+                          type="text"
+                          id="workshop_name"
+                          name="workshop_name"
+                          class="form-control rounded-3"
+                          placeholder="Masukkan nama bengkel"
+                        />
                       </div>
 
                       <!-- Alamat -->
@@ -116,7 +128,13 @@
                       <div class="mb-3">
                         <label class="form-label"> Alamat </label>
 
-                        <textarea id="workshop_address" name="workshop_address" rows="3" class="form-control rounded-3" placeholder="Masukkan alamat bengkel"></textarea>
+                        <textarea
+                          id="workshop_address"
+                          name="workshop_address"
+                          rows="3"
+                          class="form-control rounded-3"
+                          placeholder="Masukkan alamat bengkel"
+                        ></textarea>
                       </div>
 
                       <!-- Nomor HP -->
@@ -198,6 +216,8 @@
       </div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script src="{{ url_for('static', filename='javascript/helper/swal.js') }}"></script>
     <script src="{{ url_for('static', filename='javascript/api/auth.js') }}"></script>
   </body>
 </html>

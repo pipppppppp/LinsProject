@@ -40,7 +40,7 @@
           <div class="col-12 col-md-6 order-md-2 order-first">
             <nav aria-label="breadcrumb" class="breadcrumb-header float-start float-lg-end">
               <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="{{ url_for('dashboard.index') }}">Dashboard</a></li>
+                <li class="breadcrumb-item"><a href="{{ url_for('dashboard_cashier.index') }}">Dashboard</a></li>
                 <li class="breadcrumb-item active" aria-current="page">Setor Kas</li>
               </ol>
             </nav>
@@ -61,13 +61,13 @@
                   <div>
                     <h6 class="text-muted mb-2">Total Penjualan Hari Ini</h6>
 
-                    <h2 id="today_sales" class="text-success fw-bold">Rp0</h2>
+                    <h2 id="today_sales" class="font-extrabold mb-1">Rp0</h2>
 
                     <small class="text-muted"> Dari 0 transaksi </small>
                   </div>
 
-                  <div class="summary-icon summary-success">
-                    <i class="bi bi-bar-chart-fill text-success"></i>
+                  <div class="stats-icon green">
+                    <i class="bi bi-bar-chart-fill"></i>
                   </div>
                 </div>
               </div>
@@ -85,8 +85,8 @@
 
                     <small class="text-muted"> 0 kali setor</small>
                   </div>
-                  <div class="summary-icon summary-primary">
-                    <i class="bi bi-wallet2 text-primary"></i>
+                  <div class="stats-icon blue">
+                    <i class="bi bi-wallet2"></i>
                   </div>
                 </div>
               </div>
@@ -104,8 +104,8 @@
 
                     <small class="text-muted"> Belum disetor</small>
                   </div>
-                  <div class="summary-icon summary-warning">
-                    <i class="bi bi-cash-stack text-warning"></i>
+                  <div class="stats-icon warning">
+                    <i class="bi bi-cash-stack"></i>
                   </div>
                 </div>
               </div>
@@ -123,8 +123,8 @@
 
                     <small class="text-muted"> Menunggu konfirmasi owner </small>
                   </div>
-                  <div class="summary-icon summary-purple">
-                    <i class="bi bi-hourglass-split text-purple"></i>
+                  <div class="stats-icon purple">
+                    <i class="bi bi-hourglass-split"></i>
                   </div>
                 </div>
               </div>
@@ -140,34 +140,34 @@
           <div class="col-lg-7 d-flex">
             <div class="card w-100">
               <div class="card-header">
-                <h5>
-                  <i class="bi bi-cash-stack text-info"></i>
+                <h5 class="mb-0">
+                  <i class="bi bi-cash-stack text-primary me-2"></i>
                   Form Setor Kas
                 </h5>
               </div>
 
               <div class="card-body">
                 <div class="mb-3">
-                  <label>Total Penjualan Hari Ini</label>
+                  <label class="form-label fw-semibold"> Total Penjualan Hari Ini </label>
 
                   <input type="text" id="total_sales" class="form-control" readonly />
                 </div>
 
                 <div class="mb-3">
-                  <label>Nominal Setor</label>
+                  <label class="form-label fw-semibold"> Nominal Setor </label>
 
-                  <input type="number" id="total_deposit" class="form-control" />
+                  <input type="text" id="total_deposit" class="form-control" placeholder="Masukkan nominal setor" />
                 </div>
 
                 <div class="mb-3">
-                  <label>Catatan</label>
+                  <label class="form-label fw-semibold"> Catatan </label>
 
-                  <textarea id="notes" class="form-control" rows="3"></textarea>
+                  <textarea id="notes" class="form-control" rows="3" placeholder="Tambahkan catatan jika diperlukan"> </textarea>
                 </div>
 
                 <div class="d-grid">
-                  <button class="btn btn-primary btn-save">
-                    <i class="bi bi-cash-stack"></i>
+                  <button type="button" class="btn btn-primary w-100 btn-save">
+                    <i class="bi bi-cash-stack me-2"></i>
                     Setor Kas
                   </button>
                 </div>
@@ -177,34 +177,40 @@
 
           <!-- Informasi -->
           <div class="col-lg-5 d-flex">
-            <div class="card w-100 info-card summary-info">
-              <div class="card-body">
-                <div class="card-header border-0">
-                  <h5 class="text-primary">
-                    <i class="bi bi-info-circle"></i>
-                    Informasi
-                  </h5>
+            <div class="card w-100">
+              <div class="card-header">
+                <h5 class="mb-0">
+                  <i class="bi bi-info-circle text-primary me-2"></i>
+                  Informasi
+                </h5>
+              </div>
+              <div class="card-body pt-4">
+                <div class="d-flex mb-4">
+                  <i class="bi bi-check-circle-fill text-success fs-5 me-3"></i>
+
+                  <div>
+                    <div class="fw-semibold">Lakukan setor kas minimal 1 kali setiap hari.</div>
+
+                    <small class="text-muted"> Anda dapat melakukan lebih dari satu kali jika diperlukan. </small>
+                  </div>
                 </div>
-                <div class="mb-4">
-                  <h6 class="text-primary">
-                    <i class="bi bi-check2-circle"></i>
-                    Lakukan setor kas minimal 1 kali setiap hari.
-                  </h6>
-                  <small class="text-muted"> Anda dapat melakukan setoran lebih dari 1 kali jika diperlukan. </small>
+                <div class="d-flex mb-4">
+                  <i class="bi bi-clock-history text-warning fs-5 me-3"></i>
+
+                  <div>
+                    <div class="fw-semibold">Menunggu konfirmasi owner.</div>
+
+                    <small class="text-muted"> Status akan berubah setelah diverifikasi owner. </small>
+                  </div>
                 </div>
-                <div class="mb-4">
-                  <h6 class="text-primary">
-                    <i class="bi bi-clock-history"></i>
-                    Setoran akan menunggu konfirmasi owner.
-                  </h6>
-                  <small class="text-muted"> Status setoran akan berubah setelah dikonfirmasi oleh owner </small>
-                </div>
-                <div class="mb-4">
-                  <h6 class="text-primary">
-                    <i class="bi bi-shield-check"></i>
-                    Pastikan nominal sesuai
-                  </h6>
-                  <small class="text-muted"> Hitung uang dengan teliti sebelum melakukan setoran </small>
+                <div class="d-flex">
+                  <i class="bi bi-shield-check text-primary fs-5 me-3"></i>
+
+                  <div>
+                    <div class="fw-semibold">Pastikan nominal sesuai.</div>
+
+                    <small class="text-muted"> Hitung uang dengan teliti sebelum melakukan setor. </small>
+                  </div>
                 </div>
               </div>
             </div>
@@ -214,36 +220,44 @@
       <section class="section">
         <div class="card">
           <div class="card-header">
-            <h5>
-              <i class="bi bi-clock-history text-info"></i>
-              Riwayat Setor Kas
-            </h5>
+            <div class="d-flex justify-content-between align-items-center">
+              <div>
+                <h5 class="mb-1">
+                  <i class="bi bi-clock-history text-primary me-2"></i>
+                  Riwayat Setor Kas
+                </h5>
+
+                <small class="text-muted"> Daftar seluruh transaksi setor kas. </small>
+              </div>
+            </div>
           </div>
 
           <div class="card-body">
-            <table class="table table-striped" id="table1">
-              <thead>
-                <tr>
-                  <th>No</th>
+            <class class="table-responsive">
+              <table class="table table-striped mb-0" id="table1">
+                <thead>
+                  <tr>
+                    <th>No</th>
 
-                  <th>Tanggal</th>
+                    <th>Tanggal</th>
 
-                  <th>Nominal Setor</th>
+                    <th>Nominal Setor</th>
 
-                  <th>Catatan</th>
+                    <th>Catatan</th>
 
-                  <th>Status</th>
+                    <th>Status</th>
 
-                  <th>Diverifikasi Oleh</th>
+                    <th>Diverifikasi Oleh</th>
 
-                  <th>Diverifikasi Pada</th>
+                    <th>Diverifikasi Pada</th>
 
-                  <th>Action</th>
-                </tr>
-              </thead>
+                    <th>Action</th>
+                  </tr>
+                </thead>
 
-              <tbody id="cash_deposit_table"></tbody>
-            </table>
+                <tbody id="cash_deposit_table"></tbody>
+              </table>
+            </class>
           </div>
         </div>
       </section>

@@ -7,6 +7,7 @@ async function init() {
   checkoutModal = new bootstrap.Modal(document.getElementById("checkoutModal"));
 
   await loadCustomer();
+  renderCart();
 
   calculateTotal();
 }
@@ -58,9 +59,9 @@ function calculateTotal() {
     total += Number(item.subtotal);
   });
 
-  form.total.value = formatNumber(total);
+  form.total.innerHTML = "Rp " + formatNumber(total);
 
-  // calculateChange();
+  calculateChange();
 }
 // **************************************************************
 // CALCULATE TOTAL | END
@@ -69,25 +70,27 @@ function calculateTotal() {
 // **************************************************************
 // CALCULATE CHANGE | START
 // **************************************************************
-// function calculateChange() {
-//   const total = cart.reduce((sum, item) => {
-//     return sum + Number(item.subtotal);
-//   }, 0);
+function calculateChange() {
+  const total = cart.reduce((sum, item) => {
+    return sum + Number(item.subtotal);
+  }, 0);
 
-//   const payment = Number(unformatNumber(form.payment.value || "0"));
+  const payment = Number(unformatNumber(form.payment.value || "0"));
 
-//   if (payment <= 0) {
-//     form.change.value = "0";
-//     return;
-//   }
+  if (payment <= 0) {
+    form.change.innerHTML = "Rp 0";
+    return;
+  }
 
-//   if (payment < total) {
-//     form.change.value = "0";
-//     return;
-//   }
+  if (payment < total) {
+    form.change.innerHTML = "Rp 0";
+    return;
+  }
 
-//   form.change.value = formatNumber(payment - total);
-// }
+  const change = payment - total;
+
+  form.change.innerHTML = "Rp " + formatNumber(change);
+}
 // **************************************************************
 // CALCULATE CHANGE | END
 // **************************************************************
@@ -98,7 +101,7 @@ function calculateTotal() {
 form.payment.addEventListener("input", function () {
   formatNumber(this);
 
-  // calculateChange();
+  calculateChange();
 });
 // **************************************************************
 // PAYMENT EVENT | END
@@ -112,15 +115,14 @@ document.getElementById("btn_reset").addEventListener("click", resetCart);
 function resetCart() {
   cart = [];
 
-  document.getElementById("cart_table").innerHTML = "";
-
   form.customer.value = "";
-
   form.vehicle.value = "";
-
   form.payment.value = "";
 
   form.total.value = "0";
+  form.change.value = "0";
+
+  renderCart();
 }
 // **************************************************************
 // RESET CART | END
@@ -260,20 +262,24 @@ function addToCart(item) {
 async function loadCustomer() {
   const response = await getRequest("/customer/view");
 
-  const customers = response.data || [];
+  const customers = response.data?.customer || [];
 
   form.customer.innerHTML = `<option value="">Pelanggan Umum</option>`;
 
   customers.forEach((customer) => {
     form.customer.innerHTML += `
-  
-              <option value="${customer.id}">
-  
-                  ${customer.customer_name}
-  
-              </option>
-  
-          `;
+      <option value="${customer.id}">
+        ${customer.customer_name}
+      </option>
+    `;
+  });
+
+  // Aktifkan Select2
+  $("#customer_id").select2({
+    theme: "bootstrap-5",
+    width: "100%",
+    placeholder: "Pilih pelanggan",
+    allowClear: true,
   });
 }
 // **************************************************************
@@ -311,20 +317,27 @@ async function loadVehicle() {
 // **************************************************************
 function renderCart() {
   const tbody = document.getElementById("cart_table");
-
   tbody.innerHTML = "";
-
   if (cart.length == 0) {
     tbody.innerHTML = `
-              <tr>
-                  <td colspan="6" class="text-center">
-                      Belum ada item.
-                  </td>
-              </tr>
-          `;
+    <tr>
+        <td colspan="6" class="text-center py-4">
+
+            <i class="bi bi-cart-x fs-2 text-muted d-block mb-2"></i>
+
+            <h6 class="mb-1">
+                Keranjang masih kosong
+            </h6>
+
+            <small class="text-muted">
+                Cari barang atau jasa untuk memulai transaksi.
+            </small>
+
+        </td>
+    </tr>
+    `;
 
     calculateTotal();
-
     return;
   }
 

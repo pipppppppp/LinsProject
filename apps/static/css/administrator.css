@@ -292,3 +292,21 @@ body {
 .summary-info i {
   color: #0dcaf0;
 }
+
+/* ==========================================================
+   SHORTCUT BTN - DASHBOARD CASHIER
+========================================================== */
+
+.shortcut-btn{
+  width: 100%;
+  height: 84px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 4px;
+}
+
+.shortcut-btn i{
+  font-size: 1.5rem;
+}

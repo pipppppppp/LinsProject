@@ -44,10 +44,19 @@
         </div>
       </div>
       <!-- ================================================================ -->
-      <!-- Filter -->
+      <!-- Filter Tanggal -->
       <!-- ================================================================ -->
       <section class="section">
         <div class="card">
+          <div class="card-header">
+            <h5 class="mb-1">
+              <i class="bi bi-funnel me-2 text-primary"></i>
+              Filter Laporan
+            </h5>
+
+            <small class="text-muted"> Pilih rentang tanggal untuk menampilkan riwayat penjualan. </small>
+          </div>
+
           <div class="card-body">
             <div class="row">
               <div class="col-md-5">
@@ -65,61 +74,66 @@
               <div class="col-md-2">
                 <label class="form-label">&nbsp;</label>
 
-                <div class="d-flex">
-                  <button class="btn btn-primary me-2" id="btn_filter">
-                    <i class="bi bi-search"></i>
+                <div class="d-flex gap-2">
+                  <button class="btn btn-primary" id="btn_filter">
+                    <i class="bi bi-search me-1"></i>
+                    Filter
                   </button>
 
-                  <button class="btn btn-secondary me-2" id="btn_reset">
-                    <i class="bi bi-arrow-clockwise"></i>
-                  </button>
-
-                  <button class="btn btn-success me-2" id="btn-excel">
-                    <i class="bi bi-file-earmark-excel-fill"></i>
-                  </button>
-
-                  <button class="btn btn-danger" id="btn-pdf">
-                    <i class="bi bi-file-earmark-pdf-fill"></i>
+                  <button class="btn btn-secondary" id="btn_reset">
+                    <i class="bi bi-arrow-clockwise me-1"></i>
+                    Reset
                   </button>
                 </div>
-
-                <!-- <div class="d-flex justify-content-end gap-2">
-                  <button class="btn btn-danger" id="btn-pdf">
-                    <i class="bi bi-file-earmark-pdf-fill"></i>
-                    Export PDF
-                  </button>
-
-                  <button class="btn btn-success" id="btn-excel">
-                    <i class="bi bi-file-earmark-excel-fill"></i>
-                    Export Excel
-                  </button>
-                </div> -->
               </div>
             </div>
           </div>
         </div>
       </section>
+      <h1 style="color: red">TEST HELINA</h1>
       <!-- ================================================================ -->
       <!-- Summary -->
       <!-- ================================================================ -->
       <section class="section">
         <div class="row">
+          <!-- Total Transaksi -->
           <div class="col-md-6">
             <div class="card">
               <div class="card-body">
-                <h6>Total Transaksi</h6>
+                <div class="d-flex justify-content-between align-items-center">
+                  <div>
+                    <h6 class="text-muted mb-1">Total Transaksi</h6>
 
-                <h3 id="today_transaction">0</h3>
+                    <h2 class="fw-bold mb-1" id="today_transaction">0</h2>
+
+                    <small class="text-muted"> Transaksi sesuai filter </small>
+                  </div>
+
+                  <div class="text-primary fs-1">
+                    <i class="bi bi-receipt"></i>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
 
+          <!-- Total Penjualan -->
           <div class="col-md-6">
             <div class="card">
               <div class="card-body">
-                <h6>Total Penjualan</h6>
+                <div class="d-flex justify-content-between align-items-center">
+                  <div>
+                    <h6 class="text-muted mb-1">Total Penjualan</h6>
 
-                <h3 id="today_total">Rp0</h3>
+                    <h2 class="fw-bold mb-1" id="today_total">Rp0</h2>
+
+                    <small class="text-muted"> Total omzet sesuai filter </small>
+                  </div>
+
+                  <div class="text-success fs-1">
+                    <i class="bi bi-cash-stack"></i>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -130,23 +144,38 @@
       <!-- ================================================================ -->
       <section class="section">
         <div class="card">
-          <div class="card-body">
-            <table class="table table-striped" id="table1">
-              <thead>
-                <tr>
-                  <th>No</th>
-                  <th>Invoice</th>
-                  <th>Tanggal</th>
-                  <th>Customer</th>
-                  <th>Kendaraan</th>
-                  <th>Kasir</th>
-                  <th>Total</th>
-                  <th>Aksi</th>
-                </tr>
-              </thead>
+          <div class="card-header">
+            <div class="d-flex justify-content-between align-items-center">
+              <div>
+                <h5 class="mb-1">
+                  <i class="bi bi-table me-2 text-primary"></i>
+                  Data Riwayat Penjualan
+                </h5>
 
-              <tbody id="history_sales_table"></tbody>
-            </table>
+                <small class="text-muted"> Menampilkan seluruh transaksi sesuai filter yang dipilih. </small>
+              </div>
+            </div>
+          </div>
+
+          <div class="card-body">
+            <div class="table-responsive">
+              <table class="table table-striped mb-0" id="table1">
+                <thead>
+                  <tr>
+                    <th>No</th>
+                    <th>Invoice</th>
+                    <th>Tanggal</th>
+                    <th>Customer</th>
+                    <th>Kendaraan</th>
+                    <th>Kasir</th>
+                    <th>Total</th>
+                    <th>Aksi</th>
+                  </tr>
+                </thead>
+
+                <tbody id="history_sales_table"></tbody>
+              </table>
+            </div>
           </div>
         </div>
       </section>
@@ -164,11 +193,13 @@
       <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable" role="document">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title">Detail Penjualan</h5>
+            <h5 class="modal-title">
+              <i class="bi bi-receipt me-2 text-primary"></i>
 
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
-              <i data-feather="x"></i>
-            </button>
+              Detail Penjualan
+            </h5>
+
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
           </div>
 
           <div class="modal-body" id="detail_modal_body">

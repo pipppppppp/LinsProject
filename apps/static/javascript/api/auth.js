@@ -33,53 +33,30 @@ function signin_process(e) {
     redirect: "follow",
   };
 
-  // Set Loading UI
-  swal.fire({
-    title: "Tunggu Sebentar..",
-    text: "Permintaan kamu sedang diproses.",
-    button: false,
-  });
-
-  // Request API
+  // Tampilkan loading langsung
+  swalLoading("Tunggu Sebentar...", "Permintaan kamu sedang diproses.");
   fetch(API, request_options)
     .then((http_response) => http_response.json())
     .then((response) => {
       if (response.status_code == 200) {
-        swal
-          .fire({
-            title: "Login berhasil",
-            icon: "success",
-          })
-          .then((result) => {
-            const role = response.data.role;
-            
-            if (role == 0) {
-              window.location.replace("/administrator/dashboard");
-            } else if (role == 1) {
-              window.location.replace("/dashboard/");
-            } else if (role == 2) {
-              window.location.replace("/cashier/");
-            }
-          });
+        // Biarkan loading terlihat sebentar
+        setTimeout(() => {
+          signin_prosess(response.data.role);
+        }, 500);
       } else {
+        swalClose();
+
         if (response.status_code === 403) {
-          swal.fire({
-            title: response.error,
-            text: response.message,
-            icon: "warning",
-          });
+          swalWarning(response.error, response.message);
         } else {
-          swal.fire({
-            title: response.error,
-            text: response.message,
-            icon: "error",
-          });
+          swalError(response.error, response.message);
         }
       }
     })
     .catch((error) => {
-      swal.fire.close();
+      swalClose();
       console.error(error);
+      swalError("Login Gagal", "Terjadi kesalahan pada server.");
     });
 }
 const signin = document.getElementById("signin_form");
@@ -131,35 +108,20 @@ function signup_process(e) {
   };
 
   // Set Loading UI
-  swal.fire({
-    title: "Tunggu Sebentar..",
-    text: "Permintaan kamu sedang diproses",
-    button: false,
-  });
+  swalLoading("Tunggu Sebentar...", "Permintaan kamu sedang diproses.");
 
   // Request API
   fetch(API, request_options)
     .then((http_response) => http_response.json())
     .then((response) => {
       if (response.status_code == 200) {
-        swal
-          .fire({
-            title: "Registrasi berhasil",
-            icon: "success",
-          })
-          .then((result) => {
-            window.location.replace("/auth/signin");
-          });
+        swalSuccess("Registrasi Berhasil", "Silakan login menggunakan akun yang telah didaftarkan.").then(() => {
+          window.location.replace("/auth/signin");
+        });
       } else {
-        swal
-          .fire({
-            title: response.message,
-            icon: "error",
-            buttons: "Kembali",
-          })
-          .then((result) => {
-            window.location.replace("/auth/signup");
-          });
+        swalError("Registrasi Gagal", response.message).then(() => {
+          window.location.replace("/auth/signup");
+        });
       }
     })
     .catch((error) => {
@@ -174,4 +136,44 @@ if (signup) {
 // document.getElementById("signup_form").addEventListener("submit", signup_process);
 // **************************************************************
 // SIGN UP PROCESS | END
+// **************************************************************
+
+// **************************************************************
+// SIGN IN PROCESS | START
+// **************************************************************
+function signin_prosess(role) {
+  if (role == 0) {
+    window.location.replace("/administrator/dashboard");
+  } else if (role == 1) {
+    window.location.replace("/dashboard/");
+  } else if (role == 2) {
+    window.location.replace("/cashier/");
+  }
+}
+// **************************************************************
+// SIGN IN PROCESS | END
+// **************************************************************
+
+// **************************************************************
+// SIGN OUT PROCESS | START
+// **************************************************************
+async function logout_process(event) {
+  event.preventDefault();
+
+  const result = await swalConfirm("Logout", "Apakah Anda yakin ingin keluar dari aplikasi?", "Ya, Logout");
+
+  if (result.isConfirmed) {
+    await swalSuccess("Anda telah keluar dari aplikasi.");
+
+    window.location.href = "/auth/signout";
+  }
+}
+
+const logout = document.getElementById("logout");
+
+if (logout) {
+  logout.addEventListener("click", logout_process);
+}
+// **************************************************************
+// SIGN OUT PROCESS | END
 // **************************************************************

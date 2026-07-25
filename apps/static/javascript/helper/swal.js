@@ -1,11 +1,11 @@
 // **************************************************************
 // SUCCESS ALERT | START
 // **************************************************************
-function swalSuccess(message) {
+function swalSuccess(title = "Berhasil", text = "") {
   return Swal.fire({
     icon: "success",
-    title: "Berhasil",
-    text: message,
+    title: title,
+    text: text,
     timer: 1500,
     showConfirmButton: false,
   });
@@ -17,11 +17,11 @@ function swalSuccess(message) {
 // **************************************************************
 // ERROR ALERT | START
 // **************************************************************
-function swalError(message) {
+function swalError(title = "Gagal", text = "") {
   return Swal.fire({
     icon: "error",
-    title: "Gagal",
-    text: message,
+    title: title,
+    text: text,
   });
 }
 // **************************************************************
@@ -31,11 +31,11 @@ function swalError(message) {
 // **************************************************************
 // WARNING ALERT | START
 // **************************************************************
-function swalWarning(message) {
+function swalWarning(title = "Peringatan", text = "") {
   return Swal.fire({
     icon: "warning",
-    title: "Peringatan",
-    text: message,
+    title: title,
+    text: text,
   });
 }
 // **************************************************************
@@ -64,9 +64,13 @@ async function swalDelete() {
 // **************************************************************
 // LOADING ALERT | START
 // **************************************************************
-function swalLoading(message = "Memproses...") {
+function swalLoading(
+  title = "Tunggu Sebentar...",
+  text = "Permintaan kamu sedang diproses."
+) {
   Swal.fire({
-    title: message,
+    title: title,
+    text: text,
     allowOutsideClick: false,
     didOpen: () => {
       Swal.showLoading();

@@ -80,9 +80,9 @@ function renderTable() {
 
         <td>
             <button
-                class="btn btn-outline-primary btn-sm btn-detail"
+                class="btn btn-outline-primary  px-3 btn-detail"
                 data-id="${item.id}">
-                <i class="bi bi-eye-fill"></i>
+                <i class="bi bi-eye me-1"></i>
                 Detail
             </button>
         </td>

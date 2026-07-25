@@ -2,137 +2,97 @@
 <!--! [Start] Navigation Section !-->
 <!--! ================================================================ !-->
 <div id="sidebar" class="active">
-
   <div class="sidebar-wrapper active">
+    <div class="sidebar-header">
+      <div class="d-flex justify-content-between">
+        <div class="logo text-center">
+          <h4>POS Bengkel</h4>
+        </div>
 
-      <div class="sidebar-header">
-
-          <div class="d-flex justify-content-between">
-
-              <div class="logo text-center">
-                  <h4>POS Bengkel</h4>
-              </div>
-
-              <div class="toggler">
-                  <a
-                      href="#"
-                      class="sidebar-hide d-xl-none d-block">
-
-                      <i class="bi bi-x bi-middle"></i>
-
-                  </a>
-              </div>
-
-          </div>
-
+        <div class="toggler">
+          <a href="#" class="sidebar-hide d-xl-none d-block">
+            <i class="bi bi-x bi-middle"></i>
+          </a>
+        </div>
       </div>
+    </div>
 
-      <div class="sidebar-menu">
+    <div class="sidebar-menu">
+      <ul class="menu">
+        <!-- ======================================================= -->
+        <!-- Dashboard -->
+        <!-- ======================================================= -->
 
-          <ul class="menu">
+        <li class="sidebar-title">MENU</li>
 
-              <!-- ======================================================= -->
-              <!-- Dashboard -->
-              <!-- ======================================================= -->
+        <li class="sidebar-item {% if active_menu == 'dashboard_cashier' %}active{% endif %}">
+          <a href="{{ url_for('dashboard_cashier.index') }}" class="sidebar-link">
+            <i class="bi bi-grid-fill"></i>
 
-              <li class="sidebar-title">
-                  MENU
-              </li>
+            <span>Dashboard</span>
+          </a>
+        </li>
 
-              <li class="sidebar-item {% if active_menu == 'dashboard' %}active{% endif %}">
+        <!-- ======================================================= -->
+        <!-- Transaksi -->
+        <!-- ======================================================= -->
 
-                  <a
-                      href="{{ url_for('cashier.index') }}"
-                      class="sidebar-link">
+        <li class="sidebar-title">TRANSAKSI</li>
 
-                      <i class="bi bi-grid-fill"></i>
+        <li class="sidebar-item {% if active_menu == 'cashier' %}active{% endif %}">
+          <a href="{{ url_for('cashier.index') }}" class="sidebar-link">
+            <i class="bi bi-cart-check-fill"></i>
 
-                      <span>Dashboard</span>
+            <span>Kasir</span>
+          </a>
+        </li>
+        <li class="sidebar-item {% if active_menu == 'cash_deposit' %}active{% endif %}">
+          <a href="{{ url_for('cash_deposit.index') }}" class="sidebar-link">
+            <i class="bi bi-cash"></i>
 
-                  </a>
+            <span>Keuangan</span>
+          </a>
+        </li>
+        <li class="sidebar-item {% if active_menu == 'history_sales' %}active{% endif %}">
+          <a href="{{ url_for('cashier.history_sales') }}" class="sidebar-link">
+            <i class="bi bi-clock-history"></i>
 
-              </li>
+            <span>Riwayat Penjualan</span>
+          </a>
+        </li>
 
-              <!-- ======================================================= -->
-              <!-- Transaksi -->
-              <!-- ======================================================= -->
+        <!-- ======================================================= -->
+        <!-- master data -->
+        <!-- ======================================================= -->
 
-              <li class="sidebar-title">
-                  TRANSAKSI
-              </li>
+        <li class="sidebar-title">Master Data</li>
 
-              <li class="sidebar-item {% if active_menu == 'cashier' %}active{% endif %}">
+        <li class="sidebar-item {% if active_menu == 'customer' %}active{% endif %}">
+          <a href="{{ url_for('cashier.customer') }}" class="sidebar-link">
+            <i class="bi bi-people"></i>
+            <span>Data Pelanggan</span>
+          </a>
+        </li>
 
-                  <a
-                      href="{{ url_for('cashier.index') }}"
-                      class="sidebar-link">
+        <!-- ======================================================= -->
+        <!-- Akun -->
+        <!-- ======================================================= -->
 
-                      <i class="bi bi-cart-check-fill"></i>
+        <li class="sidebar-title">AKUN</li>
 
-                      <span>Kasir</span>
+        <li class="sidebar-item">
+          <a href="/auth/signout" id="logout" class="sidebar-link text-danger">
+            <i class="bi bi-box-arrow-right"></i>
+            <span>Logout</span>
+          </a>
+        </li>
+      </ul>
+    </div>
 
-                  </a>
-
-              </li>
-              <li class="sidebar-item {% if active_menu == 'cash_deposit' %}active{% endif %}">
-
-                <a
-                    href="{{ url_for('cash_deposit.index') }}"
-                    class="sidebar-link">
-
-                    <i class="bi bi-clock-history"></i>
-
-                    <span>Keuangan</span>
-
-                </a>
-
-            </li>
-              <li class="sidebar-item {% if active_menu == 'history_sales' %}active{% endif %}">
-
-                  <a
-                      href="{{ url_for('cashier.history_sales') }}"
-                      class="sidebar-link">
-
-                      <i class="bi bi-clock-history"></i>
-
-                      <span>Riwayat Penjualan</span>
-
-                  </a>
-
-              </li>
-
-              <!-- ======================================================= -->
-              <!-- Akun -->
-              <!-- ======================================================= -->
-
-              <li class="sidebar-title">
-                  AKUN
-              </li>
-
-              <li class="sidebar-item">
-
-                  <a
-                      href="{{ url_for('auth.signout') }}"
-                      class="sidebar-link">
-
-                      <i class="bi bi-box-arrow-right"></i>
-
-                      <span>Logout</span>
-
-                  </a>
-
-              </li>
-
-          </ul>
-
-      </div>
-
-      <button class="sidebar-toggler btn x">
-          <i data-feather="x"></i>
-      </button>
-
+    <button class="sidebar-toggler btn x">
+      <i data-feather="x"></i>
+    </button>
   </div>
-
 </div>
 <!--! ================================================================ !-->
 <!--! [End] Navigation Section !-->

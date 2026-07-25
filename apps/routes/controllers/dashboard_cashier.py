@@ -11,68 +11,45 @@ from apps.database.db_customers import Customers
 from apps.database.db_suppliers import Suppliers
 from apps.database.db_purchases import Purchases
 from apps.database.db_payment import Payments
-from ..models.dashboard import DashboardModels
+from ..models.dashboard_cashier import DashboardCashierModels
 from apps.routes.controllers.report import *
 
 # BLUEPRINT ================================================== Begin
-dashboard = Blueprint(
-    name='dashboard',
+dashboard_cashier = Blueprint(
+    name='dashboard_cashier',
     import_name=__name__,
-    template_folder="../../templates/pages/adminPages",
-    url_prefix='/dashboard',
+    template_folder="../../templates/pages/cashierPages",
+    url_prefix='/dashboard-cashier',
 )
 # BLUEPRINT ================================================== End
 
 # DASHBOARD PAGE ============================================================ Begin
-# GET https://127.0.0.1:5000/dashboard/
-@dashboard.get('/')
+# GET https://127.0.0.1:5000/dashboard_cashier/
+@dashboard_cashier.get('/')
 @jwt_required()
 def index():
     try:
-        claims = get_jwt()
+      return render_template(
+            title='Kasir - POS Bengkel',
+            template_name_or_list='dashboard_cashier.html',
+            active_menu="dashboard_cashier",
+      )
 
-        if claims["role"] == 0:
-            return redirect(url_for("administrator.dashboard"))
-        elif claims["role"] == 1:
-            return render_template("dashboard.html")   # atau dashboard.index
-        elif claims["role"] == 2:
-            return redirect(url_for("dashboard_cashier.index"))
-        workshop = Workshops.query.filter_by(
-            owner_id=claims["id"],
-            is_delete=0
-        ).first()
-
-        role_map = {
-            0: "Administrator",
-            1: "Owner",
-            2: "Kasir"
-        }
-
-        return render_template(
-            "dashboard.html",
-            title="Dashboard POS Bengkel",
-            active_menu="dashboard",
-
-            username=claims["name"],
-            email=claims["email"],
-            role_name=role_map.get(int(claims["role"]), "-"),
-            is_active=1,
-            workshop_status=workshop.is_active if workshop else 0
-        )
     except Exception as e:
         return bad_request(str(e))
 # DASHBOARD PAGE ============================================================ End
 
 # DASHBOARD SUMMARY ============================================================ Begin
-# [GET] https://127.0.0.1:5000/dashboard/summary
-@dashboard.get('/summary')
+# [GET] https://127.0.0.1:5000/dashboard_cashier/summary
+@dashboard_cashier.get('/summary')
 @jwt_required()
 def dashboard_summary():
     try:
         role = str(get_jwt()["role"])
         ws_id = str(get_jwt()["ws_id"])
+        user_id = str(get_jwt()["id"])
 
-        response = DashboardModels.dashboard_summary(role, ws_id)
+        response = DashboardCashierModels.dashboard_summary(role, ws_id, user_id)
 
         return response
 
@@ -80,20 +57,22 @@ def dashboard_summary():
         return bad_request(str(e))
 # DASHBOARD SUMMARY ============================================================ End
 
-# SALES CHART ============================================================ Begin
-# [POST] https://127.0.0.1:5000/dashboard/payment-chart
-@dashboard.post('/payment-chart')
+# PAYMENT CHART ============================================================ Begin
+# [POST] https://127.0.0.1:5000/dashboard_cashier/payment-chart
+@dashboard_cashier.post('/payment-chart')
 @jwt_required()
 def payment_chart():
     try:
         role = str(get_jwt()["role"])
         ws_id = str(get_jwt()["ws_id"])
+        user_id = str(get_jwt()["id"])
 
         body = request.json
 
-        response = DashboardModels.payments_chart(
+        response = DashboardCashierModels.payments_chart(
             role,
             ws_id,
+            user_id,
             body["start_date"],
             body["end_date"]
         )
@@ -102,46 +81,24 @@ def payment_chart():
 
     except Exception as e:
         return bad_request(str(e))
-# SALES CHART ============================================================ End
-
-# PURCHASE CHART ============================================================ Begin
-# [POST] https://127.0.0.1:5000/dashboard/purchase-chart
-@dashboard.post('/purchase-chart')
-@jwt_required()
-def purchase_chart():
-    try:
-        role = str(get_jwt()["role"])
-        ws_id = str(get_jwt()["ws_id"])
-
-        body = request.json
-
-        response = DashboardModels.purchase_chart(
-            role,
-            ws_id,
-            body["start_date"],
-            body["end_date"]
-        )
-
-        return response
-
-    except Exception as e:
-        return bad_request(str(e))
-# PURCHASE CHART ============================================================ End
+# PAYMENT CHART ============================================================ End
 
 # TOP PRODUCTS ============================================================ Begin
-# [POST] https://127.0.0.1:5000/dashboard/top-products
-@dashboard.post('/top-products')
+# [POST] https://127.0.0.1:5000/dashboard_cashier/top-products
+@dashboard_cashier.post('/top-products')
 @jwt_required()
 def top_products():
     try:
         role = str(get_jwt()["role"])
         ws_id = str(get_jwt()["ws_id"])
+        user_id = str(get_jwt()["id"])
 
         body = request.json
 
-        response = DashboardModels.top_products(
+        response = DashboardCashierModels.top_products(
             role,
             ws_id,
+            user_id,
             body["start_date"],
             body["end_date"]
         )
@@ -153,19 +110,21 @@ def top_products():
 # TOP PRODUCTS ============================================================ End
 
 # TOP SERVICES ============================================================ Begin
-# [POST] https://127.0.0.1:5000/dashboard/top-services
-@dashboard.post('/top-services')
+# [POST] https://127.0.0.1:5000/dashboard_cashier/top-services
+@dashboard_cashier.post('/top-services')
 @jwt_required()
 def top_services():
     try:
         role = str(get_jwt()["role"])
         ws_id = str(get_jwt()["ws_id"])
+        user_id = str(get_jwt()["id"])
 
         body = request.json
 
-        response = DashboardModels.top_services(
+        response = DashboardCashierModels.top_services(
             role,
             ws_id,
+            user_id,
             body["start_date"],
             body["end_date"]
         )
@@ -177,15 +136,15 @@ def top_services():
 # TOP SERVICES ============================================================ End
 
 # LOW STOCK ============================================================ Begin
-# [GET] https://127.0.0.1:5000/dashboard/low-stock
-@dashboard.get('/low-stock')
+# [GET] https://127.0.0.1:5000/dashboard_cashier/low-stock
+@dashboard_cashier.get('/low-stock')
 @jwt_required()
 def low_stock():
     try:
         role = str(get_jwt()["role"])
         ws_id = str(get_jwt()["ws_id"])
 
-        response = DashboardModels.low_stock(role, ws_id)
+        response = DashboardCashierModels.low_stock(role, ws_id)
 
         return response
 
@@ -194,18 +153,61 @@ def low_stock():
 # LOW STOCK ============================================================ End
 
 # RECENT TRANSACTIONS ============================================================ Begin
-# [GET] https://127.0.0.1:5000/dashboard/recent-transactions
-@dashboard.get('/recent-transactions')
+# [GET] https://127.0.0.1:5000/dashboard_cashier/recent-transactions
+@dashboard_cashier.get('/recent-transactions')
 @jwt_required()
 def recent_transactions():
     try:
         role = str(get_jwt()["role"])
         ws_id = str(get_jwt()["ws_id"])
+        user_id = str(get_jwt()["id"])
 
-        response = DashboardModels.recent_transactions(role, ws_id)
+        response = DashboardCashierModels.recent_transactions(role, ws_id, user_id)
 
         return response
 
     except Exception as e:
         return bad_request(str(e))
 # RECENT TRANSACTIONS ============================================================ End
+
+# DEPOSIT SUMMARY ============================================================ Begin
+# [GET] https://127.0.0.1:5000/dashboard_cashier/recent-transactions
+@dashboard_cashier.get("/deposit-summary")
+@jwt_required()
+def deposit_summary():
+    try:
+        role = str(get_jwt()["role"])
+        ws_id = str(get_jwt()["ws_id"])
+        user_id = str(get_jwt()["id"])
+
+        response = DashboardCashierModels.deposit_summary(
+            role,
+            ws_id,
+            user_id
+        )
+
+        return response
+
+    except Exception as e:
+        return bad_request(str(e))
+# DEPOSIT SUMMARY ============================================================ End
+
+# CASHIER PROFILE ============================================================ Begin
+# [GET] https://127.0.0.1:5000/dashboard_cashier/recent-transactions
+@dashboard_cashier.get("/profile")
+@jwt_required()
+def cashier_profile():
+    try:
+        role = str(get_jwt()["role"])
+        user_id = str(get_jwt()["id"])
+
+        response = DashboardCashierModels.cashier_profile(
+            role,
+            user_id
+        )
+
+        return response
+
+    except Exception as e:
+        return bad_request(str(e))
+# CASHIER PROFILE ============================================================ End

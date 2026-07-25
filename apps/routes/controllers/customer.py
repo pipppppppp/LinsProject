@@ -37,6 +37,10 @@ def index():
 def create_customer():
     try:
         role = str(get_jwt()["role"])
+        if role != "1":
+              return authorization_error(
+            "Hanya Owner yang dapat menambah pelanggan."
+        )
         ws_id = str(get_jwt()["ws_id"])
 
         body = request.json
@@ -74,6 +78,10 @@ def read_customer():
 def update_customer(id):
     try:
         role = str(get_jwt()["role"])
+        if role != "1":
+              return authorization_error(
+            "Hanya Owner yang dapat mengubah data pelanggan."
+        )
         ws_id = str(get_jwt()["ws_id"])
 
         body = request.json
@@ -94,6 +102,10 @@ def update_customer(id):
 def delete_customer(id):
     try:
         role = str(get_jwt()["role"])
+        if role != "1":
+              return authorization_error(
+            "Hanya Owner yang dapat menghapus pelanggan."
+        )
         ws_id = str(get_jwt()["ws_id"])
 
         response = CustomerModels.delete_customer(role, ws_id, id)

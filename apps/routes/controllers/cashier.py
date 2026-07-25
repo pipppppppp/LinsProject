@@ -8,12 +8,12 @@ from ...utilities.responseHelpers import bad_request
 cashier = Blueprint(
     name='cashier',
     import_name=__name__,
-    template_folder="././templates/pages/appPages",
+    template_folder="../../templates/pages/cashierPages",
     url_prefix='/cashier',
 )
 # BLUEPRINT ================================================== End
 
-
+print(cashier.template_folder)
 # CASHIER PAGE ============================================================ Begin
 @cashier.get('/')
 @jwt_required()
@@ -28,6 +28,23 @@ def index():
 
     except Exception as e:
         return bad_request(str(e))
+# CASHIER PAGE ============================================================ End
+
+# CASHIER PAGE ============================================================ Begin
+@cashier.get("/customer")
+@jwt_required()
+def customer():
+    try:
+
+        return render_template(
+            title="Kasir - POS Bengkel",
+            template_name_or_list="customer_cashier.html",
+            active_menu="customer",
+        )
+
+    except Exception as e:
+        return bad_request(str(e))
+
 # CASHIER PAGE ============================================================ End
 
 # SEARCH ITEM ============================================================ Begin

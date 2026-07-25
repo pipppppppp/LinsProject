@@ -50,13 +50,25 @@ async function loadHistorySales(start_date = "", end_date = "") {
 function renderTable() {
   let html = "";
   if (historySalesData.length === 0) {
-    html = `
-        <tr>
-            <td colspan="8" class="text-center">
-                Tidak ada data.
-            </td>
-        </tr>
+    document.getElementById("history_sales_table").innerHTML = `
+    <tr>
+        <td colspan="8" class="text-center py-4">
+
+            <i class="bi bi-inbox fs-2 text-secondary"></i>
+
+            <div class="fw-semibold mt-2">
+                Belum ada data
+            </div>
+
+            <small class="text-muted">
+                Silakan ubah filter tanggal atau lakukan transaksi terlebih dahulu.
+            </small>
+
+        </td>
+    </tr>
     `;
+
+    return;
   } else {
     historySalesData.forEach((history, index) => {
       html += `
@@ -79,11 +91,11 @@ function renderTable() {
                   <td>
 
                       <button
-                          class="btn btn-outline-info btn-sm btn-detail"
+                          class="btn btn-outline-primary px-3 btn-detail"
                           data-id="${history.id}"
                           title="Detail Penjualan">
 
-                          <i class="bi bi-eye-fill me 2"></i>
+                          <i class="bi bi-eye me 1"></i>
                           Detail Penjualan
                       </button>
 

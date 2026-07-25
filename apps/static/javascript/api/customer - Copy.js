@@ -2,14 +2,8 @@
 // BASE INISIALIZATION | START
 // **************************************************************
 document.addEventListener("DOMContentLoaded", init);
-
 async function init() {
   await reloadTable(loadCustomers, renderTable);
-
-  // Refresh button
-  document.getElementById("btn_refresh")?.addEventListener("click", async () => {
-    await reloadTable(loadCustomers, renderTable);
-  });
 }
 
 // Form ID Setup
@@ -33,27 +27,11 @@ let customersData = [];
 // Load Data -------------------------------------------------
 async function loadCustomers() {
   const result = await getRequest("/customer/view");
-  console.log(result.data);
 
-  customersData = result.data.customer;
-
-  renderSummary(result.data);
+  customersData = result.data;
 }
 // **************************************************************
 // GET CUSTOMER | END
-// **************************************************************
-
-// **************************************************************
-// RENDER SUMMARY | START
-// **************************************************************
-function renderSummary(data) {
-  document.getElementById("total_customer").textContent = data.total_customer;
-
-  document.getElementById("total_vehicle").textContent = data.total_vehicle;
-  document.getElementById("customer_count").textContent = `${data.total_customer} Pelanggan`;
-}
-// **************************************************************
-// RENDER SUMMARY | END
 // **************************************************************
 
 // **************************************************************
@@ -68,7 +46,7 @@ function renderTable() {
   customersData.forEach((customer, index) => {
     let action = `
       <button
-          class="btn btn-outline-primary btn-sm btn-vehicle"
+          class="btn btn-outline-info btn-sm btn-action btn-vehicle"
           data-id="${customer.id}"
           title="Data Kendaraan">
 
@@ -79,7 +57,7 @@ function renderTable() {
     if (!isCashier) {
       action = `
         <button
-            class="btn btn-outline-warning btn-sm btn-edit"
+            class="btn btn-outline-warning btn-sm btn-action btn-edit"
             data-bs-toggle="modal"
             data-bs-target="#customer_modal"
             data-id="${customer.id}"
@@ -88,7 +66,7 @@ function renderTable() {
         </button>
 
         <button
-            class="btn btn-outline-danger btn-sm btn-delete"
+            class="btn btn-outline-danger btn-sm btn-action btn-delete"
             data-id="${customer.id}"
             title="Hapus">
             <i class="bi bi-trash-fill"></i>
@@ -100,69 +78,14 @@ function renderTable() {
 
     html += `
       <tr>
-        <td class="text-center fw-bold">
-            ${index + 1}
-        </td>
+        <td>${index + 1}</td>
+        <td>${customer.customer_name}</td>
+        <td>${customer.customer_address}</td>
+        <td>${customer.customer_phone}</td>
         <td>
-            <div class="d-flex align-items-center">
-
-                <div class="avatar avatar-md bg-primary me-3">
-
-                    <span class="avatar-content">
-
-                        ${customer.customer_name
-                          .split(" ")
-                          .map((n) => n[0])
-                          .join("")
-                          .substring(0, 2)
-                          .toUpperCase()}
-
-                    </span>
-
-                </div>
-
-                <div>
-
-                    <h6 class="mb-0">
-                        ${customer.customer_name}
-                    </h6>
-
-                    <small class="text-muted">
-                        ${customer.customer_address || "-"}
-                    </small>
-
-                </div>
-
-            </div>
-        </td>
-        <td>
-            <div>
-
-                <div>
-                    <i class="bi bi-telephone-fill me-1"></i>
-
-                    ${customer.customer_phone || "-"}
-
-                </div>
-
-            </div>
-        </td>
-        <td class="text-center">
-            <span class="badge ${
-              customer.total_vehicle > 0
-              ? "bg-light-primary text-primary"
-              : "bg-light-secondary text-secondary"
-            }">
-
-                ${customer.total_vehicle} Unit
-
-            </span>
-
-        </td>
-        <td class="text-center">
-            <div class="d-inline-flex btn-outline-primary gap-2">
-                ${action}
-            </div>
+          <div class="action-buttons">
+            ${action}
+          </div>
         </td>
       </tr>
     `;

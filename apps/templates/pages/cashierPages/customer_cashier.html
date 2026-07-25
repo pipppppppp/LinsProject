@@ -1,0 +1,195 @@
+{% extends 'layouts/cashier_layout.html' %} {% block content %}
+
+<div id="app">
+  <!--! ================================================================ !-->
+  <!--! [Start] Navigation Section !-->
+  <!--! ================================================================ !-->
+  {% include 'components/nav_cashier.html' %}
+  <!--! ================================================================ !-->
+  <!--! [End] Navigation Section !-->
+  <!--! ================================================================ !-->
+
+  <!--! ================================================================ !-->
+  <!--! [Start] Page Content !-->
+  <!--! ================================================================ !-->
+  <div id="main">
+    <!--! ================================================================ !-->
+    <!--! [Start] Burger Button !-->
+    <!--! ================================================================ !-->
+    <header class="mb-3">
+      <a href="#" class="burger-btn d-block d-xl-none">
+        <i class="bi bi-justify fs-3"></i>
+      </a>
+    </header>
+    <!--! ================================================================ !-->
+    <!--! [End] Burger Button !-->
+    <!--! ================================================================ !-->
+
+    <!--! ================================================================ !-->
+    <!--! [Start] Main Content !-->
+    <!--! ================================================================ !-->
+    <div class="page-heading">
+      <!-- ================================================================ -->
+      <!-- [Start] Header -->
+      <div class="page-title mb-4">
+        <div class="row align-items-center">
+          <div class="col-md-7 col-12">
+            <h3 class="mb-2">Data Pelanggan</h3>
+
+            <p class="text-subtitle text-muted mb-0">Kelola seluruh data pelanggan dan kendaraan bengkel.</p>
+          </div>
+
+          <div class="col-md-5 col-12">
+            <nav aria-label="breadcrumb" class="breadcrumb-header float-start float-lg-end">
+              <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                  <a href="{{ url_for('dashboard.index') }}">Dashboard</a>
+                </li>
+                <li class="breadcrumb-item active" aria-current="page">Pelanggan</li>
+              </ol>
+            </nav>
+          </div>
+        </div>
+      </div>
+      <!-- [End] Header -->
+      <!-- ================================================================ -->
+
+      <!-- ================================================================ -->
+      <!-- [Start] Summary Card -->
+      <!-- ================================================================ -->
+      <section class="section mb-5">
+        <div class="row">
+          <!-- Total Pelanggan -->
+          <div class="col-xl-4 col-md-6 col-sm-12">
+            <div class="card">
+              <div class="card-content">
+                <div class="card-body">
+                  <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                      <h6 class="text-muted font-semibold mb-1">Total Pelanggan</h6>
+
+                      <h3 class="font-extrabold mb-1" id="total_customer">0</h3>
+
+                      <small class="text-muted"> Seluruh pelanggan terdaftar </small>
+                    </div>
+
+                    <div class="stats-icon blue">
+                      <i class="bi bi-people-fill"></i>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- Total Kendaraan -->
+          <div class="col-xl-4 col-md-6 col-sm-12">
+            <div class="card">
+              <div class="card-content">
+                <div class="card-body">
+                  <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                      <h6 class="text-muted font-semibold mb-1">Total Kendaraan</h6>
+
+                      <h3 class="font-extrabold mb-1" id="total_vehicle">0</h3>
+
+                      <small class="text-muted"> Kendaraan yang terdaftar </small>
+                    </div>
+
+                    <div class="stats-icon green">
+                      <i class="bi bi-bicycle"></i>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- Pelanggan Baru Hari Ini -->
+          <div class="col-xl-4 col-md-6 col-sm-12">
+            <div class="card">
+              <div class="card-content">
+                <div class="card-body">
+                  <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                      <h6 class="text-muted font-semibold mb-1">Pelanggan Hari Ini</h6>
+
+                      <h3 class="font-extrabold mb-1" id="today_customer">0</h3>
+
+                      <small class="text-muted"> Ditambahkan hari ini </small>
+                    </div>
+
+                    <div class="stats-icon purple">
+                      <i class="bi bi-person-plus-fill"></i>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+      <!-- ================================================================ -->
+      <!-- [End] Summary Card -->
+      <!-- ================================================================ -->
+
+      <!-- ================================================================ -->
+      <!-- [Start] Content -->
+      <section class="section">
+        <div class="card">
+          <div class="card-header">
+            <div class="d-flex justify-content-between align-items-center">
+              <div>
+                <h4 class="card-title mb-1">Data Pelanggan</h4>
+                <p class="text-muted mb-0">Daftar seluruh pelanggan yang telah terdaftar di bengkel.</p>
+              </div>
+
+              <div class="d-flex align-items-center gap-2">
+                <span id="customer_count" class="btn btn-light-primary btn-sm disabled"> 20 Pelanggan </span>
+
+                <button class="btn btn-light-primary btn-sm" id="btn_refresh">
+                  <i class="bi bi-arrow-clockwise"></i>
+                  Refresh
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="card-body">
+            <table class="table table-hover mb-0" id="table1">
+              <thead class="table-secondary">
+                <tr>
+                  <th width="60">No</th>
+                  <th>Pelanggan</th>
+                  <th width="220">Kontak</th>
+                  <th width="160" class="text-center">Kendaraan</th>
+                  <th width="140" class="text-center">Aksi</th>
+                </tr>
+              </thead>
+
+              <tbody id="customer_table">
+                <!-- row table set at javascript -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+      <!-- [End] Content -->
+    </div>
+    <!--! ================================================================ !-->
+    <!--! [End] Main Content !-->
+    <!--! ================================================================ !-->
+
+    <!--! ================================================================ !-->
+    <!--! [Start] Footer !-->
+    {% include 'components/footer_dashboard.html' %}
+    <!--! [End] Footer !-->
+    <!--! ================================================================ !-->
+  </div>
+  <!--! ================================================================ !-->
+  <!--! [End] Page Content !-->
+  <!--! ================================================================ !-->
+</div>
+<script src="{{ url_for('static', filename='javascript/helper/utilities.js') }}"></script>
+<script src="{{ url_for('static', filename='javascript/helper/formatter.js') }}"></script>
+<script src="{{ url_for('static', filename='javascript/helper/swal.js') }}"></script>
+<script src="{{ url_for('static', filename='javascript/helper/validators.js') }}"></script>
+<script src="{{ url_for('static', filename='javascript/api/customer.js') }}"></script>
+{% endblock %}

@@ -4,6 +4,7 @@ import time
 from ... import db
 from ...database.db_workshops import Workshops
 from ...database.db_customers import Customers
+from ...database.db_vehicles import Vehicles
 from ...utilities.validators import role_validator, customer_validator
 
 from apps.utilities.responseHelpers import *
@@ -135,19 +136,41 @@ class CustomerModels():
                 if customer.deleted_at:
                     deleted_at = format_date(customer.deleted_at)
 
+                vehicles = Vehicles.query.filter_by(
+                    customer_id=customer.id,
+                    is_delete=0
+                ).all()
+                total_vehicle = len(vehicles)
+
                 data.append({
                     "id": customer.id,
                     "customer_name": customer.customer_name,
                     "customer_address": customer.customer_address,
                     "customer_phone": customer.customer_phone,
+                    "total_vehicle": total_vehicle,
                     "created_at": created_at,
                     "updated_at": updated_at,
                     "deleted_at": deleted_at
                 })
             # Initialize Data ---------------------------------------- Finish
+
+            # Summary Data ---------------------------------------- Start
+            total_customer = len(customers)
+
+            total_vehicle = Vehicles.query.filter_by(
+                workshop_id=workshop_id,
+                is_delete=0
+            ).count()
+            # Summary Data ---------------------------------------- End
+
+
             # Response Data ---------------------------------------- Start
             return success_data(
-                data=data,
+                data={
+                    "customer": data,
+                    "total_customer": total_customer,
+                    "total_vehicle": total_vehicle
+                },
                 status_code=200
             )
         
