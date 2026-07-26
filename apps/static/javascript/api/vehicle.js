@@ -4,6 +4,10 @@
 document.addEventListener("DOMContentLoaded", init);
 async function init() {
   await reloadTable(loadVehicles, renderTable);
+  // Refresh button
+  document.getElementById("btn_refresh")?.addEventListener("click", async () => {
+    await reloadTable(loadVehicles, renderTable);
+  });
 }
 
 // Form ID Setup
@@ -32,13 +36,33 @@ async function loadVehicles() {
   const customerId = form.customer_id.value;
 
   const result = await getRequest(`/vehicle/view/${customerId}`);
-  
+  console.log(result);
+
   if (!result) {
-      vehiclesData = [];
-      return;
+    vehiclesData = [];
+    return;
   }
 
-  vehiclesData = result.data ?? [];
+  const customer = result.data.customer;
+
+  document.getElementById("customer_name").textContent = customer.customer_name;
+
+  // Avatar Inisial
+  const initial = customer.customer_name
+    .trim()
+    .split(/\s+/)
+    .slice(0, 2)
+    .map((word) => word.charAt(0).toUpperCase())
+    .join("");
+
+  document.getElementById("customer_initial").textContent = initial;
+  
+  document.getElementById("customer_phone").textContent = customer.customer_phone;
+
+  document.getElementById("customer_address").textContent = customer.customer_address;
+
+  vehiclesData = result.data.vehicles ?? [];
+  document.getElementById("vehicle_count").textContent = `${vehiclesData.length} Kendaraan`;
 }
 // **************************************************************
 // GET CUSTOMER | END
@@ -59,20 +83,21 @@ function renderTable() {
           <td>${vehicle.vehicle_type}</td>
           <td>${vehicle.vehicle_year}</td>
           <td>${vehicle.vehicle_color}</td>
-          <td>
-              <div class="action-buttons">
-      
+          <td class="text-center">
+              <div class="d-flex justify-content-center gap-2">
                   <button
-                      class="btn btn-outline-warning btn-sm btn-action btn-edit"
+                      class="btn btn-warning btn-sm btn-edit"
                       data-bs-toggle="modal"
                       data-bs-target="#vehicle_modal"
-                      data-id="${vehicle.id}">
+                      data-id="${vehicle.id}"
+                      title="Ubah">
                       <i class="bi bi-pencil-fill"></i>
                   </button>
       
                   <button
-                      class="btn btn-outline-danger btn-sm btn-action btn-delete"
-                      data-id="${vehicle.id}">
+                      class="btn btn-danger btn-sm btn-delete"
+                      data-id="${vehicle.id}"
+                      title="Hapus">
                       <i class="bi bi-trash-fill"></i>
                   </button>
       

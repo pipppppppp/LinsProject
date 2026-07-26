@@ -437,50 +437,46 @@ async function loadDepositSummary() {
 
   depositSummaryData = result.data;
 
+  console.log(depositSummaryData);
+
   renderDepositSummary();
 }
 
 // Render Data -------------------------------------------------
-function renderSummary() {
-  total_sales.textContent = formatRupiah(summaryData.total_sales);
+function renderDepositSummary() {
+  document.getElementById("today_sales").textContent = formatRupiah(depositSummaryData.total_sales);
 
-  total_transaction.textContent = summaryData.total_transaction;
+  document.getElementById("today_deposit").textContent = formatRupiah(depositSummaryData.total_deposit);
 
-  today_customer.textContent = summaryData.today_customer;
+  document.getElementById("remaining_deposit").textContent = formatRupiah(depositSummaryData.difference);
 
-  const status = document.getElementById("deposit_status");
+  const status = document.getElementById("deposit_status_text");
 
-  status.textContent = summaryData.deposit_status;
+  status.textContent = depositSummaryData.status;
 
-  // Reset class
-  status.className = "font-extrabold mb-1";
+  status.className = "badge";
 
-  switch (summaryData.deposit_status) {
+  switch (depositSummaryData.status) {
     case "Disetujui":
-      status.classList.add("text-success");
+      status.classList.add("bg-success");
       break;
 
     case "Menunggu":
-      status.classList.add("text-warning");
+      status.classList.add("bg-warning");
       break;
 
     case "Ditolak":
-      status.classList.add("text-danger");
-      break;
-
-    case "Belum Setor":
-      status.classList.add("text-secondary");
+      status.classList.add("bg-danger");
       break;
 
     default:
-      status.classList.add("text-dark");
+      status.classList.add("bg-secondary");
+      break;
   }
 }
-
 // **************************************************************
 // DEPOSIT SUMMARY | END
 // **************************************************************
-
 // **************************************************************
 // RECENT TRANSACTION | START
 // **************************************************************

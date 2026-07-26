@@ -8,7 +8,7 @@ from ...utilities.responseHelpers import bad_request
 cashier = Blueprint(
     name='cashier',
     import_name=__name__,
-    template_folder="../../templates/pages/cashierPages",
+    template_folder="../../templates/pages/appPages",
     url_prefix='/cashier',
 )
 # BLUEPRINT ================================================== End

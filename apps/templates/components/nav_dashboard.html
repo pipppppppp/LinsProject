@@ -88,6 +88,16 @@
             </li>
           </ul>
         </li>
+        
+        <li class="sidebar-title">Keuangan</li>
+
+        <li class="sidebar-item {% if active_menu == 'cash_deposit_verify' %}active{% endif %}">
+          <a href="{{ url_for('cash_deposit.verification') }}" class="sidebar-link">
+            <i class="bi bi-cash-stack"></i>
+
+            <span>Verifikasi Setor Kas</span>
+          </a>
+        </li>
         <li class="sidebar-title">LAPORAN</li>
 
         <li class="sidebar-item has-sub {% if active_menu in ['report','history_sales'] %}active{% endif %}">

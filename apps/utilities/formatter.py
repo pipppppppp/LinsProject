@@ -81,6 +81,29 @@ def format_datetime(timestamp):
         return "-"
 # FORMAT DATETIME ============================================================ End
 
+# FORMAT DATE TO TIMESTAMP ============================================================ Begin
+def format_date_timestamp(date, end_of_day=False):
+    try:
+        dt = datetime.strptime(date, "%Y-%m-%d")
+
+        if end_of_day:
+            dt = dt.replace(
+                hour=23,
+                minute=59,
+                second=59
+            )
+        else:
+            dt = dt.replace(
+                hour=0,
+                minute=0,
+                second=0
+            )
+
+        return int(dt.timestamp() * 1000)
+
+    except Exception:
+        return 0
+# FORMAT DATE TO TIMESTAMP ============================================================ End
 
 # FORMAT PLATE NUMBER ============================================================ Begin
 def format_plate_number(plate_number):

@@ -32,77 +32,102 @@
       <!--! ================================================================ !-->
       <!--! [Start] Header !-->
       <div class="page-title">
-        <div class="row">
-          <div class="col-12 col-md-6 order-md-1 order-last">
-            <h3>DATA KENDARAAN</h3> <br>
-            <div class="mb-3">
-              <div class="mb-2">
-                <span class="text-muted d-inline-block" style="width: 110px">Pelanggan</span>
-                <span>: <strong>{{ customer_name }}</strong></span>
-              </div>
+        <div class="d-flex justify-content-between align-items-start flex-wrap mb-3">
+          <div>
+            <h3>Data Kendaraan</h3>
 
-              <div class="mb-2">
-                <span class="text-muted d-inline-block" style="width: 110px">No. HP</span>
-                <span>: <strong>{{ customer_phone }}</strong></span>
+            <p class="text-muted mb-0">Kelola seluruh kendaraan milik pelanggan.</p>
+          </div>
+
+          <nav aria-label="breadcrumb" class="breadcrumb-header">
+            <ol class="breadcrumb">
+              <li class="breadcrumb-item">
+                <a href="{{ url_for('dashboard.index') }}">Dashboard</a>
+              </li>
+              <li class="breadcrumb-item">
+                <a href="{{ url_for('customer.index') }}">Pelanggan</a>
+              </li>
+              <li class="breadcrumb-item active" aria-current="page">Kendaraan</li>
+            </ol>
+          </nav>
+        </div>
+
+        <!-- Customer Card -->
+        <div class="card shadow-sm border-0">
+          <div class="card-body py-3 px-4">
+            <div class="d-flex align-items-center">
+              <div class="avatar avatar-xl bg-primary me-3">
+                <span class="avatar-content fw-bold fs-5" id="customer_initial">
+                  <i class="bi bi-person-fill text-white"></i>
+                </span>
               </div>
 
               <div>
-                <span class="text-muted d-inline-block" style="width: 110px">Alamat</span>
-                <span>: <strong>{{ customer_address }}</strong></span>
+                <h5 class="mb-1 fw-bold" id="customer_name">-</h5>
+
+                <div class="text-muted mb-1">
+                  <i class="bi bi-telephone me-1"></i>
+                  <span id="customer_phone">-</span>
+                </div>
+
+                <div class="text-muted">
+                  <i class="bi bi-geo-alt me-1"></i>
+                  <span id="customer_address">-</span>
+                </div>
               </div>
             </div>
-            <!-- <p class="text-subtitle text-muted">The default layout</p> -->
-          </div>
-          <div class="col-12 col-md-6 order-md-2 order-first">
-            <nav aria-label="breadcrumb" class="breadcrumb-header float-start float-lg-end">
-              <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="{{ url_for('dashboard.index') }}">Dashboard</a></li>
-                <li class="breadcrumb-item"><a href="{{ url_for('customer.index') }}">Pelanggan</a></li>
-                <li class="breadcrumb-item active" aria-current="page">Kendaraan</li>
-              </ol>
-            </nav>
           </div>
         </div>
       </div>
       <!--! [End] Header !-->
       <!--! ================================================================ !-->
 
-      <!--! ================================================================ !-->
-      <!--! [Start] Title !-->
+      <!-- ================================================================ -->
+      <!-- [Start] Content -->
       <section class="section">
         <div class="card">
-          <div class="card-body">
-            <div class="row">
-              <div class="col-sm-12 d-flex justify-content-end">
-                <a href="#" class="btn btn-outline-success" data-bs-toggle="modal" data-bs-target="#vehicle_modal">
-                  <i class="bi bi-plus-lg"></i> Tambah Kendaraan
-                </a>
+          <div class="card-header">
+            <div class="d-flex justify-content-between align-items-center">
+              <div>
+                <h4 class="card-title mb-1">Data Kendaraan</h4>
+                <p class="text-muted mb-0">Daftar seluruh kendaraan milik pelanggan.</p>
+              </div>
+
+              <div class="d-flex align-items-center">
+                <!-- Badge + Refresh -->
+                <div class="btn-group me-2" role="group">
+                  <span class="btn btn-light-primary disabled">
+                    <i class="bi bi-bicycle me-1"></i>
+                    <span id="vehicle_count">0 Kendaraan</span>
+                  </span>
+
+                  <button class="btn btn-light-primary" id="btn_refresh" title="Refresh">
+                    <i class="bi bi-arrow-clockwise"></i>
+                  </button>
+                </div>
+
+                <!-- Tambah -->
+                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#vehicle_modal">
+                  <i class="bi bi-plus-lg me-1"></i>
+                  Tambah
+                </button>
               </div>
             </div>
           </div>
-        </div>
-      </section>
-      <!--! [End] Title !-->
-      <!--! ================================================================ !-->
-
-      <!--! ================================================================ !-->
-      <!--! [Start] Content !-->
-      <section class="section">
-        <div class="card">
-          <!-- <div class="card-header">Simple Datatable</div> -->
           <div class="card-body">
-            <table class="table table-striped" id="table1">
-              <thead>
+            <table class="table table-hover mb-0" id="table1">
+              <thead class="table-secondary">
                 <tr>
-                  <th>No</th>
-                  <th>Plat Nomor</th>
-                  <th>Merk</th>
+                  <th width="60">No</th>
+                  <th width="180">Plat Nomor</th>
+                  <th width="130">Merk</th>
                   <th>Tipe</th>
-                  <th>Tahun</th>
-                  <th>Warna</th>
-                  <th>Action</th>
+                  <th width="100">Tahun</th>
+                  <th width="120">Warna</th>
+                  <th width="140" class="text-center">Aksi</th>
                 </tr>
               </thead>
+
               <tbody id="vehicle_table">
                 <!-- row table set at javascript -->
               </tbody>
@@ -110,7 +135,7 @@
           </div>
         </div>
       </section>
-      <!--! [End] Content !-->
+      <!-- [End] Content -->
       <!--! ================================================================ !-->
     </div>
     <!--! ================================================================ !-->
@@ -125,36 +150,96 @@
 
     <!--! ================================================================ !-->
     <!--! [Start] Modal Form !-->
-    <div class="modal fade text-left" id="vehicle_modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel33" aria-hidden="true">
-      <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable" role="document">
+    <div class="modal fade" id="vehicle_modal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content">
-          <div class="modal-header">
-            <h4 class="modal-title" id="modal_label">Tambah Kendaraan</h4>
-            <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-              <i data-feather="x"></i>
-            </button>
+          <!-- ====================================================== -->
+          <!-- MODAL HEADER -->
+          <!-- ====================================================== -->
+          <div class="modal-header border-bottom">
+            <div>
+              <h4 class="modal-title mb-1" id="modal_label">
+                <i class="bi bi-bicycle me-2 text-primary"></i>
+                Tambah Kendaraan
+              </h4>
+
+              <small class="text-muted"> Tambahkan atau ubah informasi kendaraan pelanggan. </small>
+            </div>
+
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
           </div>
-          <form action="#">
-            <div class="modal-body">
+
+          <form>
+            <!-- ====================================================== -->
+            <!-- MODAL BODY -->
+            <!-- ====================================================== -->
+            <div class="modal-body px-4 py-3">
               <input type="hidden" id="vehicle_id" />
               <input type="hidden" id="customer_id" value="{{ customer_id }}" />
-              <label>Plat Nomor : </label>
-              <input type="text" id="plate_number" class="form-control" placeholder="Plat Nomor Kendaraan" />
-              <label>Merek : </label>
-              <input type="text" id="vehicle_brand" class="form-control mt-2" placeholder="Merek Kendaraan" />
-              <label>Tipe :</label>
-              <input type="text" id="vehicle_type" class="form-control mt-2" placeholder="Tipe Kendaraan" />
-              <label>Tahun : </label>
-              <input type="number" id="vehicle_year" class="form-control mt-2" placeholder="Tahun Kendaraan" />
-              <label>Warna : </label>
-              <input type="text" id="vehicle_color" class="form-control mt-2" placeholder="Warna Kendaraan" />
+
+              <div class="mb-3">
+                <label class="form-label">
+                  <i class="bi bi-credit-card-2-front me-2"></i>
+                  Plat Nomor
+                </label>
+
+                <input type="text" id="plate_number" class="form-control" placeholder="Masukkan plat nomor kendaraan" />
+              </div>
+
+              <div class="mb-3">
+                <label class="form-label">
+                  <i class="bi bi-bicycle me-2"></i>
+                  Merek
+                </label>
+
+                <input type="text" id="vehicle_brand" class="form-control" placeholder="Masukkan merek kendaraan" />
+              </div>
+
+              <div class="mb-3">
+                <label class="form-label">
+                  <i class="bi bi-tag me-2"></i>
+                  Tipe
+                </label>
+
+                <input type="text" id="vehicle_type" class="form-control" placeholder="Masukkan tipe kendaraan" />
+              </div>
+
+              <div class="mb-3">
+                <label class="form-label">
+                  <i class="bi bi-calendar-event me-2"></i>
+                  Tahun
+                </label>
+
+                <input type="number" id="vehicle_year" class="form-control" placeholder="Masukkan tahun kendaraan" />
+              </div>
+
+              <div class="mb-3">
+                <label class="form-label">
+                  <i class="bi bi-palette me-2"></i>
+                  Warna
+                </label>
+
+                <input type="text" id="vehicle_color" class="form-control" placeholder="Masukkan warna kendaraan" />
+              </div>
             </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-light-secondary" data-bs-dismiss="modal">
-                <i class="bx bx-x d-block d-sm-none"></i>
-                <span class="d-none d-sm-block">Tutup</span>
-              </button>
-              <button type="button" class="btn btn-primary btn-save">Simpan</button>
+
+            <!-- ====================================================== -->
+            <!-- MODAL FOOTER -->
+            <!-- ====================================================== -->
+            <div class="modal-footer border-top">
+              <div class="d-flex w-100 gap-3">
+                <button type="button" class="btn btn-outline-secondary flex-fill" data-bs-dismiss="modal">
+                  <i class="bi bi-x-lg me-1"></i>
+
+                  Batal
+                </button>
+
+                <button type="button" class="btn btn-primary flex-fill btn-save">
+                  <i class="bi bi-check-lg me-1"></i>
+
+                  Simpan
+                </button>
+              </div>
             </div>
           </form>
         </div>

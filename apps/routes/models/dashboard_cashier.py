@@ -42,6 +42,7 @@ class DashboardCashierModels():
                               "Workshop could not be found."
                         )
                   # Check Workshop ---------------------------------------- Finish
+                 
                   # Today Timestamp ---------------------------------------- Start
                   today = datetime.now().date()
 
@@ -55,12 +56,27 @@ class DashboardCashierModels():
                         datetime.max.time()
                   ).timestamp())
                   # Today Timestamp ---------------------------------------- Finish
+                  today_sales = db.session.query(
+                        func.coalesce(func.sum(Payments.total), 0)
+                  ).filter(
+                        Payments.workshop_id == workshop_id,
+                        Payments.cashier_id == user_id,
+                        Payments.payment_date >= start_date,
+                        Payments.payment_date <= end_date,
+                        Payments.is_delete == 0
+                  ).scalar()
 
+                  print("WORKSHOP :", workshop_id)
+                  print("USER :", user_id)
+                  print("START :", start_date)
+                  print("END :", end_date)
+                  print("TODAY SALES :", today_sales)
                   # Total Sales ---------------------------------------- Start
                   total_sales = db.session.query(
                         func.coalesce(func.sum(Payments.total), 0)
                   ).filter(
                         Payments.workshop_id == workshop_id,
+                        Payments.cashier_id == user_id,
                         Payments.payment_date >= start_date,
                         Payments.payment_date <= end_date,
                         Payments.is_delete == 0
@@ -70,6 +86,7 @@ class DashboardCashierModels():
                   # Total Transaction ---------------------------------------- Start
                   total_transaction = Payments.query.filter(
                         Payments.workshop_id == workshop_id,
+                        Payments.cashier_id == user_id,
                         Payments.payment_date >= start_date,
                         Payments.payment_date <= end_date,
                         Payments.is_delete == 0
@@ -79,6 +96,7 @@ class DashboardCashierModels():
                   # Customer Today ---------------------------------------- Start
                   today_customer = Payments.query.filter(
                         Payments.workshop_id == workshop_id,
+                        Payments.cashier_id == user_id,
                         Payments.payment_date >= start_date,
                         Payments.payment_date <= end_date,
                         Payments.customer_id.isnot(None),
@@ -499,19 +517,36 @@ class DashboardCashierModels():
                         datetime.max.time()
                   ).timestamp())
                   # Today Timestamp ---------------------------------------- Finish
-            
+                  start_deposit = start_date * 1000
+                  end_deposit = end_date * 1000
+                  print("START :", start_date)
+                  print("END   :", end_date)
+                  
+                  # Today Sales ---------------------------------------- Start
+                  today_sales = db.session.query(
+                        func.coalesce(func.sum(Payments.total), 0)
+                  ).filter(
+                        Payments.workshop_id == workshop_id,
+                        Payments.cashier_id == user_id,
+                        Payments.payment_date >= start_date,
+                        Payments.payment_date <= end_date,
+                        Payments.is_delete == 0
+                  ).scalar()
+                  print("TODAY SALES =", today_sales)
+                  # Today Sales ---------------------------------------- Finish
+                  
                   # Get Deposit ---------------------------------------- Start
                   deposit = CashDeposits.query.filter(
                         CashDeposits.workshop_id == workshop_id,
                         CashDeposits.user_id == user_id,
-                        CashDeposits.deposit_date >= start_date,
-                        CashDeposits.deposit_date <= end_date,
+                        CashDeposits.deposit_date >= start_deposit,
+                        CashDeposits.deposit_date <= end_deposit,
                         CashDeposits.is_deleted == 0
                   ).order_by(
                         CashDeposits.deposit_date.desc()
                   ).first()
                   # Get Deposit ---------------------------------------- Finish
-                  
+                  print("DEPOSIT :", deposit)
                   # Initialize Data ---------------------------------------- Start
                   if deposit:
 
@@ -537,9 +572,9 @@ class DashboardCashierModels():
 
                   else:
                         data = {
-                              "total_sales": 0,
+                              "total_sales": today_sales,
                               "total_deposit": 0,
-                              "difference": 0,
+                              "difference": today_sales,
                               "status": "Belum Setor",
                               "deposit_date": "-"
                         }

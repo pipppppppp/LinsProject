@@ -38,69 +38,75 @@
       <section class="section">
         <div class="card">
           <div class="card-header">
-            <h4 class="card-title">Informasi Bengkel</h4>
-          </div>
+            <h4 class="card-title mb-1">
+              <i class="bi bi-shop me-2"></i>
+              Informasi Bengkel
+            </h4>
 
+            <p class="text-muted mb-0">Kelola informasi utama bengkel yang akan digunakan pada sistem POS.</p>
+          </div>
+          <hr class="my-3" />
           <div class="card-body">
             <input type="hidden" id="workshop_id" />
-            <!-- Logo Bengkel -->
-            <div class="text-center mb-4">
-              <img
-                id="preview_logo"
-                src="{{ url_for('static', filename='images/profiles/default-workshop.png') }}"
-                class="rounded-circle border shadow-sm"
-                style="width: 180px; height: 180px; object-fit: cover"
-              />
-            </div>
-            <div class="text-center">
-              <input type="file" id="workshop_logo" class="form-control" accept="image/*" />
-            </div>
-            <br />
+
             <div class="row">
-              <div class="col-md-6">
-                <div class="form-group">
-                  <label>Nama Bengkel</label>
+              <!-- FOTO -->
+              <div class="col-lg-4 text-center">
+                <img
+                  id="preview_logo"
+                  src="{{ url_for('static', filename='images/profiles/default-workshop.png') }}"
+                  class="rounded-circle shadow"
+                  style="width: 200px; height: 200px; object-fit: cover"
+                />
 
-                  <input type="text" id="workshop_name" class="form-control" placeholder="Nama Bengkel" />
+                <div class="mt-5 mx-auto" style="max-width: 250px">
+                  <input type="file" id="workshop_logo" class="form-control" accept="image/*" />
                 </div>
               </div>
 
-              <div class="col-md-6">
-                <div class="form-group">
-                  <label>Email</label>
+              <!-- FORM -->
+              <div class="col-lg-8">
+                <div class="row">
+                  <div class="col-md-6 mb-3">
+                    <label class="form-label"> Nama Bengkel </label>
 
-                  <input type="email" id="workshop_email" class="form-control" placeholder="Email Bengkel" />
+                    <input type="text" id="workshop_name" class="form-control" />
+                  </div>
+
+                  <div class="col-md-6 mb-3">
+                    <label class="form-label"> Email </label>
+
+                    <input type="email" id="workshop_email" class="form-control" />
+                  </div>
+                </div>
+
+                <div class="row">
+                  <div class="col-md-6 mb-3">
+                    <label class="form-label"> No. Telepon </label>
+
+                    <input type="text" id="workshop_phone" class="form-control" />
+                  </div>
+
+                  <div class="col-md-6 mb-3">
+                    <label class="form-label"> Status </label>
+
+                    <div class="mt-2">
+                      <span id="workshop_status" class="badge bg-success fs-6"> Aktif </span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="mb-3">
+                  <label class="form-label"> Alamat </label>
+
+                  <textarea id="workshop_address" rows="4" class="form-control"></textarea>
                 </div>
               </div>
             </div>
 
-            <div class="row mt-3">
-              <div class="col-md-6">
-                <div class="form-group">
-                  <label>No. Telepon</label>
-
-                  <input type="text" id="workshop_phone" class="form-control" placeholder="Nomor Telepon" />
-                </div>
-              </div>
-
-              <div class="col-md-6">
-                <div class="form-group">
-                  <label>Status</label>
-
-                  <input type="text" id="workshop_status" class="form-control" readonly />
-                </div>
-              </div>
-            </div>
-
-            <div class="form-group mt-3">
-              <label>Alamat</label>
-
-              <textarea id="workshop_address" rows="4" class="form-control" placeholder="Alamat Bengkel"></textarea>
-            </div>
-
-            <div class="mt-4 text-end">
-              <button class="btn btn-primary btn-save">
-                <i class="bi bi-save"></i>
+            <div class="text-end mt-4">
+              <button class="btn btn-primary px-4 btn-save">
+                <i class="bi bi-save me-1"></i>
 
                 Simpan Perubahan
               </button>

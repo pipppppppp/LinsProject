@@ -5,6 +5,10 @@ document.addEventListener("DOMContentLoaded", init);
 
 async function init() {
   await reloadTable(loadServices, renderTable);
+  // Refresh button
+  document.getElementById("btn_refresh")?.addEventListener("click", async () => {
+    await reloadTable(loadServices, renderTable);
+  });
 }
 
 // Form ID Setup
@@ -28,6 +32,7 @@ async function loadServices() {
   const result = await getRequest("/service/view");
 
   servicesData = result.data;
+  document.getElementById("service_count").textContent = `${servicesData.length} Jasa Servis`;
 }
 // **************************************************************
 // GET SERVICE | END
@@ -42,33 +47,65 @@ function renderTable() {
   servicesData.forEach((service, index) => {
     html += `
       <tr>
+
         <td>${index + 1}</td>
-        <td>${service.name}</td>
-        <td>${formatRupiah(service.service_fee)}</td>
-        <td>${service.description ?? "-"}</td>
+
         <td>
-          <div class="action-buttons">
+          <div class="d-flex align-items-center">
+
+            <div class="avatar avatar-md bg-success me-3">
+              <span class="avatar-content">
+                <i class="bi bi-tools"></i>
+              </span>
+            </div>
+
+            <div>
+
+              <div class="fw-semibold">
+                ${service.name}
+              </div>
+
+              <small class="text-muted">
+                ${service.description ?? "-"}
+              </small>
+
+            </div>
+
+          </div>
+        </td>
+
+        <td>
+          <span class="fw-bold text-success">
+            ${formatRupiah(service.service_fee)}
+          </span>
+        </td>
+
+        <td class="text-center">
+          <div class="d-flex justify-content-center gap-2">
 
             <button
-              class="btn btn-outline-warning btn-sm btn-action btn-edit"
+              class="btn btn-warning btn-sm btn-edit"
               data-bs-toggle="modal"
               data-bs-target="#service_modal"
               data-id="${service.id}"
-              title="Edit">
+              title="Ubah">
 
               <i class="bi bi-pencil-fill"></i>
+
             </button>
 
             <button
-              class="btn btn-outline-danger btn-sm btn-action btn-delete"
+              class="btn btn-danger btn-sm btn-delete"
               data-id="${service.id}"
               title="Hapus">
 
               <i class="bi bi-trash-fill"></i>
+
             </button>
 
           </div>
         </td>
+
       </tr>
     `;
   });

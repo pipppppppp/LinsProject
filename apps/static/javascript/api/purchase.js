@@ -18,6 +18,11 @@ async function init() {
   if (table) {
     new simpleDatatables.DataTable(table);
   }
+
+  // Refresh button
+  document.getElementById("btn_refresh")?.addEventListener("click", async () => {
+    await reloadTable(loadPurchases, renderPurchaseTable);
+  });
 }
 
 // Form ID Setup
@@ -50,7 +55,7 @@ let purchaseItems = [];
 // **************************************************************
 async function loadSuppliers() {
   const result = await getRequest("/supplier/view");
-  
+
   if (result.status_code !== 200) {
     await swalError(result.message);
     return;
@@ -350,24 +355,42 @@ async function loadPurchases() {
 
               <td>${index + 1}</td>
 
-              <td>${purchase.purchase_date}</td>
-
-              <td>${purchase.supplier_name}</td>
-
-              <td>${purchase.total_item}</td>
-
-              <td>${formatRupiah(purchase.total)}</td>
+              <td>
+                  <div class="fw-semibold">
+                      <i class="bi bi-calendar-event me-2 text-primary"></i>
+                      ${purchase.purchase_date}
+                  </div>
+              </td>
 
               <td>
+                  <div class="fw-semibold">
+                      <i class="bi bi-building me-2 text-secondary"></i>
+                      ${purchase.supplier_name}
+                  </div>
+              </td>
+
+              <td>
+                  <span class="badge bg-light-primary text-primary">
+                      ${purchase.total_item} Barang
+                  </span>
+              </td>
+
+              <td>
+                  <div class="fw-bold text-success">
+                      ${formatRupiah(purchase.total)}
+                  </div>
+              </td>
+
+              <td class="text-center">
 
                   <button
-                      class="btn btn-outline-info btn-sm btn-detail"
-                      data-id="${purchase.id}"
-                      title="Detail Pembelian">
-                  
-                      <i class="bi bi-eye-fill me-2"></i>
-                      Detail Pembelian
-                  
+                      class="btn btn-outline-primary btn-sm btn-detail"
+                      data-id="${purchase.id}">
+
+                      <i class="bi bi-eye-fill me-1"></i>
+
+                      Detail
+
                   </button>
 
               </td>
@@ -377,6 +400,7 @@ async function loadPurchases() {
   });
 
   document.getElementById("purchase_table").innerHTML = html;
+  document.getElementById("purchase_count").textContent = `${result.data.length} Pembelian`;
 }
 // **************************************************************
 // LOAD PURCHASE | END

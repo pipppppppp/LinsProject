@@ -182,7 +182,8 @@ class AuthModels():
             # Data Response ---------------------------------------- Start
             response = success_data({
                 "access_token" : access_token,
-                "role" : result.role
+                "role" : result.role,
+                "name": result.username
             })
             set_access_cookies(response, access_token)
             # Data Response ---------------------------------------- Finish

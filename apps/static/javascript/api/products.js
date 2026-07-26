@@ -6,6 +6,11 @@ document.addEventListener("DOMContentLoaded", init);
 async function init() {
   await loadCategories();
   await reloadTable(loadProducts, renderTable);
+
+  // Refresh button
+  document.getElementById("btn_refresh")?.addEventListener("click", async () => {
+    await reloadTable(loadProducts, renderTable);
+  });
 }
 
 // Form ID Setup
@@ -40,6 +45,7 @@ async function loadProducts() {
   const result = await getRequest("/product/view");
 
   productsData = result.data;
+  document.getElementById("product_count").textContent = `${productsData.length} Produk`;
 }
 
 // Load Category -------------------------------------------------
@@ -76,8 +82,6 @@ function renderCategoryOptions() {
 
 // Render Table -------------------------------------------------
 function renderTable() {
-  const table = document.getElementById("product_table");
-
   let html = "";
 
   productsData.forEach((product, index) => {
@@ -93,35 +97,77 @@ function renderTable() {
 
     html += `
       <tr>
+
         <td>${index + 1}</td>
-        <td>${product.product_name}</td>
-        <td>${product.category}</td>
-        <td>${formatNumber(product.stock)}</td>
-        <td>${formatNumber(product.minimum_stock)}</td>
-        <td>${formatRupiah(product.purchase_price)}</td>
-        <td>${formatRupiah(product.selling_price)}</td>
-        <td>${status}</td>
-        <td>
-            <div class="action-buttons">
-              <button
-                  class="btn btn-outline-warning btn-sm btn-action btn-edit"
-                  data-bs-toggle="modal"
-                  data-bs-target="#product_modal"
-                  data-id="${product.id}"
-                  title="Edit">
 
-                  <i class="bi bi-pencil-fill"></i>
-              </button>
-
-              <button
-                  class="btn btn-outline-danger btn-sm btn-action btn-delete"
-                  data-id="${product.id}"
-                  title="Hapus">
-
-                  <i class="bi bi-trash-fill"></i>
-              </button>
-            </div>
+        <td class="fw-semibold">
+            <i class="bi bi-box-seam text-primary me-2"></i>
+              ${product.product_name}
         </td>
+
+        <td>
+          <span class="badge bg-light-primary text-primary px-3 py-2">
+            ${product.category}
+          </span>
+        </td>
+
+        <td>
+
+            <div class="fw-bold">
+                ${formatNumber(product.stock)}
+            </div>
+
+            <small class="text-muted">
+                Min : ${formatNumber(product.minimum_stock)}
+            </small>
+
+        </td>
+
+        <td>
+
+            <div class="text-danger fw-semibold">
+                <i class="bi bi-arrow-down-circle me-1"></i>
+                ${formatRupiah(product.purchase_price)}
+            </div>
+
+            <div class="text-success fw-semibold">
+                <i class="bi bi-arrow-up-circle me-1"></i>
+                ${formatRupiah(product.selling_price)}
+            </div>
+
+        </td>
+        <td>
+          ${status}
+        </td>
+
+        <td class="text-center">
+
+          <div class="d-flex justify-content-center gap-2">
+
+            <button
+              class="btn btn-warning btn-sm btn-edit"
+              data-bs-toggle="modal"
+              data-bs-target="#product_modal"
+              data-id="${product.id}"
+              title="Ubah">
+
+              <i class="bi bi-pencil-fill"></i>
+
+            </button>
+
+            <button
+              class="btn btn-danger btn-sm btn-delete"
+              data-id="${product.id}"
+              title="Hapus">
+
+              <i class="bi bi-trash-fill"></i>
+
+            </button>
+
+          </div>
+
+        </td>
+
       </tr>
     `;
   });

@@ -1226,7 +1226,7 @@ def sale_validator(customer_id,vehicle_id,payment,product_details,service_detail
 # SALE VALIDATION ============================================================ End
 
 # CASH DEPOSIT VALIDATION ============================================================ Begin
-def cash_deposit_validator(total_deposit):
+def cash_deposit_validator(total_deposit, total_sales=None):
     check_result = []
 
     # Check Null Value
@@ -1240,5 +1240,10 @@ def cash_deposit_validator(total_deposit):
     elif int(total_deposit) <= 0:
         check_result.append("Nominal setor harus lebih dari 0.")
 
+    # Check Maximum Deposit
+    elif total_sales is not None and int(total_deposit) > int(total_sales):
+        check_result.append(
+            "Nominal setor tidak boleh melebihi total penjualan hari ini."
+        )
     return check_result
 # CASH DEPOSIT VALIDATION ============================================================ End

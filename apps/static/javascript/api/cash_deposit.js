@@ -36,6 +36,32 @@ async function loadCashDeposits() {
   form.totalSales.value = formatRupiah(result.data.today_sales);
 
   document.getElementById("today_sales").textContent = formatRupiah(result.data.today_sales);
+  document.getElementById("today_deposit").textContent = formatRupiah(result.data.total_deposit);
+
+  document.getElementById("remaining_deposit").textContent = formatRupiah(result.data.remaining);
+  document.getElementById("deposit_count").textContent = `${cashDepositsData.length} kali setor`;
+
+  let statusText = "Belum Setor";
+
+  if (cashDepositsData.length > 0) {
+    const latest = cashDepositsData[0];
+
+    switch (latest.status) {
+      case 0:
+        statusText = "Menunggu";
+        break;
+
+      case 1:
+        statusText = "Disetujui";
+        break;
+
+      case 2:
+        statusText = "Ditolak";
+        break;
+    }
+  }
+
+  document.getElementById("deposit_status").textContent = statusText;
 }
 // **************************************************************
 // GET CUSTOMER | END

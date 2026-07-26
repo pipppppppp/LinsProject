@@ -4,6 +4,7 @@
 document.addEventListener("DOMContentLoaded", init);
 
 async function init() {
+  renderHeader();
   await loadDashboard();
 }
 // **************************************************************
@@ -40,7 +41,7 @@ let summaryData = {};
 // Load Data -------------------------------------------------
 async function loadSummary() {
   const result = await getRequest("/dashboard/summary");
-
+  console.log(result);
   summaryData = result.data;
 
   renderSummary();
@@ -59,6 +60,8 @@ function renderSummary() {
   document.getElementById("total_product").textContent = summaryData.total_product;
 
   document.getElementById("total_service").textContent = summaryData.total_service;
+
+  document.getElementById("current_user").textContent = `👋 Selamat Datang, ${summaryData.owner_name}!`;
 }
 // **************************************************************
 // SUMMARY | END
@@ -215,12 +218,28 @@ async function loadTopProducts() {
 function renderTopProducts() {
   let html = "";
 
+  if (topProductsData.length === 0) {
+    document.getElementById("top_product_table").innerHTML = `
+      <tr>
+        <td colspan="3" class="text-center text-muted">
+          Tidak ada data.
+        </td>
+      </tr>
+    `;
+    return;
+  }
   topProductsData.forEach((product, index) => {
     html += `
       <tr>
-        <td>${index + 1}</td>
-        <td>${product.product_name}</td>
-        <td>${product.total_sold}</td>
+          <td>${index + 1}</td>
+
+          <td>${product.product_name}</td>
+
+          <td>
+              <span class="badge bg-success">
+                  ${product.total_sold}
+              </span>
+          </td>
       </tr>
     `;
   });
@@ -254,13 +273,28 @@ async function loadTopServices() {
 // Render Data -------------------------------------------------
 function renderTopServices() {
   let html = "";
-
+  if (topServicesData.length === 0) {
+    document.getElementById("top_service_table").innerHTML = `
+      <tr>
+        <td colspan="3" class="text-center text-muted">
+          Tidak ada data.
+        </td>
+      </tr>
+    `;
+    return;
+  }
   topServicesData.forEach((service, index) => {
     html += `
       <tr>
-        <td>${index + 1}</td>
-        <td>${service.name}</td>
-        <td>${service.total_service}</td>
+          <td>${index + 1}</td>
+
+          <td>${service.name}</td>
+
+          <td>
+              <span class="badge bg-primary">
+                  ${service.total_service}
+              </span>
+          </td>
       </tr>
     `;
   });
@@ -288,13 +322,26 @@ async function loadLowStock() {
 // Render Data -------------------------------------------------
 function renderLowStock() {
   let html = "";
-
+  if (lowStockData.length === 0) {
+    document.getElementById("low_stock_table").innerHTML = `
+      <tr>
+        <td colspan="3" class="text-center text-muted">
+          Tidak ada data.
+        </td>
+      </tr>
+    `;
+    return;
+  }
   lowStockData.forEach((product, index) => {
     html += `
       <tr>
         <td>${index + 1}</td>
         <td>${product.product_name}</td>
-        <td>${product.stock}</td>
+        <td>
+            <span class="badge bg-warning">
+                ${product.stock}
+            </span>
+        </td>
       </tr>
     `;
   });
@@ -323,13 +370,26 @@ async function loadRecentTransactions() {
 // Render Data -------------------------------------------------
 function renderRecentTransactions() {
   let html = "";
-
+  if (recentTransactionData.length === 0) {
+    document.getElementById("recent_transaction_table").innerHTML = `
+      <tr>
+        <td colspan="3" class="text-center text-muted">
+          Tidak ada data.
+        </td>
+      </tr>
+    `;
+    return;
+  }
   recentTransactionData.forEach((transaction) => {
     html += `
       <tr>
         <td>${transaction.invoice}</td>
         <td>${transaction.customer_name}</td>
-        <td>${formatRupiah(transaction.total)}</td>
+        <td>
+            <span class="badge bg-primary">
+                ${formatRupiah(transaction.total)}
+            </span>
+        </td>
       </tr>
     `;
   });
@@ -339,3 +399,15 @@ function renderRecentTransactions() {
 // **************************************************************
 // RECENT TRANSACTION | END
 // **************************************************************
+function renderHeader() {
+  const today = new Date();
+
+  const date = today.toLocaleDateString("id-ID", {
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  });
+
+  document.getElementById("current_date").textContent = date;
+}

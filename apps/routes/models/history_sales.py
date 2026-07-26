@@ -224,13 +224,48 @@ class HistorySalesModels():
                         payment.total for payment in filter_payments
                   )
                   # Filter Summary ---------------------------------------- Finish
+                  # Penjualan Hari Ini ---------------------------------------- Start
+                  today_start = datetime(
+                        today.year,
+                        today.month,
+                        today.day,
+                        0,
+                        0,
+                        0
+                  )
 
+                  today_end = datetime(
+                        today.year,
+                        today.month,
+                        today.day,
+                        23,
+                        59,
+                        59
+                  )
+
+                  today_query = Payments.query.filter(
+                        Payments.workshop_id == workshop_id,
+                        Payments.is_delete == 0,
+                        Payments.payment_date >= int(today_start.timestamp()),
+                        Payments.payment_date <= int(today_end.timestamp())
+                  )
+
+                  if str(user_role) == "2":
+                        today_query = today_query.filter(
+                              Payments.cashier_id == user_id
+                        )
+
+                  today_sales = sum(
+                        payment.total for payment in today_query.all()
+                  )
+                  # Penjualan Hari Ini ---------------------------------------- End
                   # Response ---------------------------------------- Start
                   return success_data(
                         data={
                               "history": result,
                               "today_transaction": today_transaction,
-                              "today_total": today_total
+                              "today_total": today_total,
+                              "today_sales": today_sales
                         },
                         status_code=200
                   )

@@ -62,6 +62,7 @@ function renderWorkshop() {
   if (!workshopData) {
     return;
   }
+
   form.id.value = workshopData.id ?? "";
 
   form.name.value = workshopData.workshop_name ?? "";
@@ -72,8 +73,12 @@ function renderWorkshop() {
 
   form.address.value = workshopData.workshop_address ?? "";
 
-  form.status.value = workshopData.is_active == 1 ? "Aktif" : "Tidak Aktif";
+  // Status
+  form.status.textContent = workshopData.is_active == 1 ? "Aktif" : "Tidak Aktif";
 
+  form.status.className = workshopData.is_active == 1 ? "badge bg-success fs-6" : "badge bg-danger fs-6";
+
+  // Logo
   if (workshopData.logo) {
     form.preview.src = `/static/images/profiles/${workshopData.logo}`;
   } else {

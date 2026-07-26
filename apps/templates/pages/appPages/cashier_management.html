@@ -55,24 +55,100 @@
       <!--! ================================================================ !-->
 
       <!--! ================================================================ !-->
-      <!--! [Start] Title !-->
+      <!--! [Start] Tambah Kasir !-->
       <!--! ================================================================ !-->
       <section class="section">
         <div class="card">
           <div class="card-body">
-            <div class="row">
-              <div class="col-sm-12 d-flex justify-content-end">
-                <a href="#" class="btn btn-outline-success" data-bs-toggle="modal" data-bs-target="#cashier_modal">
-                  <i class="bi bi-plus-lg"></i>
-                  Tambah Kasir
-                </a>
+            <div class="d-flex justify-content-between align-items-center">
+              <div>
+                <h5 class="mb-1">Daftar Kasir</h5>
+
+                <p class="text-muted mb-0">Kelola akun kasir yang memiliki akses ke sistem POS.</p>
+              </div>
+
+              <a href="#" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#cashier_modal">
+                <i class="bi bi-plus-circle me-1"></i>
+
+                Tambah Kasir
+              </a>
+            </div>
+          </div>
+        </div>
+      </section>
+      <!--! ================================================================ !-->
+      <!--! [End] Tambah Kasir !-->
+      <!--! ================================================================ !-->
+
+      <!--! ================================================================ !-->
+      <!--! [Start] Summary !-->
+      <!--! ================================================================ !-->
+
+      <section class="section">
+        <div class="row">
+          <div class="col-md-4">
+            <div class="card">
+              <div class="card-body py-3 px-3">
+                <div class="d-flex justify-content-between align-items-start mb-1">
+                  <div>
+                    <h6 class="text-muted mb-0">Total Kasir</h6>
+                  </div>
+
+                  <div class="stats-icon blue">
+                    <i class="bi bi-people-fill"></i>
+                  </div>
+                </div>
+
+                <h3 class="fw-bold mb-1" id="total_cashier">0</h3>
+
+                <p class="text-muted mb-0 small">Total akun kasir terdaftar</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-4">
+            <div class="card">
+              <div class="card-body py-3 px-3">
+                <div class="d-flex justify-content-between align-items-start mb-1">
+                  <div>
+                    <h6 class="text-muted mb-0">Kasir Aktif</h6>
+                  </div>
+
+                  <div class="stats-icon green">
+                    <i class="bi bi-person-check-fill"></i>
+                  </div>
+                </div>
+
+                <h3 class="fw-bold mb-1" id="active_cashier">0</h3>
+
+                <p class="text-muted mb-0 small">Akun kasir aktif</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-4">
+            <div class="card">
+              <div class="card-body py-3 px-3">
+                <div class="d-flex justify-content-between align-items-start mb-1">
+                  <div>
+                    <h6 class="text-muted mb-0">Kasir Nonaktif</h6>
+                  </div>
+
+                  <div class="stats-icon red">
+                    <i class="bi bi-person-x-fill"></i>
+                  </div>
+                </div>
+
+                <h3 class="fw-bold mb-1" id="inactive_cashier">0</h3>
+
+                <p class="text-muted mb-0 small">Akun kasir nonaktif</p>
               </div>
             </div>
           </div>
         </div>
       </section>
       <!--! ================================================================ !-->
-      <!--! [End] Title !-->
+      <!--! [End] Summary !-->
       <!--! ================================================================ !-->
 
       <!--! ================================================================ !-->
@@ -81,15 +157,15 @@
       <section class="section">
         <div class="card">
           <div class="card-body">
-            <table class="table table-striped" id="table1">
+            <table class="table table-hover mb-0" id="table1">
               <thead>
                 <tr>
-                  <th>No</th>
+                  <th width="60">No</th>
                   <th>Nama</th>
                   <th>Username</th>
                   <th>Email</th>
-                  <th>Status</th>
-                  <th>Aksi</th>
+                  <th width="100" class="text-center">Status</th>
+                  <th width="100" class="text-center">Aksi</th>
                 </tr>
               </thead>
 
@@ -115,52 +191,112 @@
       <!--! ================================================================ !-->
       <!--! [Start] Modal Form !-->
       <!--! ================================================================ !-->
-      <div class="modal fade text-left" id="cashier_modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel33" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable" role="document">
+      <div class="modal fade" id="cashier_modal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
           <div class="modal-content">
+            <!-- ====================================================== -->
+            <!-- MODAL HEADER -->
+            <!-- ====================================================== -->
             <div class="modal-header">
-              <h4 class="modal-title" id="modal_label">Tambah Kasir</h4>
+              <div>
+                <h4 class="modal-title mb-1" id="modal_label">
+                  <i class="bi bi-person-plus-fill me-2 text-primary"></i>
+                  Tambah Kasir
+                </h4>
 
-              <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-                <i data-feather="x"></i>
-              </button>
+                <small class="text-muted"> Kelola akun kasir bengkel </small>
+              </div>
+
+              <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
 
-            <form action="#">
+            <form>
+              <!-- ====================================================== -->
+              <!-- MODAL BODY -->
+              <!-- ====================================================== -->
               <div class="modal-body">
                 <input type="hidden" id="cashier_id" />
 
-                <label>Nama :</label>
-                <input type="text" id="owner_name" class="form-control" placeholder="Nama Lengkap" />
+                <div class="mb-3">
+                  <label class="form-label">
+                    <i class="bi bi-person me-2"></i>
+                    Nama Lengkap
+                  </label>
 
-                <label class="mt-2">Username :</label>
-                <input type="text" id="username" class="form-control" placeholder="Username" />
+                  <input type="text" id="owner_name" class="form-control" placeholder="Masukkan nama lengkap" />
+                </div>
 
-                <label class="mt-2">Email :</label>
-                <input type="email" id="email" class="form-control" placeholder="Email" />
+                <div class="mb-3">
+                  <label class="form-label">
+                    <i class="bi bi-at me-2"></i>
+                    Username
+                  </label>
 
-                <label class="mt-2">Password :</label>
-                <input type="password" id="password" class="form-control" placeholder="Password" />
+                  <input type="text" id="username" class="form-control" placeholder="Masukkan username" />
+                </div>
 
-                <label class="mt-2">Role :</label>
-                <select id="role" class="form-select">
-                  <option value="2">Kasir</option>
-                </select>
+                <div class="mb-3">
+                  <label class="form-label">
+                    <i class="bi bi-envelope me-2"></i>
+                    Email
+                  </label>
 
-                <label class="mt-2">Status :</label>
-                <select id="is_active" class="form-select">
-                  <option value="1">Aktif</option>
-                  <option value="0">Nonaktif</option>
-                </select>
+                  <input type="email" id="email" class="form-control" placeholder="Masukkan email" />
+                </div>
+
+                <div class="mb-3">
+                  <label class="form-label">
+                    <i class="bi bi-lock me-2"></i>
+                    Password
+                  </label>
+
+                  <input type="password" id="password" class="form-control" placeholder="Masukkan password" />
+                </div>
+
+                <div class="row">
+                  <div class="col-md-6">
+                    <label class="form-label">
+                      <i class="bi bi-person-badge me-2"></i>
+                      Role
+                    </label>
+
+                    <select id="role" class="form-select">
+                      <option value="2">Kasir</option>
+                    </select>
+                  </div>
+
+                  <div class="col-md-6">
+                    <label class="form-label">
+                      <i class="bi bi-check-circle me-2"></i>
+                      Status
+                    </label>
+
+                    <select id="is_active" class="form-select">
+                      <option value="1">Aktif</option>
+
+                      <option value="0">Nonaktif</option>
+                    </select>
+                  </div>
+                </div>
               </div>
 
+              <!-- ====================================================== -->
+              <!-- MODAL FOOTER -->
+              <!-- ====================================================== -->
               <div class="modal-footer">
-                <button type="button" class="btn btn-light-secondary" data-bs-dismiss="modal">
-                  <i class="bx bx-x d-block d-sm-none"></i>
-                  <span class="d-none d-sm-block"> Tutup </span>
-                </button>
+                <div class="d-flex w-100 gap-3">
+                  <button type="button" class="btn btn-outline-secondary flex-fill" data-bs-dismiss="modal">
+                    <i class="bi bi-x-lg me-1"></i>
 
-                <button type="button" class="btn btn-primary btn-save">Simpan</button>
+                    Batal
+                  </button>
+
+                  <button type="button" class="btn btn-primary flex-fill btn-save">
+                    <i class="bi bi-check-lg me-1"></i>
+
+                    Simpan
+                  </button>
+                </div>
               </div>
             </form>
           </div>
@@ -169,6 +305,7 @@
       <!--! ================================================================ !-->
       <!--! [End] Modal Form !-->
       <!--! ================================================================ !-->
+    
     </div>
     <!--! ================================================================ !-->
     <!--! [End] Page Content !-->

@@ -18,7 +18,7 @@ from apps.routes.controllers.report import *
 dashboard_cashier = Blueprint(
     name='dashboard_cashier',
     import_name=__name__,
-    template_folder="../../templates/pages/cashierPages",
+    template_folder="../../templates/pages/appPages",
     url_prefix='/dashboard-cashier',
 )
 # BLUEPRINT ================================================== End

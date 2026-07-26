@@ -10,6 +10,10 @@ async function init() {
   document.getElementById("end_date").value = today;
 
   await reloadTable(() => loadHistorySales(today, today), renderTable);
+  // Refresh button
+  document.getElementById("btn_refresh")?.addEventListener("click", async () => {
+    await reloadTable(loadHistorySales, renderTable);
+  });
 }
 // **************************************************************
 // BASE INITIALIZATION | END
@@ -39,6 +43,8 @@ async function loadHistorySales(start_date = "", end_date = "") {
   document.getElementById("today_transaction").textContent = result.data.today_transaction;
 
   document.getElementById("today_total").textContent = formatRupiah(result.data.today_total);
+  document.getElementById("transaction_count").textContent = `${result.data.history.length} Transaksi`;
+  document.getElementById("today_sales").textContent = formatRupiah(result.data.today_sales);
 }
 // **************************************************************
 // GET HISTORY SALES | END
@@ -52,17 +58,17 @@ function renderTable() {
   if (historySalesData.length === 0) {
     document.getElementById("history_sales_table").innerHTML = `
     <tr>
-        <td colspan="8" class="text-center py-4">
+        <td colspan="8" class="text-center py-5">
 
-            <i class="bi bi-inbox fs-2 text-secondary"></i>
+            <i class="bi bi-receipt fs-1 text-secondary"></i>
 
-            <div class="fw-semibold mt-2">
-                Belum ada data
-            </div>
+            <h5 class="mt-3 mb-1">
+                Belum Ada Riwayat Penjualan
+            </h5>
 
-            <small class="text-muted">
-                Silakan ubah filter tanggal atau lakukan transaksi terlebih dahulu.
-            </small>
+            <p class="text-muted mb-0">
+                Riwayat transaksi akan muncul setelah kasir melakukan penjualan.
+            </p>
 
         </td>
     </tr>
@@ -71,38 +77,109 @@ function renderTable() {
     return;
   } else {
     historySalesData.forEach((history, index) => {
+      const initial = history.customer_name
+        .split(" ")
+        .slice(0, 2)
+        .map((n) => n[0])
+        .join("")
+        .toUpperCase();
+
       html += `
-              <tr>
+          <tr>
+  
+              <td class="text-center">
+                  ${index + 1}
+              </td>
+  
+              <td>
+  
+                  <span class="badge bg-primary">
+  
+                      ${history.invoice}
+  
+                  </span>
+  
+              </td>
+  
+              <td>
+  
+                  ${history.payment_date}
+  
+              </td>
+  
+              <td>
+  
+                <div class="d-flex align-items-center">
 
-                  <td>${index + 1}</td>
+                    <div class="avatar avatar-md bg-primary me-3">
+                
+                        <span class="avatar-content fw-bold">
+                            ${initial}
+                        </span>
+                
+                    </div>
+                
+                    <div>
+                
+                        <div class="fw-bold">
+                            ${history.customer_name}
+                        </div>
+                
+                        <small class="text-muted">
+                            Pelanggan
+                        </small>
+                
+                    </div>
+                
+                </div>
+  
+              </td>
+  
+              <td>
 
-                  <td>${history.invoice}</td>
+                  <span class="badge bg-light-secondary text-secondary">
 
-                  <td>${history.payment_date}</td>
+                      ${history.plate_number}
 
-                  <td>${history.customer_name}</td>
+                  </span>
 
-                  <td>${history.plate_number}</td>
+              </td>
+  
+              <td class="text-center">
+  
+              <span class="badge rounded-pill bg-success">
 
-                  <td>${history.cashier_name}</td>
+                  <i class="bi bi-person-check-fill me-1"></i>
+              
+                  ${history.cashier_name}
+              
+              </span>
+  
+              </td>
+  
+              <td class="text-end">
 
-                  <td>${formatRupiah(history.total)}</td>
+                  <span class="fw-bold text-success">
 
-                  <td>
+                      ${formatRupiah(history.total)}
 
-                      <button
-                          class="btn btn-outline-primary px-3 btn-detail"
-                          data-id="${history.id}"
-                          title="Detail Penjualan">
+                  </span>
 
-                          <i class="bi bi-eye me 1"></i>
-                          Detail Penjualan
-                      </button>
-
-                  </td>
-
-              </tr>
-          `;
+              </td>
+  
+              <td class="text-center">
+  
+                  <button
+                      class="btn btn-outline-primary rounded-pill btn-sm btn-detail">
+                      
+                      <i class="bi bi-eye-fill me-1"></i>
+                      
+                      Detail
+                  
+                  </button>
+  
+          </tr>
+      `;
     });
   }
   document.getElementById("history_sales_table").innerHTML = html;

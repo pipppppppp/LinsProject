@@ -68,30 +68,33 @@ function renderTable() {
   customersData.forEach((customer, index) => {
     let action = `
       <button
-          class="btn btn-outline-primary btn-sm btn-vehicle"
+          class="btn btn-primary btn-sm btn-vehicle"
+          style="width:34px;height:34px;"
           data-id="${customer.id}"
           title="Data Kendaraan">
 
-          <i class="bi bi-bicycle"></i>
+          <i class="bi bi-bicycle fs-6"></i>
       </button>
     `;
 
     if (!isCashier) {
       action = `
         <button
-            class="btn btn-outline-warning btn-sm btn-edit"
+            class="btn btn-warning btn-sm btn-edit"
+            style="width:34px;height:34px;"
             data-bs-toggle="modal"
             data-bs-target="#customer_modal"
             data-id="${customer.id}"
             title="Edit">
-            <i class="bi bi-pencil-fill"></i>
+            <i class="bi bi-pencil-square"></i>
         </button>
 
         <button
-            class="btn btn-outline-danger btn-sm btn-delete"
+            class="btn btn-danger btn-sm btn-delete"
+            style="width:34px;height:34px;"
             data-id="${customer.id}"
             title="Hapus">
-            <i class="bi bi-trash-fill"></i>
+            <i class="bi bi-trash"></i>
         </button>
 
         ${action}
@@ -160,7 +163,7 @@ function renderTable() {
 
         </td>
         <td class="text-center">
-            <div class="d-inline-flex btn-outline-primary gap-2">
+            <div class="d-flex justify-content-center align-items-center gap-1">
                 ${action}
             </div>
         </td>

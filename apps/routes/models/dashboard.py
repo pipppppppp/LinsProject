@@ -21,7 +21,7 @@ from apps.utilities.responseHelpers import *
 class DashboardModels():
 
       # DASHBOARD SUMMARY ============================================================ Begin
-      def dashboard_summary(user_role, workshop_id):
+      def dashboard_summary(user_role, workshop_id, name):
             try:
                   # Access Validation ---------------------------------------- Start
                   access = role_validator(user_role)
@@ -90,6 +90,7 @@ class DashboardModels():
 
                   # Initialize Data ---------------------------------------- Start
                   data = {
+                        "owner_name": workshop.workshop_name,
                         "total_payments": total_payments,
                         "total_purchase": total_purchase,
                         "total_transaction": total_transaction,

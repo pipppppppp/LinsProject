@@ -64,22 +64,69 @@ def create_cash_deposit():
 @jwt_required()
 def read_cash_deposit():
     try:
+        print("===== JWT =====")
+        print(get_jwt())
+        
         role = str(get_jwt()["role"])
         ws_id = str(get_jwt()["ws_id"])
         user_id = str(get_jwt()["id"])
 
+        date = request.args.get("date", "")
+        status = request.args.get("status", "")
+
         response = CashDepositModels.read_cash_deposit(
             role,
             ws_id,
-            user_id
+            user_id,
+            date,
+            status,
         )
-
         return response
 
     except Exception as e:
         return bad_request(str(e))
 # GET CASH DEPOSIT ============================================================ End
 
+# CASH DEPOSIT VERIFICATION PAGE ============================================== Begin
+# [GET] https://127.0.0.1:5000/cash-deposit/verification
+@cash_deposit.get("/verification")
+@jwt_required()
+def verification():
+    try:
+        return render_template(
+            title="Verifikasi Setor Kas - POS Bengkel",
+            template_name_or_list="cash_deposit_verify.html",
+            active_menu="cash_deposit_verify",
+        )
+
+    except Exception as e:
+        return bad_request(str(e))
+# CASH DEPOSIT VERIFICATION PAGE ============================================== End
+
+# VERIFY CASH DEPOSIT ============================================================ Begin
+# [PUT] https://127.0.0.1:5000/cash-deposit/verify
+@cash_deposit.put("/verify")
+@jwt_required()
+def verify_cash_deposit():
+    try:
+        role = str(get_jwt()["role"])
+        ws_id = str(get_jwt()["ws_id"])
+        user_id = str(get_jwt()["id"])
+
+        body = request.json
+
+        response = CashDepositModels.verify_cash_deposit(
+            role,
+            ws_id,
+            user_id,
+            body
+        )
+
+        return response
+
+    except Exception as e:
+        return bad_request(str(e))
+# VERIFY CASH DEPOSIT ============================================================ End
 
 # DELETE CASH DEPOSIT ============================================================ Begin
 # [DELETE] https://127.0.0.1:5000/cash-deposit/delete/<id>

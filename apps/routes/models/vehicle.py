@@ -205,8 +205,17 @@ class VehicleModels():
             # Initialize Data ---------------------------------------- Finish
 
             # Response Data ---------------------------------------- Start
+            # Response Data ---------------------------------------- Start
             return success_data(
-                data=data,
+                data={
+                    "customer": {
+                        "id": customer.id,
+                        "customer_name": customer.customer_name,
+                        "customer_phone": customer.customer_phone,
+                        "customer_address": customer.customer_address,
+                    },
+                    "vehicles": data
+                },
                 status_code=200
             )
 

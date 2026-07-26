@@ -8,7 +8,7 @@ from ...utilities.responseHelpers import bad_request
 history_sales = Blueprint(
     name="history_sales",
     import_name=__name__,
-    template_folder="../../templates/pages/cashierPages",
+    template_folder="../../templates/pages/appPages",
     url_prefix="/history-sales",
 )
 # BLUEPRINT ============================================================ End

@@ -30,13 +30,14 @@ dashboard = Blueprint(
 def index():
     try:
         claims = get_jwt()
-
+        
         if claims["role"] == 0:
             return redirect(url_for("administrator.dashboard"))
-        elif claims["role"] == 1:
-            return render_template("dashboard.html")   # atau dashboard.index
+        # elif claims["role"] == 1:
+        #     return render_template("dashboard.html")   # atau dashboard.index
         elif claims["role"] == 2:
             return redirect(url_for("dashboard_cashier.index"))
+
         workshop = Workshops.query.filter_by(
             owner_id=claims["id"],
             is_delete=0
@@ -71,8 +72,9 @@ def dashboard_summary():
     try:
         role = str(get_jwt()["role"])
         ws_id = str(get_jwt()["ws_id"])
+        name = str(get_jwt()["name"])
 
-        response = DashboardModels.dashboard_summary(role, ws_id)
+        response = DashboardModels.dashboard_summary(role, ws_id, name)
 
         return response
 

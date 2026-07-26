@@ -34,8 +34,9 @@
       <div class="page-title">
         <div class="row">
           <div class="col-12 col-md-6 order-md-1 order-last">
-            <h3>DATA PEMBELIAN BARANG</h3>
-            <!-- <p class="text-subtitle text-muted">The default layout</p> -->
+            <h3>Data Pembelian</h3>
+
+            <p class="text-subtitle text-muted mb-0">Kelola seluruh transaksi pembelian barang dari supplier.</p>
           </div>
           <div class="col-12 col-md-6 order-md-2 order-first">
             <nav aria-label="breadcrumb" class="breadcrumb-header float-start float-lg-end">
@@ -52,7 +53,7 @@
 
       <!--! ================================================================ !-->
       <!--! [Start] Title !-->
-      <section class="section">
+      <!-- <section class="section">
         <div class="card">
           <div class="card-body">
             <div class="row">
@@ -60,7 +61,13 @@
                 <button type="button" class="btn btn-outline-success me-2" data-bs-toggle="modal" data-bs-target="#purchase_modal">
                   <i class="bi bi-plus-lg"></i>Tambah Pembelian
                 </button>
-                <button type="button" id="btn_import_modal" class="btn btn-outline-success me-2" data-bs-toggle="modal" data-bs-target="#import_purchase_modal">
+                <button
+                  type="button"
+                  id="btn_import_modal"
+                  class="btn btn-outline-success me-2"
+                  data-bs-toggle="modal"
+                  data-bs-target="#import_purchase_modal"
+                >
                   <i class="bi bi-file-earmark-excel-fill"></i>
                   Import Excel
                 </button>
@@ -68,7 +75,7 @@
             </div>
           </div>
         </div>
-      </section>
+      </section> -->
       <!--! [End] Title !-->
       <!--! ================================================================ !-->
 
@@ -76,22 +83,67 @@
       <!--! [Start] Content !-->
       <section class="section">
         <div class="card">
-          <!-- <div class="card-header">Simple Datatable</div> -->
+          <div class="card-header">
+            <div class="d-flex justify-content-between align-items-center">
+              <div>
+                <h4 class="card-title mb-1">Data Pembelian</h4>
+
+                <p class="text-muted mb-0">Daftar seluruh transaksi pembelian barang.</p>
+              </div>
+
+              <div class="d-flex align-items-center">
+                <div class="btn-group me-2">
+                  <span class="btn btn-light-primary disabled">
+                    <i class="bi bi-cart-check me-1"></i>
+
+                    <span id="purchase_count"> 0 Pembelian </span>
+                  </span>
+
+                  <button class="btn btn-light-primary" id="btn_refresh">
+                    <i class="bi bi-arrow-clockwise"></i>
+                  </button>
+                </div>
+
+                <div class="d-flex gap-2">
+                  <button type="button" class="btn btn-primary" style="min-width: 180px" data-bs-toggle="modal" data-bs-target="#purchase_modal">
+                    <i class="bi bi-plus-lg me-1"></i>
+                    Tambah
+                  </button>
+
+                  <button
+                    type="button"
+                    class="btn btn-success"
+                    style="min-width: 180px"
+                    id="btn_import_modal"
+                    data-bs-toggle="modal"
+                    data-bs-target="#import_purchase_modal"
+                  >
+                    <i class="bi bi-file-earmark-excel-fill me-1"></i>
+                    Import Excel
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
           <div class="card-body">
-            <table class="table table-striped" id="table1">
-              <thead>
+            <table class="table table-hover mb-0" id="table1">
+              <thead class="table-secondary">
                 <tr>
-                    <th>No</th>
-                    <th>Tanggal</th>
-                    <th>Supplier</th>
-                    <th>Total Item</th>
-                    <th>Total Pembelian</th>
-                    <th>Action</th>
+                  <th width="60">No</th>
+
+                  <th width="180">Tanggal</th>
+
+                  <th>Supplier</th>
+
+                  <th width="130">Total Item</th>
+
+                  <th width="180">Total Pembelian</th>
+
+                  <th width="150" class="text-center">Aksi</th>
                 </tr>
-            </thead>
-            
-            <tbody id="purchase_table">
-            </tbody>
+              </thead>
+
+              <tbody id="purchase_table">
                 <!-- row table set at javascript -->
               </tbody>
             </table>
@@ -110,186 +162,107 @@
     {% include 'components/footer_dashboard.html' %}
     <!--! [End] Footer !-->
     <!--! ================================================================ !-->
-    
+
     <!--! ================================================================ !-->
     <!--! [Start] Purchase Modal !-->
     <!--! ================================================================ !-->
-    <div
-    class="modal fade text-left"
-    id="purchase_modal"
-    tabindex="-1"
-    role="dialog"
-    aria-labelledby="purchaseModalLabel"
-    aria-hidden="true">
-
-    <div
-        class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable"
-        role="document">
-
+    <div class="modal fade text-left" id="purchase_modal" tabindex="-1" role="dialog" aria-labelledby="purchaseModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-xl modal-dialog-centered" role="document">
         <div class="modal-content">
+          <div class="modal-header border-bottom">
+            <div>
+              <h4 class="modal-title mb-1" id="purchase_modal_label">
+                <i class="bi bi-cart-plus me-2 text-primary"></i>
 
-            <div class="modal-header">
+                Tambah Pembelian
+              </h4>
 
-                <h4
-                    class="modal-title"
-                    id="purchase_modal_label">
-
-                    Tambah Pembelian
-
-                </h4>
-
-                <button
-                    type="button"
-                    class="close"
-                    data-bs-dismiss="modal"
-                    aria-label="Close">
-
-                    <i data-feather="x"></i>
-
-                </button>
-
+              <small class="text-muted"> Tambahkan transaksi pembelian barang dari supplier. </small>
             </div>
 
-            <form action="#">
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
 
-                <div class="modal-body">
+          <form action="#">
+            <div class="modal-body px-4 py-3">
+              <input type="hidden" id="purchase_id" />
 
-                    <input
-                        type="hidden"
-                        id="purchase_id">
+              <!-- Supplier -->
+              <label class="form-label">
+                <i class="bi bi-building text-secondary me-2"></i>
+                Supplier
+              </label>
 
-                    <!-- Supplier -->
-                    <label>Supplier :</label>
+              <select id="supplier_id" class="form-select">
+                <option value="">Pilih Supplier</option>
+              </select>
 
-                    <select
-                        id="supplier_id"
-                        class="form-select">
+              <!-- Tanggal -->
+              <label class="form-label mt-3">
+                <i class="bi bi-calendar-event me-2"></i>
+                Tanggal Pembelian
+              </label>
 
-                        <option value="">
+              <input type="date" id="purchase_date" class="form-control" />
 
-                            Pilih Supplier
+              <!-- Detail Barang -->
+              <div class="d-flex justify-content-between align-items-center mt-4 mb-3">
+                <h6 class="mb-0 fw-bold">Detail Barang</h6>
 
-                        </option>
+                <button type="button" class="btn btn-success btn-sm" id="btn_add_item">
+                  <i class="bi bi-plus-lg me-1"></i>
 
-                    </select>
+                  Tambah Barang
+                </button>
+              </div>
 
-                    <!-- Tanggal -->
-                    <label class="mt-3">
+              <table class="table table-hover align-middle">
+                <thead class="table-secondary">
+                  <tr>
+                    <th style="width: 35%">Barang</th>
 
-                        Tanggal Pembelian :
+                    <th style="width: 15%">Qty</th>
 
-                    </label>
+                    <th style="width: 20%">Harga Beli</th>
 
-                    <input
-                        type="date"
-                        id="purchase_date"
-                        class="form-control">
+                    <th style="width: 20%">Subtotal</th>
 
-                    <!-- Detail Barang -->
-                    <div class="d-flex justify-content-between align-items-center mt-4 mb-2">
+                    <th style="width: 10%">Aksi</th>
+                  </tr>
+                </thead>
 
-                        <label class="mb-0">
+                <tbody id="purchase_detail_table">
+                  <!-- Render Javascript -->
+                </tbody>
+              </table>
 
-                            Detail Barang
+              <div class="row justify-content-end">
+                <div class="col-md-4">
+                  <label> Total Pembelian : </label>
 
-                        </label>
-
-                        <button
-                            type="button"
-                            class="btn btn-outline-success btn-sm"
-                            id="btn_add_item">
-
-                            <i class="bi bi-plus-lg"></i>
-                            Tambah Barang
-
-                        </button>
-
-                    </div>
-
-                    <table class="table table-bordered">
-
-                        <thead>
-
-                            <tr>
-
-                                <th style="width:35%">
-                                    Barang
-                                </th>
-
-                                <th style="width:15%">
-                                    Qty
-                                </th>
-
-                                <th style="width:20%">
-                                    Harga Beli
-                                </th>
-
-                                <th style="width:20%">
-                                    Subtotal
-                                </th>
-
-                                <th style="width:10%">
-                                    Aksi
-                                </th>
-
-                            </tr>
-
-                        </thead>
-
-                        <tbody id="purchase_detail_table">
-
-                            <!-- Render Javascript -->
-
-                        </tbody>
-
-                    </table>
-
-                    <div class="row justify-content-end">
-
-                        <div class="col-md-4">
-
-                            <label>
-
-                                Total Pembelian :
-
-                            </label>
-
-                            <input type="text" id="grand_total" class="form-control" value="Rp 0" readonly>
-
-                        </div>
-
-                    </div>
-
+                  <input type="text" id="grand_total" class="form-control" value="Rp 0" readonly />
                 </div>
+              </div>
+            </div>
 
-                <div class="modal-footer">
+            <div class="modal-footer border-top">
+              <div class="d-flex w-100 gap-2">
+                <button type="button" class="btn btn-outline-secondary flex-fill" data-bs-dismiss="modal">
+                  <i class="bi bi-x-lg me-1"></i>
 
-                    <button
-                        type="button"
-                        class="btn btn-light-secondary"
-                        data-bs-dismiss="modal">
+                  Batal
+                </button>
 
-                        Tutup
+                <button type="button" class="btn btn-primary flex-fill" id="btn-save">
+                  <i class="bi bi-check-lg me-1"></i>
 
-                    </button>
-
-                    <button
-                        type="button"
-                        class="btn btn-primary"
-                        id="btn-save">
-
-                        Simpan
-
-                    </button>
-
-                </div>
-
-            </form>
-
+                  Simpan Pembelian
+                </button>
+              </div>
+            </div>
+          </form>
         </div>
-
-    </div>
-
+      </div>
     </div>
     <!--! ================================================================ !-->
     <!--! [End] Purchase Modal !-->
@@ -301,41 +274,72 @@
     <div class="modal fade" id="import_purchase_modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel33" aria-hidden="true">
       <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable" role="document">
         <div class="modal-content">
-          <div class="modal-header">
-            <h4 class="modal-title">Import Pembelian</h4>
+          <div class="modal-header border-bottom">
+            <div>
+              <h4 class="modal-title mb-1">
+                <i class="bi bi-file-earmark-excel text-success me-2"></i>
+                Import Pembelian
+              </h4>
+
+              <small class="text-muted"> Import data pembelian menggunakan template Excel. </small>
+            </div>
 
             <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
           </div>
 
-          <div class="modal-body">
-            <label>Supplier</label>
+          <div class="modal-body px-4 py-3">
+            <label class="form-label">
+              <i class="bi bi-building text-secondary me-2"></i>
+              Supplier
+            </label>
 
             <select id="import_supplier" class="form-select">
               <option value="">Pilih Supplier</option>
             </select>
 
-            <label class="mt-3"> Tanggal Pembelian </label>
+            <label class="form-label mt-3">
+              <i class="bi bi-calendar-event me-2"></i>
+              Tanggal Pembelian
+            </label>
 
             <input type="date" id="import_purchase_date" class="form-control" />
 
-            <label class="mt-3"> File Excel </label>
+            <label class="form-label mt-3">
+              <i class="bi bi-file-earmark-excel me-2"></i>
+              File Excel
+            </label>
 
             <input type="file" id="import_file" class="form-control" accept=".xlsx" />
 
             <small class="text-muted"> Format file harus .xlsx </small>
+            <div class="alert alert-light-info mt-3 mb-0">
+              <i class="bi bi-info-circle me-2"></i>
 
-            <div class="mt-3">
-              <a href="{{ url_for('static', filename='templateExcel/purchase_template.xlsx') }}" class="btn btn-outline-primary btn-sm">
-                <i class="bi bi-download me-1"></i>
-                Download Template
+              Gunakan template Excel agar proses import berjalan dengan benar.
+            </div>
+            <div class="d-grid mt-3">
+              <a href="{{ url_for('static', filename='templateExcel/purchase_template.xlsx') }}" class="btn btn-outline-primary">
+                <i class="bi bi-download me-2"></i>
+
+                Download Template Excel
               </a>
             </div>
           </div>
 
-          <div class="modal-footer">
-            <button type="button" class="btn btn-light-secondary" data-bs-dismiss="modal">Tutup</button>
+          <div class="modal-footer border-top">
+            <div class="d-flex w-100 gap-2">
+              <button type="button" class="btn btn-outline-secondary flex-fill" data-bs-dismiss="modal">
+                <i class="bi bi-x-lg me-1"></i>
 
-            <button type="button" id="btn_import_purchase" class="btn btn-primary">Import File</button>
+                Batal
+              </button>
+
+              <button type="button" id="btn_import_purchase" class="btn btn-success flex-fill">
+                <i class="bi bi-upload me-1"></i>
+
+                Import File
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -343,130 +347,77 @@
     <!--! ================================================================ !-->
     <!--! [End] Import Purchase Modal !-->
     <!--! ================================================================ !-->
-    
+
     <!--! ================================================================ !-->
     <!--! [Start] Purchase Detail Modal !-->
     <!--! ================================================================ !-->
-    <div class="modal fade text-left" id="purchase_detail_modal" tabindex="-1" role="dialog" aria-labelledby="purchaseDetailModalLabel" aria-hidden="true">
-
+    <div
+      class="modal fade text-left"
+      id="purchase_detail_modal"
+      tabindex="-1"
+      role="dialog"
+      aria-labelledby="purchaseDetailModalLabel"
+      aria-hidden="true"
+    >
       <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h4 class="modal-title">Detail Pembelian</h4>
 
-          <div class="modal-content">
-
-              <div class="modal-header">
-
-                  <h4 class="modal-title">
-
-                      Detail Pembelian
-
-                  </h4>
-
-                  <button
-                      type="button"
-                      class="close"
-                      data-bs-dismiss="modal"
-                      aria-label="Close">
-
-                      <i data-feather="x"></i>
-
-                  </button>
-
-              </div>
-
-              <div class="modal-body">
-
-                  <div class="row mb-3">
-
-                      <div class="col-md-6">
-
-                          <label>Supplier :</label>
-
-                          <input
-                              type="text"
-                              id="detail_supplier"
-                              class="form-control"
-                              readonly>
-
-                      </div>
-
-                      <div class="col-md-6">
-
-                          <label>Tanggal Pembelian :</label>
-
-                          <input
-                              type="text"
-                              id="detail_purchase_date"
-                              class="form-control"
-                              readonly>
-
-                      </div>
-
-                  </div>
-
-                  <table class="table table-striped table-bordered">
-
-                      <thead>
-
-                          <tr>
-
-                              <th>No</th>
-                              <th>Barang</th>
-                              <th>Qty</th>
-                              <th>Harga Beli</th>
-                              <th>Subtotal</th>
-
-                          </tr>
-
-                      </thead>
-
-                      <tbody id="purchase_detail_body">
-
-                          <!-- Render Javascript -->
-
-                      </tbody>
-
-                  </table>
-
-                  <div class="row justify-content-end mt-3">
-
-                      <div class="col-md-4">
-
-                          <label>Total Pembelian :</label>
-
-                          <input
-                              type="text"
-                              id="detail_total"
-                              class="form-control"
-                              readonly>
-
-                      </div>
-
-                  </div>
-
-              </div>
-
-              <div class="modal-footer">
-
-                  <button
-                      type="button"
-                      class="btn btn-light-secondary"
-                      data-bs-dismiss="modal">
-
-                      Tutup
-
-                  </button>
-
-              </div>
-
+            <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+              <i data-feather="x"></i>
+            </button>
           </div>
 
-      </div>
+          <div class="modal-body">
+            <div class="row mb-3">
+              <div class="col-md-6">
+                <label>Supplier :</label>
 
+                <input type="text" id="detail_supplier" class="form-control" readonly />
+              </div>
+
+              <div class="col-md-6">
+                <label>Tanggal Pembelian :</label>
+
+                <input type="text" id="detail_purchase_date" class="form-control" readonly />
+              </div>
+            </div>
+
+            <table class="table table-striped table-bordered">
+              <thead>
+                <tr>
+                  <th>No</th>
+                  <th>Barang</th>
+                  <th>Qty</th>
+                  <th>Harga Beli</th>
+                  <th>Subtotal</th>
+                </tr>
+              </thead>
+
+              <tbody id="purchase_detail_body">
+                <!-- Render Javascript -->
+              </tbody>
+            </table>
+
+            <div class="row justify-content-end mt-3">
+              <div class="col-md-4">
+                <label>Total Pembelian :</label>
+
+                <input type="text" id="detail_total" class="form-control" readonly />
+              </div>
+            </div>
+          </div>
+
+          <div class="modal-footer">
+            <button type="button" class="btn btn-light-secondary" data-bs-dismiss="modal">Tutup</button>
+          </div>
+        </div>
+      </div>
     </div>
     <!--! ================================================================ !-->
     <!--! [End] Purchase Detail Modal !-->
     <!--! ================================================================ !-->
-    
   </div>
   <!--! ================================================================ !-->
   <!--! [End] Page Content !-->

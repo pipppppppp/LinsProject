@@ -37,9 +37,14 @@ function signin_process(e) {
   swalLoading("Tunggu Sebentar...", "Permintaan kamu sedang diproses.");
   fetch(API, request_options)
     .then((http_response) => http_response.json())
+
     .then((response) => {
+      console.log("LOGIN RESPONSE:", response);
       if (response.status_code == 200) {
         // Biarkan loading terlihat sebentar
+        console.log("LOGIN BERHASIL");
+        console.log(response.data);
+        localStorage.setItem("username", response.data.name);
         setTimeout(() => {
           signin_prosess(response.data.role);
         }, 500);
