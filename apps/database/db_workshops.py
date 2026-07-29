@@ -11,6 +11,8 @@ class Workshops(db.Model):
     logo = db.Column(db.String(255), nullable=True)
     is_verified = db.Column(db.Boolean, nullable=False, default=False)
     is_active = db.Column(db.Integer, nullable=False, server_default='0', comment="0=Belum disetujui, 1=Aktif")
+    subscription_status = db.Column(db.Integer, nullable=False, server_default="0", comment="0=Belum Aktif, 1=Aktif, 2=Kadaluwarsa")
+    subscription_end = db.Column(db.BigInteger, nullable=True)
     created_at = db.Column(db.BigInteger, nullable=False)
     updated_at = db.Column(db.BigInteger, nullable=False)
     deleted_at = db.Column(db.BigInteger, nullable=True)
@@ -28,6 +30,7 @@ class Workshops(db.Model):
     purchases = db.relationship("Purchases", back_populates="workshops")
     vehicles = db.relationship("Vehicles", back_populates="workshops")
     cash_deposits = db.relationship("CashDeposits", back_populates="workshops")
+    subscription_payments = db.relationship("SubscriptionPayments", back_populates="workshops")
     
     def __repr__(self):
         return '<Workshops {}>'.format(self.workshop_name)

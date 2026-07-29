@@ -64,10 +64,7 @@ async function swalDelete() {
 // **************************************************************
 // LOADING ALERT | START
 // **************************************************************
-function swalLoading(
-  title = "Tunggu Sebentar...",
-  text = "Permintaan kamu sedang diproses."
-) {
+function swalLoading(title = "Tunggu Sebentar...", text = "Permintaan kamu sedang diproses.") {
   Swal.fire({
     title: title,
     text: text,
@@ -106,4 +103,37 @@ async function swalConfirm(title, text, confirmText = "Ya") {
 }
 // **************************************************************
 // CONFIRM ALERT | END
+// **************************************************************
+
+// **************************************************************
+// SUBSCRIPTION REQUIRED ALERT | START
+// **************************************************************
+async function swalSubscriptionRequired(message = "Langganan bengkel belum aktif atau sudah kedaluwarsa.") {
+  return await Swal.fire({
+    icon: "warning",
+    title: "Langganan Diperlukan",
+    text: message,
+    showCancelButton: true,
+    confirmButtonText: "Buka Langganan",
+    cancelButtonText: "Nanti",
+    reverseButtons: true,
+  });
+}
+// **************************************************************
+// SUBSCRIPTION REQUIRED ALERT | END
+// **************************************************************
+
+// **************************************************************
+// WORKSHOP INACTIVE ALERT | START
+// **************************************************************
+async function swalWorkshopInactive(message = "Bengkel sedang dinonaktifkan oleh administrator.") {
+  return await Swal.fire({
+    icon: "error",
+    title: "Bengkel Tidak Aktif",
+    text: message,
+    confirmButtonText: "Mengerti",
+  });
+}
+// **************************************************************
+// WORKSHOP INACTIVE ALERT | END
 // **************************************************************

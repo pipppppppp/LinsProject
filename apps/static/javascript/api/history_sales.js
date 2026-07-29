@@ -9,6 +9,8 @@ async function init() {
   document.getElementById("start_date").value = today;
   document.getElementById("end_date").value = today;
 
+  await loadCashiers();
+
   await reloadTable(() => loadHistorySales(today, today), renderTable);
   // Refresh button
   document.getElementById("btn_refresh")?.addEventListener("click", async () => {
@@ -19,21 +21,66 @@ async function init() {
 // BASE INITIALIZATION | END
 // **************************************************************
 
+let historySalesData = [];
+
+// ============================================================
+// LOAD CASHIERS | START
+// ============================================================
+async function loadCashiers() {
+  const result = await getRequest("/cashier-management/view");
+
+  if (!result) return;
+
+  if (result.status_code !== 200) {
+    return;
+  }
+
+  let html = `
+      <option value="">Semua Kasir</option>
+  `;
+
+  result.data.forEach((cashier) => {
+    html += `
+          <option value="${cashier.id}">
+              ${cashier.username}
+          </option>
+      `;
+  });
+
+  document.getElementById("cashier_id").innerHTML = html;
+}
+// ============================================================
+// LOAD CASHIERS | END
+// ============================================================
+
 // **************************************************************
 // GET HISTORY SALES | START
 // **************************************************************
-let historySalesData = [];
-
-async function loadHistorySales(start_date = "", end_date = "") {
+async function loadHistorySales(start_date = "", end_date = "", cashier_id = "") {
   let url = "/history-sales/view";
 
-  if (start_date && end_date) {
-    url += `?start_date=${start_date}&end_date=${end_date}`;
+  const params = [];
+
+  if (start_date) {
+    params.push(`start_date=${start_date}`);
+  }
+
+  if (end_date) {
+    params.push(`end_date=${end_date}`);
+  }
+
+  if (cashier_id) {
+    params.push(`cashier_id=${cashier_id}`);
+  }
+
+  if (params.length > 0) {
+    url += "?" + params.join("&");
   }
 
   const result = await getRequest(url);
 
   if (!result) return;
+
   if (result.status_code !== 200) {
     return swalError(result.message);
   }
@@ -43,8 +90,16 @@ async function loadHistorySales(start_date = "", end_date = "") {
   document.getElementById("today_transaction").textContent = result.data.today_transaction;
 
   document.getElementById("today_total").textContent = formatRupiah(result.data.today_total);
-  document.getElementById("transaction_count").textContent = `${result.data.history.length} Transaksi`;
+
+  document.getElementById("transaction_count").textContent = `${result.data.today_transaction} Transaksi`;
+
   document.getElementById("today_sales").textContent = formatRupiah(result.data.today_sales);
+
+  const activeCashier = document.getElementById("active_cashier");
+
+  if (activeCashier) {
+    activeCashier.textContent = `${result.data.active_cashier} Orang`;
+  }
 }
 // **************************************************************
 // GET HISTORY SALES | END
@@ -54,6 +109,8 @@ async function loadHistorySales(start_date = "", end_date = "") {
 // RENDER TABLE | START
 // **************************************************************
 function renderTable() {
+  console.log("RENDER TABLE");
+  console.log(historySalesData);
   let html = "";
   if (historySalesData.length === 0) {
     document.getElementById("history_sales_table").innerHTML = `
@@ -170,7 +227,8 @@ function renderTable() {
               <td class="text-center">
   
                   <button
-                      class="btn btn-outline-primary rounded-pill btn-sm btn-detail">
+                      class="btn btn-outline-primary rounded-pill btn-sm btn-detail"
+                      data-id="${history.id}">
                       
                       <i class="bi bi-eye-fill me-1"></i>
                       
@@ -452,17 +510,18 @@ document.getElementById("btn_filter").addEventListener("click", async () => {
   const start_date = document.getElementById("start_date").value;
 
   const end_date = document.getElementById("end_date").value;
+  const cashier_id = document.getElementById("cashier_id")?.value ?? "";
 
-  await reloadTable(() => loadHistorySales(start_date, end_date), renderTable);
+  await reloadTable(() => loadHistorySales(start_date, end_date, cashier_id), renderTable);
 });
 
 document.getElementById("btn_reset").addEventListener("click", async () => {
-  const today = new Date().toISOString().split("T")[0];
+  document.getElementById("start_date").value = "";
+  document.getElementById("end_date").value = "";
 
-  document.getElementById("start_date").value = today;
-  document.getElementById("end_date").value = today;
+  const cashier_id = document.getElementById("cashier_id")?.value ?? "";
 
-  await reloadTable(() => loadHistorySales(today, today), renderTable);
+  await reloadTable(() => loadHistorySales("", "", cashier_id), renderTable);
 });
 // **************************************************************
 // FILTER HISTORY SALES | END
@@ -563,9 +622,9 @@ async function exportHistorySalesPDF() {
 // **************************************************************
 // EXPORT EVENT | START
 // **************************************************************
-document.getElementById("btn-excel").addEventListener("click", exportHistorySalesExcel);
+// document.getElementById("btn-excel").addEventListener("click", exportHistorySalesExcel);
 
-document.getElementById("btn-pdf").addEventListener("click", exportHistorySalesPDF);
+// document.getElementById("btn-pdf").addEventListener("click", exportHistorySalesPDF);
 // **************************************************************
 // EXPORT EVENT | END
 // **************************************************************

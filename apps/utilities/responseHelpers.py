@@ -23,3 +23,16 @@ def invalid_params(status_code=400):
 
 def bad_request(message="", error="Bad Request", status_code=400):
     return make_response(jsonify({"status_code":status_code, "error":error, "message":f"{message}"}), 400)
+
+def subscription_required(
+    message="Langganan bengkel belum aktif atau sudah kedaluwarsa.",
+    status_code=402
+):
+    return make_response(
+        jsonify({
+            "status_code": status_code,
+            "error": "Subscription Required",
+            "message": message
+        }),
+        status_code
+    )

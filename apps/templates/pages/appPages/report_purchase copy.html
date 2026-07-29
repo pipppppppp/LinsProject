@@ -1,0 +1,188 @@
+{% extends 'layouts/dashboard_layout.html' %} {% block content %}
+
+<div id="app">
+  <!--! ================================================================ !-->
+  <!--! [Start] Navigation Section !-->
+  <!--! ================================================================ !-->
+  {% include 'components/nav_dashboard.html' %}
+  <!--! ================================================================ !-->
+  <!--! [End] Navigation Section !-->
+  <!--! ================================================================ !-->
+
+  <!--! ================================================================ !-->
+  <!--! [Start] Page Content !-->
+  <!--! ================================================================ !-->
+  <div id="main">
+    <!--! ================================================================ !-->
+    <!--! [Start] Burger Button !-->
+    <!--! ================================================================ !-->
+    <header class="mb-3">
+      <a href="#" class="burger-btn d-block d-xl-none">
+        <i class="bi bi-justify fs-3"></i>
+      </a>
+    </header>
+    <!--! ================================================================ !-->
+    <!--! [End] Burger Button !-->
+    <!--! ================================================================ !-->
+
+    <!--! ================================================================ !-->
+    <!--! [Start] Main Content !-->
+    <!--! ================================================================ !-->
+    <div class="page-heading">
+      <!--! ================================================================ !-->
+      <!--! [Start] Header !-->
+      <!--! ================================================================ !-->
+      <div class="page-title">
+        <div class="row">
+          <div class="col-12 col-md-6 order-md-1 order-last">
+            <h3>LAPORAN PEMBELIAN</h3>
+          </div>
+
+          <div class="col-12 col-md-6 order-md-2 order-first">
+            <nav aria-label="breadcrumb" class="breadcrumb-header float-start float-lg-end">
+              <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                  <a href="{{ url_for('dashboard.index') }}"> Dashboard </a>
+                </li>
+
+                <li class="breadcrumb-item active" aria-current="page">Laporan Pembelian</li>
+              </ol>
+            </nav>
+          </div>
+        </div>
+      </div>
+      <!--! ================================================================ !-->
+      <!--! [End] Header !-->
+      <!--! ================================================================ !-->
+
+      <!--! ================================================================ !-->
+      <!--! [Start] Filter !-->
+      <!--! ================================================================ !-->
+      <section class="section">
+        <div class="card">
+          <div class="card-body">
+            <div class="row g-3">
+              <div class="col-md-3">
+                <label>Tanggal Awal</label>
+
+                <input type="date" id="start_date" class="form-control" />
+              </div>
+
+              <div class="col-md-3">
+                <label>Tanggal Akhir</label>
+
+                <input type="date" id="end_date" class="form-control" />
+              </div>
+
+              <div class="col-md-3">
+                <label>Supplier</label>
+
+                <select id="supplier_id" class="form-select">
+                  <option value="">Semua Supplier</option>
+                </select>
+              </div>
+
+              <div class="col-md-3">
+                <label>&nbsp;</label>
+
+                <div class="d-flex gap-2">
+                  <button id="btn-search" class="btn btn-primary w-100">
+                    <i class="bi bi-search"></i>
+                    Cari
+                  </button>
+
+                  <button id="btn-excel" class="btn btn-success">
+                    <i class="bi bi-file-earmark-excel-fill"></i>
+                  </button>
+
+                  <button id="btn-pdf" class="btn btn-danger">
+                    <i class="bi bi-file-earmark-pdf-fill"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+      <!--! ================================================================ !-->
+      <!--! [End] Filter !-->
+      <!--! ================================================================ !-->
+      <!--! ================================================================ !-->
+      <!--! [Start] Summary !-->
+      <!--! ================================================================ !-->
+      <section class="section">
+        <div class="row">
+          <div class="col-md-6">
+            <div class="card">
+              <div class="card-body">
+                <h6 class="text-muted">Jumlah Pembelian</h6>
+
+                <h3 id="total_purchase">0</h3>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-6">
+            <div class="card">
+              <div class="card-body">
+                <h6 class="text-muted">Total Pengeluaran</h6>
+
+                <h3 id="total_expense">Rp 0</h3>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+      <!--! ================================================================ !-->
+      <!--! [End] Summary !-->
+      <!--! ================================================================ !-->
+
+      <!--! ================================================================ !-->
+      <!--! [Start] Report Table !-->
+      <!--! ================================================================ !-->
+      <section class="section">
+        <div class="card">
+          <div class="card-body">
+            <table class="table table-striped" id="table1">
+              <thead>
+                <tr>
+                  <th>No</th>
+                  <th>Tanggal</th>
+                  <th>Supplier</th>
+                  <th>Total</th>
+                </tr>
+              </thead>
+
+              <tbody id="purchase_report_table"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+      <!--! ================================================================ !-->
+      <!--! [End] Report Table !-->
+      <!--! ================================================================ !-->
+    </div>
+    <!--! ================================================================ !-->
+    <!--! [End] Main Content !-->
+    <!--! ================================================================ !-->
+
+    <!--! ================================================================ !-->
+    <!--! [Start] Footer !-->
+    <!--! ================================================================ !-->
+    {% include 'components/footer_dashboard.html' %}
+    <!--! ================================================================ !-->
+    <!--! [End] Footer !-->
+    <!--! ================================================================ !-->
+  </div>
+  <!--! ================================================================ !-->
+  <!--! [End] Page Content !-->
+  <!--! ================================================================ !-->
+</div>
+
+<script src="{{ url_for('static', filename='javascript/helper/utilities.js') }}"></script>
+<script src="{{ url_for('static', filename='javascript/helper/formatter.js') }}"></script>
+<script src="{{ url_for('static', filename='javascript/helper/swal.js') }}"></script>
+<script src="{{ url_for('static', filename='javascript/helper/validators.js') }}"></script>
+<script src="{{ url_for('static', filename='javascript/api/report.js') }}"></script>
+
+{% endblock %}

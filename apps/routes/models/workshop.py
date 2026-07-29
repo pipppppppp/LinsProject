@@ -6,8 +6,15 @@ from apps.configure.config import STATIC_FOLDER_PATH
 from apps import db
 from apps.database.db_workshops import Workshops
 from apps.utilities.responseHelpers import *
-from apps.utilities.validators import role_validator, workshop_validator, email_checker, saving_upload_image
+from apps.utilities.validators import (
+    role_validator,
+    workshop_validator,
+    email_checker,
+    saving_upload_image,
+    subscription_validator
+)
 
+from apps.utilities.utilities import current_timestamp
 
 # WORKSHOP MODEL CLASS ============================================================ Begin
 class WorkshopModels():
@@ -90,6 +97,55 @@ class WorkshopModels():
                 )
             # Check Workshop ---------------------------------------- Finish
 
+            # Subscription Status ---------------------------------------- Start
+            timestamp = current_timestamp()
+
+            subscription_status = int(
+                workshop.subscription_status or 0
+            )
+
+            subscription_end = int(
+                workshop.subscription_end or 0
+            )
+
+            # Ubah status menjadi kedaluwarsa
+            if (
+                subscription_status == 1 and
+                subscription_end > 0 and
+                subscription_end <= timestamp
+            ):
+                workshop.subscription_status = 2
+                workshop.updated_at = timestamp
+
+                try:
+                    db.session.commit()
+                    subscription_status = 2
+
+                except Exception as e:
+                    db.session.rollback()
+                    return parameter_error(str(e))
+
+            # Tentukan status operasional bengkel
+            if int(workshop.is_active or 0) != 1:
+                operational_status = "inactive"
+                operational_status_label = "Tidak Aktif"
+
+            elif (
+                subscription_status == 1 and
+                subscription_end > timestamp
+            ):
+                operational_status = "active"
+                operational_status_label = "Aktif"
+
+            elif subscription_status == 2:
+                operational_status = "expired"
+                operational_status_label = "Langganan Kedaluwarsa"
+
+            else:
+                operational_status = "unsubscribed"
+                operational_status_label = "Belum Berlangganan"
+            # Subscription Status ---------------------------------------- Finish
+
             # Initialize Data ---------------------------------------- Start
             data = {
                 "id": workshop.id,
@@ -99,7 +155,15 @@ class WorkshopModels():
                 "workshop_email": workshop.workshop_email,
                 "logo": workshop.logo,
                 "is_verified": workshop.is_verified,
-                "is_active": workshop.is_active
+                "is_active": workshop.is_active,
+                "subscription_status": subscription_status,
+                "subscription_end": (
+                    subscription_end
+                    if subscription_end > 0
+                    else None
+                ),
+                "operational_status": operational_status,
+                "operational_status_label": operational_status_label
             }
             # Initialize Data ---------------------------------------- Finish
 
@@ -121,6 +185,11 @@ class WorkshopModels():
 
             if not access:
                 return authorization_error()
+
+            subscription_access = subscription_validator(user_role, workshop_id)
+
+            if not subscription_access:
+                return subscription_required()
             # Access Validation ---------------------------------------- Finish
 
             # Check Request Body ---------------------------------------- Start

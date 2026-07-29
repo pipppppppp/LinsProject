@@ -5,7 +5,7 @@ from ... import db
 from ...database.db_workshops import Workshops
 from ...database.db_customers import Customers
 from ...database.db_vehicles import Vehicles
-from ...utilities.validators import role_validator, customer_validator
+from ...utilities.validators import role_validator, customer_validator, subscription_validator
 
 from apps.utilities.responseHelpers import *
 from apps.utilities.utilities import current_timestamp
@@ -21,6 +21,11 @@ class CustomerModels():
             access = role_validator(user_role)
             if not access:
                 return authorization_error()
+
+            subscription_access = subscription_validator(user_role, workshop_id)
+
+            if not subscription_access:
+                return subscription_required()
             # Access Validation ---------------------------------------- Finish
 
             # Check Request Body ---------------------------------------- Start
@@ -119,6 +124,8 @@ class CustomerModels():
             customers = Customers.query.filter_by(
                 workshop_id=workshop_id,
                 is_delete=0
+            ).order_by(
+                Customers.created_at.desc()
             ).all()
             # Get Data ---------------------------------------- Finish
             
@@ -186,6 +193,11 @@ class CustomerModels():
 
             if not access:
                 return authorization_error()
+
+            subscription_access = subscription_validator(user_role, workshop_id)
+
+            if not subscription_access:
+                return subscription_required()
             # Access Validation ---------------------------------------- Finish
 
             # Check Request Body ---------------------------------------- Start
@@ -286,6 +298,11 @@ class CustomerModels():
 
             if not access:
                 return authorization_error()
+
+            subscription_access = subscription_validator(user_role, workshop_id)
+
+            if not subscription_access:
+                return subscription_required()
             # Access Validation ---------------------------------------- Finish
 
             # Check Workshop ---------------------------------------- Start

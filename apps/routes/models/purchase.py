@@ -7,8 +7,9 @@ from ...database.db_suppliers import Suppliers
 from ...database.db_products import Products
 from ...database.db_purchases import Purchases
 from ...database.db_purchase_details import PurchaseDetails
+
 from openpyxl import load_workbook
-from ...utilities.validators import role_validator, purchase_validator, excel_file_validator, purchase_excel_validator
+from ...utilities.validators import role_validator, purchase_validator, excel_file_validator, purchase_excel_validator, subscription_validator
 from apps.utilities.responseHelpers import *
 from apps.utilities.utilities import current_timestamp
 from apps.utilities.formatter import format_date
@@ -25,6 +26,11 @@ class PurchaseModels():
 
             if not access:
                 return authorization_error()
+
+            subscription_access = subscription_validator(user_role, workshop_id)
+
+            if not subscription_access:
+                return subscription_required()
             # Access Validation ---------------------------------------- Finish
 
             # Check Request Body ---------------------------------------- Start
@@ -309,6 +315,11 @@ class PurchaseModels():
 
             if not access:
                 return authorization_error()
+            
+            subscription_access = subscription_validator(user_role, workshop_id)
+
+            if not subscription_access:
+                return subscription_required()
             # Access Validation ---------------------------------------- Finish
 
             # Check Request Body ---------------------------------------- Start
@@ -490,6 +501,11 @@ class PurchaseModels():
 
             if not access:
                 return authorization_error()
+            
+            subscription_access = subscription_validator(user_role, workshop_id)
+
+            if not subscription_access:
+                return subscription_required()
             # Access Validation ---------------------------------------- Finish
 
             # Check Workshop ---------------------------------------- Start
@@ -568,19 +584,18 @@ class PurchaseModels():
     # DELETE PURCHASE ============================================================ End
 
     # IMPORT PURCHASE ============================================================ Begin
-    def import_purchase(
-      user_role,
-      workshop_id,
-      supplier_id,
-      purchase_date,
-      file
-      ):
+    def import_purchase(user_role, workshop_id, supplier_id, purchase_date, file):
       try:
             # Access Validation ---------------------------------------- Start
             access = role_validator(user_role)
 
             if not access:
                   return authorization_error()
+            
+            subscription_access = subscription_validator(user_role, workshop_id)
+
+            if not subscription_access:
+                return subscription_required()
             # Access Validation ---------------------------------------- Finish
 
             # Excel File Validation ---------------------------------------- Start

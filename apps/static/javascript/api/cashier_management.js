@@ -32,6 +32,16 @@ let cashiersData = [];
 async function loadCashiers() {
   const result = await getRequest("/cashier-management/view");
 
+  if (!result) {
+    return;
+  }
+
+  if (result.status_code !== 200) {
+    await swalError("Gagal", result.message);
+
+    return;
+  }
+
   cashiersData = result.data;
 }
 // **************************************************************
@@ -114,9 +124,11 @@ async function saveCashier() {
     swalClose();
   }
 
-  if (result.status_code === 201 || result.status_code === 200) {
-    await swalSuccess(result.message);
+  if (!result) {
+    return;
+  }
 
+  if (result.status_code === 201 || result.status_code === 200) {
     closeModal("cashier_modal");
 
     clearValue(form.id, form.owner_name, form.username, form.email, form.password, form.role, form.is_active);
@@ -124,8 +136,10 @@ async function saveCashier() {
     form.title.textContent = "Tambah Kasir";
 
     await reloadTable(loadCashiers, renderTable);
+
+    await swalSuccess("Berhasil", result.message);
   } else {
-    await swalError(result.message);
+    await swalError("Gagal", result.message);
   }
 }
 
@@ -187,12 +201,16 @@ async function handleTableClick(e) {
       swalClose();
     }
 
+    if (!result) {
+      return;
+    }
+
     if (result.status_code === 200) {
-      await swalSuccess(result.message);
+      await swalSuccess("Berhasil", result.message);
 
       await reloadTable(loadCashiers, renderTable);
     } else {
-      await swalError(result.message);
+      await swalError("Gagal", result.message);
     }
   }
 }

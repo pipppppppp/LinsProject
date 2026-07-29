@@ -1,0 +1,456 @@
+-- =====================================================================
+-- CONFIGURATION
+-- Tentukan ID workshop yang akan digunakan untuk testing
+-- =====================================================================
+SET @workshop_id = 1;
+
+
+
+-- =====================================================================
+-- TEST 0: CEK KONDISI AWAL WORKSHOP
+-- Digunakan untuk melihat kondisi sebelum melakukan perubahan
+-- =====================================================================
+SELECT
+    id,
+    workshop_name,
+    is_active,
+    subscription_status,
+    subscription_end,
+    FROM_UNIXTIME(subscription_end / 1000) AS subscription_end_date
+FROM workshops
+WHERE id = @workshop_id;
+
+
+
+-- =====================================================================
+-- TEST 0.1: CEK RIWAYAT PEMBAYARAN LANGGANAN
+-- Melihat seluruh transaksi subscription milik workshop
+-- =====================================================================
+SELECT
+    id,
+    workshop_id,
+    order_id,
+    amount,
+    transaction_id,
+    payment_type,
+    transaction_status,
+    FROM_UNIXTIME(paid_at / 1000) AS paid_date,
+    is_delete,
+    FROM_UNIXTIME(created_at / 1000) AS created_date
+FROM subscription_payments
+WHERE workshop_id = @workshop_id
+ORDER BY created_at DESC;
+
+
+
+-- =====================================================================
+-- TEST 1: BERSIHKAN TRANSAKSI PENDING
+-- Digunakan apabila transaksi pending lama menghalangi pembuatan
+-- pembayaran subscription baru
+--
+-- Data tidak dihapus permanen, tetapi dilakukan soft delete
+-- =====================================================================
+UPDATE subscription_payments
+SET
+    transaction_status = 'expire',
+    is_delete = 1,
+    deleted_at = UNIX_TIMESTAMP(NOW(3)) * 1000,
+    updated_at = UNIX_TIMESTAMP(NOW(3)) * 1000
+WHERE workshop_id = @workshop_id
+  AND transaction_status = 'pending'
+  AND is_delete = 0;
+
+
+
+-- =====================================================================
+-- TEST 2: KONDISI BELUM BERLANGGANAN
+--
+-- Expected:
+-- - Banner: Belum Berlangganan
+-- - subscription_status = 0
+-- - subscription_end = NULL
+-- - CRUD dan transaksi menghasilkan HTTP 402
+-- - Halaman read, dashboard, riwayat, dan laporan tetap bisa dibuka
+-- =====================================================================
+UPDATE workshops
+SET
+    is_active = 1,
+    subscription_status = 0,
+    subscription_end = NULL,
+    updated_at = UNIX_TIMESTAMP(NOW(3)) * 1000
+WHERE id = @workshop_id;
+
+
+
+-- =====================================================================
+-- VERIFIKASI TEST 2
+-- =====================================================================
+SELECT
+    id,
+    workshop_name,
+    is_active,
+    subscription_status,
+    subscription_end
+FROM workshops
+WHERE id = @workshop_id;
+
+
+
+-- =====================================================================
+-- TEST 2.1: SIMULASI WORKSHOP BENAR-BENAR BELUM PERNAH BERLANGGANAN
+--
+-- Blok ini opsional.
+-- Semua riwayat pembayaran aktif akan disembunyikan dengan soft delete.
+-- Gunakan hanya ketika ingin menguji tampilan "belum pernah berlangganan".
+$# Catatan penting: blok Test 2.1 melakukan soft delete seluruh riwayat 
+   pembayaran aktif. Jangan jalankan blok itu lagi apabila riwayat pembayaran hasil testing Midtrans masih ingin ditampilkan.
+-- =====================================================================
+UPDATE subscription_payments
+SET
+    is_delete = 1,
+    deleted_at = UNIX_TIMESTAMP(NOW(3)) * 1000,
+    updated_at = UNIX_TIMESTAMP(NOW(3)) * 1000
+WHERE workshop_id = @workshop_id
+  AND is_delete = 0;
+
+
+
+-- =====================================================================
+-- TEST 3: LANGGANAN AKTIF 30 HARI
+--
+-- Expected:
+-- - Banner subscription tidak tampil
+-- - Status langganan aktif
+-- - CRUD dan transaksi dapat digunakan
+-- - Tombol perpanjangan belum aktif karena sisa lebih dari 7 hari
+-- =====================================================================
+UPDATE workshops
+SET
+    is_active = 1,
+    subscription_status = 1,
+    subscription_end =
+        UNIX_TIMESTAMP(
+            DATE_ADD(NOW(), INTERVAL 30 DAY)
+        ) * 1000,
+    updated_at = UNIX_TIMESTAMP(NOW(3)) * 1000
+WHERE id = @workshop_id;
+
+
+
+-- =====================================================================
+-- VERIFIKASI TEST 3
+-- =====================================================================
+SELECT
+    id,
+    workshop_name,
+    is_active,
+    subscription_status,
+    FROM_UNIXTIME(subscription_end / 1000) AS subscription_end_date,
+    DATEDIFF(
+        FROM_UNIXTIME(subscription_end / 1000),
+        NOW()
+    ) AS remaining_days
+FROM workshops
+WHERE id = @workshop_id;
+
+
+
+-- =====================================================================
+-- TEST 4: PERPANJANGAN DITOLAK KARENA SISA MASIH LEBIH DARI 7 HARI
+--
+-- Digunakan untuk memastikan backend menolak pembayaran baru ketika
+-- langganan masih memiliki sisa sekitar 30 hari
+--
+-- Expected:
+-- - Status aktif
+-- - Tombol pembayaran/perpanjangan nonaktif
+-- - Backend menolak create payment
+-- =====================================================================
+UPDATE workshops
+SET
+    is_active = 1,
+    subscription_status = 1,
+    subscription_end =
+        UNIX_TIMESTAMP(
+            DATE_ADD(NOW(), INTERVAL 30 DAY)
+        ) * 1000,
+    updated_at = UNIX_TIMESTAMP(NOW(3)) * 1000
+WHERE id = @workshop_id;
+
+
+
+-- =====================================================================
+-- TEST 5: PERPANJANGAN DIIZINKAN KARENA SISA 6 HARI
+--
+-- Expected:
+-- - Status tetap aktif
+-- - Sisa masa aktif sekitar 6 hari
+-- - Tombol Perpanjang Langganan aktif
+-- - Pembayaran subscription baru dapat dibuat
+-- =====================================================================
+UPDATE workshops
+SET
+    is_active = 1,
+    subscription_status = 1,
+    subscription_end =
+        UNIX_TIMESTAMP(
+            DATE_ADD(NOW(), INTERVAL 6 DAY)
+        ) * 1000,
+    updated_at = UNIX_TIMESTAMP(NOW(3)) * 1000
+WHERE id = @workshop_id;
+
+
+
+-- =====================================================================
+-- VERIFIKASI TEST 5
+-- =====================================================================
+SELECT
+    id,
+    subscription_status,
+    FROM_UNIXTIME(subscription_end / 1000) AS subscription_end_date,
+    DATEDIFF(
+        FROM_UNIXTIME(subscription_end / 1000),
+        NOW()
+    ) AS remaining_days
+FROM workshops
+WHERE id = @workshop_id;
+
+
+
+-- =====================================================================
+-- TEST 5.1: CEK HASIL SETELAH PEMBAYARAN PERPANJANGAN MIDTRANS
+--
+-- Tidak melakukan UPDATE.
+-- Jalankan setelah pembayaran perpanjangan berhasil.
+--
+-- Expected:
+-- - subscription_status = 1
+-- - Sisa lama 6 hari ditambah masa paket baru
+-- - Jika paket 30 hari, sisa menjadi sekitar 36 hari
+-- =====================================================================
+SELECT
+    id,
+    workshop_name,
+    subscription_status,
+    FROM_UNIXTIME(subscription_end / 1000) AS subscription_end_date,
+    DATEDIFF(
+        FROM_UNIXTIME(subscription_end / 1000),
+        NOW()
+    ) AS remaining_days
+FROM workshops
+WHERE id = @workshop_id;
+
+
+
+-- =====================================================================
+-- TEST 5.2: CEK TRANSAKSI PERPANJANGAN TERBARU
+--
+-- Expected:
+-- - transaction_status = settlement atau capture
+-- - paid_at terisi
+-- - is_delete = 0
+-- =====================================================================
+SELECT
+    id,
+    order_id,
+    amount,
+    transaction_id,
+    payment_type,
+    transaction_status,
+    FROM_UNIXTIME(paid_at / 1000) AS paid_date,
+    is_delete
+FROM subscription_payments
+WHERE workshop_id = @workshop_id
+ORDER BY created_at DESC;
+
+
+
+-- =====================================================================
+-- TEST 6: LANGGANAN KEDALUWARSA
+--
+-- Masa aktif dibuat berakhir satu hari yang lalu.
+--
+-- Expected setelah endpoint status atau validator dipanggil:
+-- - subscription_status berubah dari 1 menjadi 2
+-- - Banner: Langganan Kedaluwarsa
+-- - CRUD dan transaksi diblokir
+-- - HTTP 402
+-- - Data lama tetap dapat dibaca
+-- =====================================================================
+UPDATE workshops
+SET
+    is_active = 1,
+    subscription_status = 1,
+    subscription_end =
+        UNIX_TIMESTAMP(
+            DATE_SUB(NOW(), INTERVAL 1 DAY)
+        ) * 1000,
+    updated_at = UNIX_TIMESTAMP(NOW(3)) * 1000
+WHERE id = @workshop_id;
+
+
+
+-- =====================================================================
+-- VERIFIKASI SEBELUM AUTO-UPDATE STATUS
+--
+-- Status masih mungkin 1 sampai endpoint subscription/status,
+-- halaman workshop, atau mutation validator dijalankan.
+-- =====================================================================
+SELECT
+    id,
+    is_active,
+    subscription_status,
+    FROM_UNIXTIME(subscription_end / 1000) AS subscription_end_date
+FROM workshops
+WHERE id = @workshop_id;
+
+
+
+-- =====================================================================
+-- VERIFIKASI SETELAH REFRESH / ENDPOINT STATUS DIPANGGIL
+--
+-- Expected:
+-- subscription_status = 2
+-- =====================================================================
+SELECT
+    id,
+    is_active,
+    subscription_status,
+    FROM_UNIXTIME(subscription_end / 1000) AS subscription_end_date
+FROM workshops
+WHERE id = @workshop_id;
+
+
+
+-- =====================================================================
+-- TEST 7: BENGKEL DINONAKTIFKAN ADMINISTRATOR
+--
+-- Langganan tetap aktif, tetapi status operasional bengkel dimatikan.
+--
+-- Expected:
+-- - Banner: Bengkel Tidak Aktif
+-- - Alert CRUD: Bengkel Tidak Aktif
+-- - CRUD dan transaksi diblokir
+-- - Langganan tetap tercatat aktif
+-- - subscription_end tidak berubah
+-- =====================================================================
+UPDATE workshops
+SET
+    is_active = 0,
+    subscription_status = 1,
+    subscription_end =
+        UNIX_TIMESTAMP(
+            DATE_ADD(NOW(), INTERVAL 30 DAY)
+        ) * 1000,
+    updated_at = UNIX_TIMESTAMP(NOW(3)) * 1000
+WHERE id = @workshop_id;
+
+
+
+-- =====================================================================
+-- VERIFIKASI TEST 7
+--
+-- Expected:
+-- is_active = 0
+-- subscription_status = 1
+-- subscription_end masih berlaku
+-- =====================================================================
+SELECT
+    id,
+    workshop_name,
+    is_active,
+    subscription_status,
+    FROM_UNIXTIME(subscription_end / 1000) AS subscription_end_date
+FROM workshops
+WHERE id = @workshop_id;
+
+
+
+-- =====================================================================
+-- TEST 8: AKTIFKAN KEMBALI BENGKEL
+--
+-- Hanya mengubah status aktivasi administrator.
+-- Masa langganan tidak diubah.
+--
+-- Expected:
+-- - Banner Bengkel Tidak Aktif hilang
+-- - CRUD kembali dapat digunakan
+-- - Masa langganan tetap sama
+-- =====================================================================
+UPDATE workshops
+SET
+    is_active = 1,
+    updated_at = UNIX_TIMESTAMP(NOW(3)) * 1000
+WHERE id = @workshop_id;
+
+
+
+-- =====================================================================
+-- VERIFIKASI TEST 8
+-- =====================================================================
+SELECT
+    id,
+    workshop_name,
+    is_active,
+    subscription_status,
+    FROM_UNIXTIME(subscription_end / 1000) AS subscription_end_date
+FROM workshops
+WHERE id = @workshop_id;
+
+
+
+-- =====================================================================
+-- TEST 9: KEMBALIKAN KE KONDISI NORMAL SETELAH SEMUA TESTING
+--
+-- Kondisi akhir:
+-- - Bengkel aktif
+-- - Subscription aktif
+-- - Masa aktif 30 hari dari sekarang
+-- - CRUD dan transaksi dapat digunakan
+-- =====================================================================
+UPDATE workshops
+SET
+    is_active = 1,
+    subscription_status = 1,
+    subscription_end =
+        UNIX_TIMESTAMP(
+            DATE_ADD(NOW(), INTERVAL 30 DAY)
+        ) * 1000,
+    updated_at = UNIX_TIMESTAMP(NOW(3)) * 1000
+WHERE id = @workshop_id;
+
+
+
+-- =====================================================================
+-- FINAL CHECK: KONDISI WORKSHOP SETELAH TESTING
+-- =====================================================================
+SELECT
+    id,
+    workshop_name,
+    is_active,
+    subscription_status,
+    FROM_UNIXTIME(subscription_end / 1000) AS subscription_end_date,
+    DATEDIFF(
+        FROM_UNIXTIME(subscription_end / 1000),
+        NOW()
+    ) AS remaining_days
+FROM workshops
+WHERE id = @workshop_id;
+
+
+
+-- =====================================================================
+-- FINAL CHECK: RIWAYAT PEMBAYARAN SUBSCRIPTION
+-- =====================================================================
+SELECT
+    id,
+    order_id,
+    amount,
+    payment_type,
+    transaction_status,
+    FROM_UNIXTIME(paid_at / 1000) AS paid_date,
+    is_delete,
+    FROM_UNIXTIME(created_at / 1000) AS created_date
+FROM subscription_payments
+WHERE workshop_id = @workshop_id
+ORDER BY created_at DESC;

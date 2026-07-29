@@ -7,7 +7,7 @@ from ...database.db_workshops import Workshops
 from ...database.db_customers import Customers
 from ...database.db_cash_deposits import CashDeposits
 from ...database.db_payment import Payments
-from ...utilities.validators import role_validator, cash_deposit_validator
+from ...utilities.validators import role_validator, cash_deposit_validator, subscription_validator
 
 from apps.utilities.responseHelpers import *
 from apps.utilities.utilities import current_timestamp
@@ -21,6 +21,11 @@ class CashDepositModels():
             access = role_validator(user_role)
             if not access:
                 return authorization_error()
+
+            subscription_access = subscription_validator(user_role, workshop_id)
+
+            if not subscription_access:
+                return subscription_required()
             # Access Validation ---------------------------------------- Finish
 
             # Check Request Body ---------------------------------------- Start
@@ -215,7 +220,7 @@ class CashDepositModels():
             # Deposit Timestamp (Milliseconds) ------------------------- Finish
 
             # Summary ---------------------------------------------- Start
-            if user_role == "cashier":
+            if str(user_role) == "2":
 
                 today_sales = db.session.query(
                     func.coalesce(func.sum(Payments.total), 0)
@@ -263,7 +268,7 @@ class CashDepositModels():
             # Summary ---------------------------------------------- Finish
             
             # Get Query ----------------------------------------------- Start
-            if user_role == "cashier":
+            if str(user_role) == "2":
 
                 query = db.session.query(
                     CashDeposits,
@@ -386,6 +391,11 @@ class CashDepositModels():
 
             if not access:
                 return authorization_error()
+
+            subscription_access = subscription_validator(user_role, workshop_id)
+
+            if not subscription_access:
+                return subscription_required()
             # Access Validation ---------------------------------------- Finish
 
             # Check Request Body ---------------------------------------- Start
@@ -481,6 +491,11 @@ class CashDepositModels():
 
             if not access:
                 return authorization_error()
+            
+            subscription_access = subscription_validator(user_role, workshop_id)
+
+            if not subscription_access:
+                return subscription_required()
             # Access Validation ---------------------------------------- Finish
 
             # Check Workshop ---------------------------------------- Start

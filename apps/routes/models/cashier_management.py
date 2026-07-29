@@ -5,7 +5,7 @@ from apps import db
 from apps.database.db_workshops import Workshops
 from apps.database.db_users import Users
 from apps.database.db_cashier import Cashiers
-from apps.utilities.validators import owner_validator, user_validator
+from apps.utilities.validators import owner_validator, user_validator, subscription_validator
 
 from apps.utilities.responseHelpers import *
 from apps.utilities.formatter import format_datetime
@@ -23,6 +23,11 @@ class CashierManagementModels():
 
             if not access:
                 return authorization_error()
+            
+            subscription_access = subscription_validator(user_role, workshop_id)
+
+            if not subscription_access:
+                return subscription_required()
             # Access Validation ---------------------------------------- Finish
 
             # Check Request Body ---------------------------------------- Start
@@ -100,7 +105,7 @@ class CashierManagementModels():
 
             try:
                 db.session.add(data)
-                db.session.commit()
+                db.session.flush()
                 
                 cashier = Cashiers(
                     user_id=data.id,
@@ -141,6 +146,8 @@ class CashierManagementModels():
             cashiers = Cashiers.query.filter_by(
                 workshop_id=workshop_id,
                 is_delete=0
+            ).order_by(
+                Cashiers.created_at.desc()
             ).all()
             # Get Data ---------------------------------------- Finish
 
@@ -188,6 +195,11 @@ class CashierManagementModels():
 
             if not access:
                 return authorization_error()
+
+            subscription_access = subscription_validator(user_role, workshop_id)
+
+            if not subscription_access:
+                return subscription_required()
             # Access Validation ---------------------------------------- Finish
 
             # Check Request Body ---------------------------------------- Start
@@ -305,6 +317,11 @@ class CashierManagementModels():
 
             if not access:
                 return authorization_error()
+
+            subscription_access = subscription_validator(user_role, workshop_id)
+
+            if not subscription_access:
+                return subscription_required()
             # Access Validation ---------------------------------------- Finish
 
             # Check Workshop ---------------------------------------- Start

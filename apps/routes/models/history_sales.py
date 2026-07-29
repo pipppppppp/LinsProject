@@ -43,7 +43,7 @@ def _history_sales_helper(workshop_id, cashier_id="", start_date="", end_date=""
       )
 
       # filter tanggal
-      if start_date != "" and end_date != "":
+      if start_date and end_date :
             payments=payments.filter(
                   Payments.payment_date >=start_date,
                   Payments.payment_date <= end_date
@@ -126,7 +126,7 @@ def _get_filter_date(start_date="", end_date=""):
 # HISTORY SALES ============================================================ Begin
 class HistorySalesModels():
       # HISTORY SALES ============================================================ Begin
-      def read_history_sales(user_role, user_id, workshop_id, start_date=None, end_date=None):
+      def read_history_sales(user_role, user_id, workshop_id, cashier_id="", start_date=None, end_date=None):
             try:
 
                   # Access Validation ---------------------------------------- Start
@@ -150,30 +150,9 @@ class HistorySalesModels():
 
                   # Filter Date ---------------------------------------- Start
                   today = datetime.now()
-
-                  # Default filter = hari ini
-                  if not start_date or not end_date:
-
-                        start_datetime = datetime(
-                              today.year,
-                              today.month,
-                              today.day,
-                              0,
-                              0,
-                              0
-                        )
-
-                        end_datetime = datetime(
-                              today.year,
-                              today.month,
-                              today.day,
-                              23,
-                              59,
-                              59
-                        )
-
-                  # Filter berdasarkan tanggal yang dipilih
-                  else:
+                  
+                  # Filter berdasarkan tanggal (jika dipilih)
+                  if start_date and end_date:
 
                         start_datetime = datetime.strptime(
                               start_date,
@@ -189,9 +168,55 @@ class HistorySalesModels():
                               second=59
                         )
 
+                        start_date = int(start_datetime.timestamp())
+                        end_date = int(end_datetime.timestamp())
+
+                  else:
+
+                        start_date = None
+                        end_date = None
+
+                  # # Default filter = hari ini
+                  # if not start_date or not end_date:
+
+                  #       start_datetime = datetime(
+                  #             today.year,
+                  #             today.month,
+                  #             today.day,
+                  #             0,
+                  #             0,
+                  #             0
+                  #       )
+
+                  #       end_datetime = datetime(
+                  #             today.year,
+                  #             today.month,
+                  #             today.day,
+                  #             23,
+                  #             59,
+                  #             59
+                  #       )
+
+                  # # Filter berdasarkan tanggal yang dipilih
+                  # else:
+
+                  #       start_datetime = datetime.strptime(
+                  #             start_date,
+                  #             "%Y-%m-%d"
+                  #       )
+
+                  #       end_datetime = datetime.strptime(
+                  #             end_date,
+                  #             "%Y-%m-%d"
+                  #       ).replace(
+                  #             hour=23,
+                  #             minute=59,
+                  #             second=59
+                  #       )
+
                   # Konversi ke timestamp
-                  start_date = int(start_datetime.timestamp())
-                  end_date = int(end_datetime.timestamp())
+                  # start_date = int(start_datetime.timestamp())
+                  # end_date = int(end_datetime.timestamp())
                   # Filter Date ---------------------------------------- Finish
 
                   # Get History ---------------------------------------- Start
@@ -200,22 +225,35 @@ class HistorySalesModels():
                         result = _history_sales_helper(workshop_id, cashier_id=user_id, start_date=start_date, end_date=end_date)
 
                   else:
-                        result = _history_sales_helper(workshop_id, start_date=start_date, end_date=end_date)
+                        result = _history_sales_helper(workshop_id, cashier_id=cashier_id, start_date=start_date, end_date=end_date)
                   # Get History ---------------------------------------- Finish
 
                   # Filter Summary ---------------------------------------- Start
                   query = Payments.query.filter(
                         Payments.workshop_id == workshop_id,
-                        Payments.is_delete == 0,
-                        Payments.payment_date >= start_date,
-                        Payments.payment_date <= end_date
+                        Payments.is_delete == 0
                   )
+
+                  if start_date and end_date:
+                        query = query.filter(
+                              Payments.payment_date >= start_date,
+                              Payments.payment_date <= end_date
+                        )
+                  # query = Payments.query.filter(
+                  #       Payments.workshop_id == workshop_id,
+                  #       Payments.is_delete == 0,
+                  #       Payments.payment_date >= start_date,
+                  #       Payments.payment_date <= end_date
+                  # )
 
                   if str(user_role) == "2":
                         query = query.filter(
                               Payments.cashier_id == user_id
                         )
-
+                  elif cashier_id != "":
+                        query = query.filter(
+                              Payments.cashier_id == cashier_id
+                        )
                   filter_payments = query.all()
 
                   today_transaction = len(filter_payments)
@@ -224,6 +262,7 @@ class HistorySalesModels():
                         payment.total for payment in filter_payments
                   )
                   # Filter Summary ---------------------------------------- Finish
+                  
                   # Penjualan Hari Ini ---------------------------------------- Start
                   today_start = datetime(
                         today.year,
@@ -254,18 +293,30 @@ class HistorySalesModels():
                         today_query = today_query.filter(
                               Payments.cashier_id == user_id
                         )
-
+                        
+                  elif cashier_id != "":
+                        query = query.filter(
+                              Payments.cashier_id == cashier_id
+                        )
                   today_sales = sum(
                         payment.total for payment in today_query.all()
                   )
                   # Penjualan Hari Ini ---------------------------------------- End
+                  
+                  # Kasir Aktif ---------------------------------------- Start
+                  active_cashier = len(
+                        set(payment.cashier_id for payment in filter_payments)
+                  )
+                  # Kasir Aktif ---------------------------------------- End
+                 
                   # Response ---------------------------------------- Start
                   return success_data(
                         data={
                               "history": result,
                               "today_transaction": today_transaction,
                               "today_total": today_total,
-                              "today_sales": today_sales
+                              "today_sales": today_sales,
+                              "active_cashier": active_cashier
                         },
                         status_code=200
                   )
@@ -694,4 +745,5 @@ class HistorySalesModels():
             except Exception as e:
                   return bad_request(str(e))
       # EXPORT PDF ============================================================ End
+
 # HISTORY SALES ============================================================ End

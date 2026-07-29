@@ -29,8 +29,10 @@ let cashDepositsData = [];
 async function loadCashDeposits() {
   const result = await getRequest("/cash-deposit/view");
 
-  console.log(result);
-
+  if (!result) {
+    return;
+  }
+  
   cashDepositsData = result.data.history;
 
   form.totalSales.value = formatRupiah(result.data.today_sales);
@@ -142,14 +144,18 @@ async function saveCashDeposit() {
     swalClose();
   }
 
-  if (result.status_code === 201) {
-    await swalSuccess(result.message);
+  if (!result) {
+    return;
+  }
+
+  if (result.status_code === 201 || result.status_code === 200) {
+    await swalSuccess("Berhasil", result.message);
 
     clearValue(form.totalDeposit, form.notes);
 
     await reloadTable(loadCashDeposits, renderTable);
   } else {
-    await swalError(result.message);
+    await swalError("Gagal", result.message);
   }
 }
 
@@ -194,12 +200,18 @@ async function handleTableClick(e) {
     swalClose();
   }
 
+  if (!result) {
+    return;
+  }
+
   if (result.status_code === 200) {
-    await swalSuccess(result.message);
+    await swalSuccess("Berhasil", result.message);
+
+    clearValue(form.totalDeposit, form.notes);
 
     await reloadTable(loadCashDeposits, renderTable);
   } else {
-    await swalError(result.message);
+    await swalError("Gagal", result.message);
   }
 }
 // **************************************************************

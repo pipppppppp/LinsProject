@@ -98,19 +98,3 @@ def receipt(payment_id):
     except Exception as e:
         return bad_request(str(e))
 # PRINT RECEIPT ============================================================ End
-
-# HISTORY SALES CASHIER PAGE ============================================================ Begin
-# [GET] https://127.0.0.1:5000//cashier/history-sales
-@cashier.get("/history-sales")
-@jwt_required()
-def history_sales():
-    try:
-        return render_template(
-            title="History Sales - POS Bengkel",
-            template_name_or_list="cashier_history_sales.html",
-            active_menu="history_sales",
-        )
-
-    except Exception as e:
-        return bad_request(str(e))
-# HISTORY CASHIER PAGE ============================================================ End

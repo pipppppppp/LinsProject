@@ -43,8 +43,12 @@ let workshopData = null;
 async function loadWorkshop() {
   const result = await getRequest("/workshop/view");
 
+  if (!result) {
+    return;
+  }
+
   if (result.status_code !== 200) {
-    await swalError(result.message);
+    await swalError("Gagal", result.message);
 
     return;
   }
@@ -73,11 +77,23 @@ function renderWorkshop() {
 
   form.address.value = workshopData.workshop_address ?? "";
 
-  // Status
-  form.status.textContent = workshopData.is_active == 1 ? "Aktif" : "Tidak Aktif";
+  // Status Operasional Workshop
+  const statusClasses = {
+    active: "bg-success",
+    inactive: "bg-secondary",
+    unsubscribed: "bg-warning text-dark",
+    expired: "bg-danger",
+  };
 
-  form.status.className = workshopData.is_active == 1 ? "badge bg-success fs-6" : "badge bg-danger fs-6";
+  const operationalStatus = workshopData.operational_status || "inactive";
 
+  form.status.textContent = workshopData.operational_status_label || "Tidak Aktif";
+
+  form.status.className = `
+    badge
+    ${statusClasses[operationalStatus] || "bg-secondary"}
+    fs-6
+  `;
   // Logo
   if (workshopData.logo) {
     form.preview.src = `/static/images/profiles/${workshopData.logo}`;
@@ -122,36 +138,50 @@ async function saveWorkshop() {
   const formData = new FormData();
 
   formData.append("workshop_name", form.name.value.trim());
+
   formData.append("workshop_email", form.email.value.trim());
+
   formData.append("workshop_phone", form.phone.value.trim());
+
   formData.append("workshop_address", form.address.value.trim());
 
   if (form.logo.files.length > 0) {
     formData.append("logo", form.logo.files[0]);
   }
 
-  swalLoading();
+  let result;
 
   try {
+    swalLoading();
+
     const response = await fetch("/workshop/edit", {
       method: "PUT",
       body: formData,
     });
 
-    const result = await response.json();
-
-    swalClose();
-
-    if (response.ok) {
-      swalSuccess("Profil bengkel berhasil diperbarui.");
-
-      await loadWorkshop();
-    } else {
-      swalError(result.message);
-    }
+    result = await processApiResponse(response);
   } catch (error) {
+    await swalError("Gagal", error.message);
+
+    return;
+  } finally {
     swalClose();
-    swalError(error.message);
+  }
+
+  if (!result) {
+    return;
+  }
+
+  if (result.status_code === 200) {
+    await swalSuccess("Berhasil", result.message);
+
+    form.logo.value = "";
+
+    await loadWorkshop();
+
+    renderWorkshop();
+  } else {
+    await swalError("Gagal", result.message);
   }
 }
 // **************************************************************

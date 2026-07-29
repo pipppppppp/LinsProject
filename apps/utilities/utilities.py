@@ -329,7 +329,7 @@ def email_sender(recivier, subject, messages_content):
             try:
                 creds.refresh(Request())
             except Exception as e:
-                print(f"Error refreshing token: {e}")
+
                 if os.path.exists('token.json'):
                     os.remove('token.json')
                 creds = None
@@ -356,8 +356,8 @@ def email_sender(recivier, subject, messages_content):
 
     try:
         message = (service.users().messages().send(userId='me', body={'raw': raw_message}).execute())
-        print('Message Id: %s' % message['id'])
+        
         return success_data(message)
     except Exception as error:
-        print(f'An error occurred: {error}')
+        
         return bad_request(str(error))

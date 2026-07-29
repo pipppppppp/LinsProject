@@ -55,7 +55,9 @@ let purchaseItems = [];
 // **************************************************************
 async function loadSuppliers() {
   const result = await getRequest("/supplier/view");
-
+  if (!result) {
+    return;
+  }
   if (result.status_code !== 200) {
     await swalError(result.message);
     return;
@@ -89,7 +91,9 @@ async function loadSuppliers() {
 // **************************************************************
 async function loadProducts() {
   const result = await getRequest("/product/view");
-
+  if (!result) {
+    return;
+  }
   if (result.status_code !== 200) {
     await swalError(result.message);
     return;
@@ -261,8 +265,9 @@ async function savePurchase() {
     purchase_details: purchaseItems,
   };
 
-  // VALIDATION ==================================================
-  if (!validatePurchase(purchase)) return;
+  if (!validatePurchase(purchase)) {
+    return;
+  }
 
   let result;
 
@@ -274,13 +279,20 @@ async function savePurchase() {
     swalClose();
   }
 
-  if (result.status_code === 201) {
+  if (!result) {
+    return;
+  }
+
+  if (result.status_code === 201 || result.status_code === 200) {
     closeModal("purchase_modal");
+
     resetForm();
+
     await loadPurchases();
-    await swalSuccess(result.message);
+
+    await swalSuccess("Berhasil", result.message);
   } else {
-    await swalError(result.message);
+    await swalError("Gagal", result.message);
   }
 }
 // **************************************************************
@@ -317,8 +329,11 @@ async function importPurchase() {
   } finally {
     swalClose();
   }
+  if (!result) {
+    return;
+  }
 
-  if (result.status_code === 201) {
+  if (result.status_code === 201 || result.status_code === 200) {
     closeModal("import_purchase_modal");
 
     clearValue(form.importSupplier, form.importDate, form.importFile);
@@ -342,6 +357,9 @@ async function importPurchase() {
 async function loadPurchases() {
   const result = await getRequest("/purchase/view");
 
+  if (!result) {
+    return;
+  }
   if (result.status_code !== 200) {
     await swalError(result.message);
     return;
@@ -411,6 +429,10 @@ async function loadPurchases() {
 // **************************************************************
 async function loadPurchaseDetail(id) {
   const result = await getRequest(`/purchase/detail/${id}`);
+
+  if (!result) {
+    return;
+  }
 
   if (result.status_code !== 200) {
     await swalError(result.message);

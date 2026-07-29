@@ -23,6 +23,11 @@ class VehicleModels():
 
             if not access:
                 return authorization_error()
+            
+            subscription_access = subscription_validator(user_role, workshop_id)
+
+            if not subscription_access:
+                return subscription_required()
             # Access Validation ---------------------------------------- Finish
 
             # Check Request Body ---------------------------------------- Start
@@ -231,6 +236,11 @@ class VehicleModels():
 
             if not access:
                 return authorization_error()
+            
+            subscription_access = subscription_validator(user_role, workshop_id)
+
+            if not subscription_access:
+                return subscription_required()
             # Access Validation ---------------------------------------- Finish
 
             # Check Request Body ---------------------------------------- Start
@@ -357,6 +367,11 @@ class VehicleModels():
 
             if not access:
                 return authorization_error()
+
+            subscription_access = subscription_validator(user_role, workshop_id)
+
+            if not subscription_access:
+                return subscription_required()
             # Access Validation ---------------------------------------- Finish
 
             # Check Workshop ---------------------------------------- Start

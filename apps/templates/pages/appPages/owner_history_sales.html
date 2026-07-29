@@ -51,41 +51,45 @@
       <!-- ================================================================ -->
       <!-- Filter Tanggal -->
       <!-- ================================================================ -->
-      <section class="section">
+      <section class="section mb-4">
         <div class="card">
           <div class="card-header">
-            <h5 class="mb-1">
-              <i class="bi bi-funnel me-2 text-primary"></i>
-              Filter Laporan
-            </h5>
+            <div>
+              <h4 class="card-title mb-1">Filter Riwayat Penjualan</h4>
 
-            <small class="text-muted"> Pilih rentang tanggal untuk menampilkan riwayat penjualan. </small>
+              <p class="text-muted mb-0">Pilih rentang tanggal untuk menampilkan transaksi penjualan.</p>
+            </div>
           </div>
 
           <div class="card-body">
-            <div class="row">
-              <div class="col-md-5">
-                <label class="form-label"> Tanggal Awal </label>
-
+            <div class="row g-3 align-items-end">
+              <div class="col-lg-3">
+                <label class="form-label fw-semibold">Tanggal Awal</label>
                 <input type="date" class="form-control" id="start_date" />
               </div>
 
-              <div class="col-md-5">
-                <label class="form-label"> Tanggal Akhir </label>
-
+              <div class="col-lg-3">
+                <label class="form-label fw-semibold">Tanggal Akhir</label>
                 <input type="date" class="form-control" id="end_date" />
               </div>
 
-              <div class="col-md-2">
+              <div class="col-lg-3">
+                <label class="form-label fw-semibold">Kasir</label>
+                <select id="cashier_id" class="form-select">
+                  <option value="">Semua Kasir</option>
+                </select>
+              </div>
+
+              <div class="col-lg-3">
                 <label class="form-label">&nbsp;</label>
 
                 <div class="d-flex gap-2">
-                  <button class="btn btn-primary" id="btn_filter">
+                  <button class="btn btn-primary flex-fill" id="btn_filter">
                     <i class="bi bi-search me-1"></i>
                     Filter
                   </button>
 
-                  <button class="btn btn-secondary" id="btn_reset">
+                  <button class="btn btn-light-secondary flex-fill" id="btn_reset">
                     <i class="bi bi-arrow-clockwise me-1"></i>
                     Reset
                   </button>
@@ -98,23 +102,25 @@
       <!-- ================================================================ -->
       <!-- Summary -->
       <!-- ================================================================ -->
-      <section class="section">
+      <section class="section mb-5">
         <div class="row">
           <!-- Total Transaksi -->
-          <div class="col-md-6">
+          <div class="col-xl-3 col-md-6 col-sm-12">
             <div class="card">
-              <div class="card-body">
-                <div class="d-flex justify-content-between align-items-center">
-                  <div>
-                    <h6 class="text-muted mb-1">Total Transaksi</h6>
+              <div class="card-content">
+                <div class="card-body">
+                  <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                      <h6 class="text-muted font-semibold mb-1">Total Transaksi</h6>
 
-                    <h2 class="fw-bold mb-1" id="today_transaction">0</h2>
+                      <h3 class="font-extrabold mb-1" id="today_transaction">0</h3>
 
-                    <small class="text-muted"> Transaksi sesuai filter </small>
-                  </div>
+                      <small class="text-muted"> Total transaksi sesuai filter </small>
+                    </div>
 
-                  <div class="text-primary fs-1">
-                    <i class="bi bi-receipt"></i>
+                    <div class="stats-icon blue">
+                      <i class="bi bi-receipt"></i>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -122,20 +128,66 @@
           </div>
 
           <!-- Total Penjualan -->
-          <div class="col-md-6">
+          <div class="col-xl-3 col-md-6 col-sm-12">
             <div class="card">
-              <div class="card-body">
-                <div class="d-flex justify-content-between align-items-center">
-                  <div>
-                    <h6 class="text-muted mb-1">Total Penjualan</h6>
+              <div class="card-content">
+                <div class="card-body">
+                  <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                      <h6 class="text-muted font-semibold mb-1">Total Penjualan</h6>
 
-                    <h2 class="fw-bold mb-1" id="today_total">Rp0</h2>
+                      <h3 class="font-extrabold mb-1" id="today_total">Rp 0</h3>
 
-                    <small class="text-muted"> Total omzet sesuai filter </small>
+                      <small class="text-muted"> Total omzet sesuai filter </small>
+                    </div>
+
+                    <div class="stats-icon green">
+                      <i class="bi bi-cash-stack"></i>
+                    </div>
                   </div>
+                </div>
+              </div>
+            </div>
+          </div>
 
-                  <div class="text-success fs-1">
-                    <i class="bi bi-cash-stack"></i>
+          <!-- Penjualan Hari Ini -->
+          <div class="col-xl-3 col-md-6 col-sm-12">
+            <div class="card">
+              <div class="card-content">
+                <div class="card-body">
+                  <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                      <h6 class="text-muted font-semibold mb-1">Penjualan Hari Ini</h6>
+
+                      <h3 class="font-extrabold mb-1" id="today_sales">Rp 0</h3>
+
+                      <small class="text-muted"> Total penjualan hari ini </small>
+                    </div>
+                    <div class="stats-icon purple">
+                      <i class="bi bi-bar-chart"></i>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- Kasir Aktif -->
+          <div class="col-xl-3 col-md-6 col-sm-12">
+            <div class="card">
+              <div class="card-content">
+                <div class="card-body">
+                  <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                      <h6 class="text-muted font-semibold mb-1">Kasir Aktif</h6>
+
+                      <h3 class="font-extrabold mb-1" id="active_cashier">0</h3>
+
+                      <small class="text-muted"> Kasir yang memiliki transaksi </small>
+                    </div>
+
+                    <div class="stats-icon warning">
+                      <i class="bi bi-person-check-fill"></i>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -143,6 +195,7 @@
           </div>
         </div>
       </section>
+
       <!-- ================================================================ -->
       <!-- Table -->
       <!-- ================================================================ -->
@@ -151,35 +204,46 @@
           <div class="card-header">
             <div class="d-flex justify-content-between align-items-center">
               <div>
-                <h5 class="mb-1">
-                  <i class="bi bi-table me-2 text-primary"></i>
-                  Data Riwayat Penjualan
-                </h5>
+                <h4 class="card-title mb-1">Riwayat Penjualan</h4>
 
-                <small class="text-muted"> Menampilkan seluruh transaksi sesuai filter yang dipilih. </small>
+                <p class="text-muted mb-0">Daftar seluruh transaksi penjualan yang telah dilakukan.</p>
+              </div>
+
+              <div class="d-flex align-items-center gap-2">
+                <span id="transaction_count" class="btn btn-light-primary btn-sm disabled"> 0 Transaksi </span>
+                <button class="btn btn-light-primary btn-sm" id="btn_refresh">
+                  <i class="bi bi-arrow-clockwise"></i>
+                  Refresh
+                </button>
               </div>
             </div>
           </div>
-
           <div class="card-body">
-            <div class="table-responsive">
-              <table class="table table-striped mb-0" id="table1">
-                <thead>
-                  <tr>
-                    <th>No</th>
-                    <th>Invoice</th>
-                    <th>Tanggal</th>
-                    <th>Customer</th>
-                    <th>Kendaraan</th>
-                    <th>Kasir</th>
-                    <th>Total</th>
-                    <th>Aksi</th>
-                  </tr>
-                </thead>
+            <table class="table table-hover mb-0" id="table1">
+              <thead class="table-secondary">
+                <tr>
+                  <th width="60">No</th>
 
-                <tbody id="history_sales_table"></tbody>
-              </table>
-            </div>
+                  <th width="170">Invoice</th>
+
+                  <th width="140">Tanggal</th>
+
+                  <th>Pelanggan</th>
+
+                  <th width="160" class="text-center">Kendaraan</th>
+
+                  <th width="150" class="text-center">Kasir</th>
+
+                  <th width="150" class="text-end">Total</th>
+
+                  <th width="120" class="text-center">Aksi</th>
+                </tr>
+              </thead>
+
+              <tbody id="history_sales_table">
+                <!-- row table set at javascript -->
+              </tbody>
+            </table>
           </div>
         </div>
       </section>

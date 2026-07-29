@@ -12,7 +12,7 @@ from apps.database.db_suppliers import Suppliers
 from apps.database.db_purchases import Purchases
 from apps.database.db_payment import Payments
 from ..models.dashboard import DashboardModels
-from apps.routes.controllers.report import *
+from apps.routes.controllers.history_purchase import *
 
 # BLUEPRINT ================================================== Begin
 dashboard = Blueprint(

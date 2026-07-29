@@ -10,7 +10,7 @@ from apps.database.db_sale_details import SaleDetails
 from apps.database.db_sale_service_details import SaleServiceDetails
 
 from apps.utilities.responseHelpers import *
-from apps.utilities.validators import sale_validator
+from apps.utilities.validators import sale_validator, subscription_validator
 from apps.utilities.formatter import format_datetime
 
 import time
@@ -104,13 +104,26 @@ class CashierModels():
             claims = get_jwt()
 
             workshop_id = claims["ws_id"]
-            role = claims["role"]
+            role = str(claims["role"])
 
             OWNER = "1"
             CASHIER = "2"
 
+            # Access Validation ---------------------------------------- Start
             if role not in [OWNER, CASHIER]:
-                return bad_request("Anda tidak memiliki akses.")
+                return authorization_error()
+
+            subscription_access = subscription_validator(
+                role,
+                workshop_id
+            )
+
+            if not subscription_access:
+                return subscription_required()
+            # Access Validation ---------------------------------------- Finish
+            if datas is None:
+                return invalid_params()
+                
             customer_id = datas.get("customer_id")
             vehicle_id = datas.get("vehicle_id")
             payment = datas.get("payment")

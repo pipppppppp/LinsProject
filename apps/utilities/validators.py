@@ -2,6 +2,7 @@ from datetime import datetime, timedelta
 
 import json
 
+from apps import db
 from apps.database.db_categories import Categories
 from apps.database.db_users import Users
 from apps.database.db_workshops import Workshops
@@ -118,6 +119,81 @@ def cashier_validator(role):
     return access
 # CASHIER VALIDATION ============================================================ End
 
+# SUBSCRIPTION VALIDATION ============================================================ Begin
+def subscription_validator(role, workshop_id):
+    try:
+        # Administrator tidak membutuhkan subscription
+        if int(role) == 0:
+            return True
+
+        # Workshop ID Validation ---------------------------------------- Start
+        if (
+            workshop_id is None or
+            str(workshop_id).strip() == "" or
+            not str(workshop_id).isdigit()
+        ):
+            return False
+        # Workshop ID Validation ---------------------------------------- Finish
+
+        # Check Workshop ---------------------------------------- Start
+        workshop = Workshops.query.filter_by(
+            id=workshop_id,
+            is_delete=0
+        ).first()
+
+        if not workshop:
+            return False
+        # Check Workshop ---------------------------------------- Finish
+        
+        # Workshop Active Validation ---------------------------------------- Start
+        if int(workshop.is_active or 0) != 1:
+            return False
+        # Workshop Active Validation ---------------------------------------- Finish
+        
+        # Initialize Subscription ---------------------------------------- Start
+        timestamp = current_timestamp()
+
+        subscription_status = int(
+            workshop.subscription_status or 0
+        )
+
+        subscription_end = int(
+            workshop.subscription_end or 0
+        )
+        # Initialize Subscription ---------------------------------------- Finish
+
+        # Active Subscription ---------------------------------------- Start
+        if (
+            subscription_status == 1 and
+            subscription_end > timestamp
+        ):
+            return True
+        # Active Subscription ---------------------------------------- Finish
+
+        # Expired Subscription ---------------------------------------- Start
+        if (
+            subscription_status == 1 and
+            subscription_end > 0 and
+            subscription_end <= timestamp
+        ):
+            workshop.subscription_status = 2
+            workshop.updated_at = timestamp
+
+            try:
+                db.session.commit()
+
+            except Exception:
+                db.session.rollback()
+
+            return False
+        # Expired Subscription ---------------------------------------- Finish
+
+        return False
+
+    except Exception:
+        db.session.rollback()
+        return False
+# SUBSCRIPTION VALIDATION ============================================================ End
 
 def signin_validator(usermail, password):
     checker_result = []
@@ -973,7 +1049,7 @@ def purchase_excel_validator(worksheet):
 # PURCHASE EXCEL VALIDATION ============================================================ End
 
 # REPORT VALIDATION ============================================================ Begin
-def report_validator(
+def history_validator(
     start_date,
     end_date,
     workshop_id,
@@ -1247,3 +1323,4 @@ def cash_deposit_validator(total_deposit, total_sales=None):
         )
     return check_result
 # CASH DEPOSIT VALIDATION ============================================================ End
+

@@ -6,7 +6,7 @@ from apps.database.db_categories import Categories
 from apps.database.db_products import Products
 from apps.database.db_workshops import Workshops
 from apps.utilities.responseHelpers import *
-from apps.utilities.validators import role_validator, category_validator
+from apps.utilities.validators import role_validator, category_validator, subscription_validator
 from apps.utilities.utilities import current_timestamp
 from apps.utilities.formatter import format_date
 
@@ -20,6 +20,11 @@ class CategoryModels():
             access = role_validator(user_role)
             if not access: # Access = True -> Admin
                 return authorization_error()
+            
+            subscription_access = subscription_validator(user_role, workshop_id)
+
+            if not subscription_access:
+                return subscription_required()
             # Access Validation ---------------------------------------- Finish
 
             # Check Request Body ---------------------------------------- Start
@@ -74,7 +79,12 @@ class CategoryModels():
     def read_category(workshop_id):
         try:
             # Check Data ---------------------------------------- Start
-            result = Categories.query.filter_by(workshop_id=workshop_id, is_delete=0).all()
+            result = Categories.query.filter_by(
+                workshop_id=workshop_id,
+                is_delete=0
+            ).order_by(
+                Categories.created_at.desc()
+            ).all()
             if not result:
                 # return not_found("Data kategori tidak dapat ditemukan.")
                 return not_found("Category data could not be found.")
@@ -107,6 +117,11 @@ class CategoryModels():
             access = role_validator(user_role)
             if not access: # Access = True -> Admin
                 return authorization_error()
+            
+            subscription_access = subscription_validator(user_role, workshop_id)
+
+            if not subscription_access:
+                return subscription_required()
             # Access Validation ---------------------------------------- Finish
 
             # Check Request Body ---------------------------------------- Start
@@ -168,6 +183,11 @@ class CategoryModels():
             access = role_validator(user_role)
             if not access: # Access = True -> Admin
                 return authorization_error()
+
+            subscription_access = subscription_validator(user_role, workshop_id)
+
+            if not subscription_access:
+                return subscription_required()
             # Access Validation ---------------------------------------- Finish
 
             # Checking Request Body ---------------------------------------- Start

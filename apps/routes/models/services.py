@@ -4,7 +4,7 @@ import time
 from ... import db
 from ...database.db_workshops import Workshops
 from ...database.db_services import Services
-from ...utilities.validators import role_validator, service_validator
+from ...utilities.validators import role_validator, service_validator, subscription_validator
 
 from apps.utilities.responseHelpers import *
 from apps.utilities.utilities import current_timestamp
@@ -21,6 +21,11 @@ class ServiceModels():
             access = role_validator(user_role)
             if not access:
                 return authorization_error()
+            
+            subscription_access = subscription_validator(user_role, workshop_id)
+
+            if not subscription_access:
+                return subscription_required()
             # Access Validation ---------------------------------------- Finish
 
             # Check Request Body ---------------------------------------- Start
@@ -164,6 +169,11 @@ class ServiceModels():
             access = role_validator(user_role)
             if not access:
                 return authorization_error()
+
+            subscription_access = subscription_validator(user_role, workshop_id)
+
+            if not subscription_access:
+                return subscription_required()
             # Access Validation ---------------------------------------- Finish
 
             # Check Request Body ---------------------------------------- Start
@@ -263,6 +273,11 @@ class ServiceModels():
             access = role_validator(user_role)
             if not access:
                 return authorization_error()
+
+            subscription_access = subscription_validator(user_role, workshop_id)
+
+            if not subscription_access:
+                return subscription_required()
             # Access Validation ---------------------------------------- Finish
 
             # Check Workshop ---------------------------------------- Start

@@ -8,7 +8,7 @@ from apps.database.db_workshops import Workshops
 from apps.utilities.responseHelpers import *
 from apps.utilities.utilities import current_timestamp
 from apps.utilities.formatter import format_date
-from apps.utilities.validators import role_validator, product_validator
+from apps.utilities.validators import role_validator, product_validator, subscription_validator
 
 # PRODUCT MODEL CLASS ============================================================ Begin
 class ProductModels():
@@ -20,6 +20,11 @@ class ProductModels():
             access = role_validator(user_role)
             if not access:
                 return authorization_error()
+            
+            subscription_access = subscription_validator(user_role, workshop_id)
+
+            if not subscription_access:
+                return subscription_required()
             # Access Validation ---------------------------------------- Finish
 
             # Check Request Body ---------------------------------------- Start
@@ -110,6 +115,7 @@ class ProductModels():
             return success(status_code=201)
 
         except Exception as e:
+            db.session.rollback()
             return bad_request(str(e))
     # CREATE PRODUCT ============================================================ End
 
@@ -182,6 +188,11 @@ class ProductModels():
             access = role_validator(user_role)
             if not access:
                 return authorization_error()
+            
+            subscription_access = subscription_validator(user_role, workshop_id)
+
+            if not subscription_access:
+                return subscription_required()
             # Access Validation ---------------------------------------- Finish
 
             # Check Request Body ---------------------------------------- Start
@@ -291,6 +302,11 @@ class ProductModels():
             access = role_validator(user_role)
             if not access:
                 return authorization_error()
+            
+            subscription_access = subscription_validator(user_role, workshop_id)
+
+            if not subscription_access:
+                return subscription_required()
             # Access Validation ---------------------------------------- Finish
 
             # Check Product ---------------------------------------- Start

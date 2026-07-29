@@ -14,21 +14,38 @@ history_sales = Blueprint(
 # BLUEPRINT ============================================================ End
 
 
-# HISTORY SALES PAGE ============================================================ Begin
+# HISTORY SALES PAGE OWNER============================================================ Begin
 # [GET] https://127.0.0.1:5000/history-sales/
 @history_sales.get("/")
 @jwt_required()
-def index():
+def owner():
     try:
         return render_template(
-            title="History Sales - POS Bengkel",
-            template_name_or_list="history_sales.html",
-            active_menu="history_sales",
+            title="Riwayat Penjualan - POS Bengkel",
+            template_name_or_list="owner_history_sales.html",
+            active_menu="owner_history_sales",
         )
 
     except Exception as e:
         return bad_request(str(e))
-# HISTORY SALES PAGE ============================================================ End
+# HISTORY SALES PAGE OWNER============================================================ End
+
+# HISTORY SALES CASHIER PAGE ============================================================ Begin
+# [GET] https://127.0.0.1:5000/history-sales/cashier
+@history_sales.get("/cashier")
+@jwt_required()
+def cashier():
+    try:
+        return render_template(
+            title="Cashier History Sales - POS Bengkel",
+            template_name_or_list="cashier_history_sales.html",
+            active_menu="cashier_history_sales",
+        )
+
+    except Exception as e:
+        return bad_request(str(e))
+# HISTORY CASHIER PAGE ============================================================ End
+
 
 # READ HISTORY SALES ============================================================ Begin
 # [GET] https://127.0.0.1:5000/history-sales/view
@@ -47,10 +64,13 @@ def read_history_sales():
         start_date = request.args.get("start_date")
         end_date = request.args.get("end_date")
 
+        cashier_id = request.args.get("cashier_id", "")
+
         return HistorySalesModels.read_history_sales(
             user_role,
             user_id,
             workshop_id,
+            cashier_id,
             start_date,
             end_date
         )

@@ -1,0 +1,273 @@
+{% extends 'layouts/dashboard_layout.html' %} {% block content %}
+
+<div id="app">
+  <!-- Navigation -->
+  {% include 'components/nav_dashboard.html' %}
+
+  <div id="main">
+    <!-- Burger -->
+    <header class="mb-3">
+      <a href="#" class="burger-btn d-block d-xl-none">
+        <i class="bi bi-justify fs-3"></i>
+      </a>
+    </header>
+
+    <div class="page-heading">
+      <!-- Header -->
+      <div class="page-title">
+        <div class="row">
+          <div class="col-12 col-md-6 order-md-1 order-last">
+            <h3>LANGGANAN</h3>
+          </div>
+
+          <div class="col-12 col-md-6 order-md-2 order-first">
+            <nav aria-label="breadcrumb" class="breadcrumb-header float-start float-lg-end">
+              <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                  <a href="{{ url_for('dashboard.index') }}"> Dashboard </a>
+                </li>
+
+                <li class="breadcrumb-item active" aria-current="page">Langganan</li>
+              </ol>
+            </nav>
+          </div>
+        </div>
+      </div>
+
+      <!-- Content -->
+      <section class="section">
+        <div class="row">
+          <!-- SUBSCRIPTION INFORMATION -->
+          <div class="col-12 col-xl-8">
+            <div class="card">
+              <div class="card-header">
+                <div class="d-flex justify-content-between align-items-center">
+                  <div>
+                    <h4 class="card-title mb-1">
+                      <i class="bi bi-patch-check me-2"></i>
+                      Status Langganan
+                    </h4>
+
+                    <p class="text-muted mb-0">Informasi masa aktif langganan sistem POS Bengkel.</p>
+                  </div>
+
+                  <span id="subscription_status" class="badge bg-secondary fs-6"> Memuat... </span>
+                </div>
+              </div>
+
+              <hr class="my-3" />
+
+              <div class="card-body">
+                <div class="row">
+                  <div class="col-md-4 mb-3">
+                    <div class="d-flex align-items-center">
+                      <div class="stats-icon purple me-3">
+                        <i class="bi bi-shop"></i>
+                      </div>
+
+                      <div>
+                        <p class="text-muted mb-1">Bengkel</p>
+
+                        <h6 id="subscription_workshop_name" class="mb-0">-</h6>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="col-md-4 mb-3">
+                    <div class="d-flex align-items-center">
+                      <div class="stats-icon blue me-3">
+                        <i class="bi bi-calendar-check"></i>
+                      </div>
+
+                      <div>
+                        <p class="text-muted mb-1">Berakhir Pada</p>
+
+                        <h6 id="subscription_end" class="mb-0">-</h6>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="col-md-4 mb-3">
+                    <div class="d-flex align-items-center">
+                      <div class="stats-icon green me-3">
+                        <i class="bi bi-hourglass-split"></i>
+                      </div>
+
+                      <div>
+                        <p class="text-muted mb-1">Sisa Masa Aktif</p>
+
+                        <h6 id="remaining_days" class="mb-0">0 Hari</h6>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div id="subscription_alert" class="alert alert-light-primary mb-0">
+                  <i class="bi bi-info-circle me-2"></i>
+
+                  <span id="subscription_message"> Sedang mengambil informasi langganan. </span>
+                </div>
+              </div>
+            </div>
+
+            <!-- LATEST PAYMENT -->
+            <div id="latest_payment_card" class="card d-none">
+              <div class="card-header">
+                <h4 class="card-title mb-1">
+                  <i class="bi bi-receipt me-2"></i>
+                  Pembayaran Terakhir
+                </h4>
+
+                <p class="text-muted mb-0">Informasi transaksi langganan terbaru.</p>
+              </div>
+
+              <hr class="my-3" />
+
+              <div class="card-body">
+                <div class="table-responsive">
+                  <table class="table table-borderless mb-0">
+                    <tbody>
+                      <tr>
+                        <th width="35%">Order ID</th>
+                        <td id="latest_order_id">-</td>
+                      </tr>
+
+                      <tr>
+                        <th>Nominal</th>
+                        <td id="latest_amount">Rp 0</td>
+                      </tr>
+
+                      <tr>
+                        <th>Metode Pembayaran</th>
+                        <td id="latest_payment_type">-</td>
+                      </tr>
+
+                      <tr>
+                        <th>Status Transaksi</th>
+                        <td>
+                          <span id="latest_transaction_status" class="badge bg-secondary"> - </span>
+                        </td>
+                      </tr>
+
+                      <tr>
+                        <th>Waktu Pembayaran</th>
+                        <td id="latest_paid_at">-</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- PACKAGE -->
+          <div class="col-12 col-xl-4">
+            <div class="card">
+              <div class="card-header text-center">
+                <div class="mb-3">
+                  <i class="bi bi-gem text-primary" style="font-size: 3rem"></i>
+                </div>
+
+                <h4 class="card-title">Paket Bulanan</h4>
+
+                <p class="text-muted mb-0">Akses seluruh fitur POS Bengkel.</p>
+              </div>
+
+              <div class="card-body">
+                <div class="text-center mb-4">
+                  <h2 class="text-primary mb-1">Rp 50.000</h2>
+
+                  <span class="text-muted"> per 30 hari </span>
+                </div>
+
+                <ul class="list-group list-group-flush mb-4">
+                  <li class="list-group-item px-0">
+                    <i class="bi bi-check-circle-fill text-success me-2"></i>
+                    Manajemen barang dan jasa
+                  </li>
+
+                  <li class="list-group-item px-0">
+                    <i class="bi bi-check-circle-fill text-success me-2"></i>
+                    Transaksi penjualan dan pembelian
+                  </li>
+
+                  <li class="list-group-item px-0">
+                    <i class="bi bi-check-circle-fill text-success me-2"></i>
+                    Dashboard dan laporan
+                  </li>
+
+                  <li class="list-group-item px-0">
+                    <i class="bi bi-check-circle-fill text-success me-2"></i>
+                    Manajemen kasir
+                  </li>
+                </ul>
+
+                <button type="button" id="btn_pay_subscription" class="btn btn-primary w-100" disabled>
+                  <i class="bi bi-credit-card me-1"></i>
+                  Bayar Langganan
+                </button>
+
+                <p class="text-muted text-center small mt-3 mb-0">Pembayaran diproses melalui Midtrans Sandbox.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- PAYMENT HISTORY -->
+        <div class="card">
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <div>
+              <h4 class="card-title mb-1">
+                <i class="bi bi-clock-history me-2"></i>
+                Riwayat Pembayaran
+              </h4>
+
+              <p class="text-muted mb-0">Daftar seluruh transaksi pembayaran langganan.</p>
+            </div>
+
+            <span id="subscription_history_total" class="badge bg-light-primary"> 0 Transaksi </span>
+          </div>
+
+          <hr class="my-3" />
+
+          <div class="card-body">
+            <div class="table-responsive">
+              <table id="subscription_history_table" class="table table-hover">
+                <thead>
+                  <tr>
+                    <th>No.</th>
+                    <th>Tanggal</th>
+                    <th>Order ID</th>
+                    <th>Metode</th>
+                    <th>Nominal</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+
+                <tbody id="subscription_history_body">
+                  <tr>
+                    <td colspan="6" class="text-center text-muted py-4">Memuat riwayat pembayaran...</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+        <!-- PAYMENT HISTORY END -->
+      </section>
+    </div>
+
+    {% include 'components/footer_dashboard.html' %}
+  </div>
+</div>
+
+<script type="text/javascript" src="https://app.sandbox.midtrans.com/snap/snap.js" data-client-key="{{ midtrans_client_key }}"></script>
+
+<script src="{{ url_for('static', filename='javascript/helper/utilities.js') }}"></script>
+
+<script src="{{ url_for('static', filename='javascript/helper/formatter.js') }}"></script>
+
+<script src="{{ url_for('static', filename='javascript/helper/swal.js') }}"></script>
+
+<script src="{{ url_for('static', filename='javascript/api/subscription.js') }}"></script>
+
+{% endblock %}

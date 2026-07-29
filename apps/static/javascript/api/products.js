@@ -214,8 +214,12 @@ async function saveProduct() {
     swalClose();
   }
 
+  if (!result) {
+    return;
+  }
+
   if (result.status_code === 201 || result.status_code === 200) {
-    await swalSuccess(result.message);
+    await swalSuccess("Berhasil", result.message);
 
     closeModal("product_modal");
 
@@ -225,10 +229,9 @@ async function saveProduct() {
 
     await reloadTable(loadProducts, renderTable);
   } else {
-    await swalError(result.message);
+    await swalError("Gagal", result.message);
   }
 }
-
 document.querySelector(".btn-save").addEventListener("click", saveProduct);
 // **************************************************************
 // SAVE PRODUCT | END
@@ -279,15 +282,19 @@ async function handleTableClick(e) {
         product_id: id,
       });
     } finally {
+
       swalClose();
+    }
+    if (!result) {
+      return;
     }
 
     if (result.status_code === 200 || result.status_code === 201) {
-      await swalSuccess(result.message);
+      await swalSuccess("Berhasil", result.message);
 
       await reloadTable(loadProducts, renderTable);
     } else {
-      await swalError(result.message);
+      await swalError("Gagal", result.message);
     }
   }
 }

@@ -5,3 +5,4 @@ apps/__pycache__
 apps/__pycache__/*
 migrations
 migrations/*
+.env

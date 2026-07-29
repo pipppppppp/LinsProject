@@ -1,0 +1,288 @@
+{% extends 'layouts/dashboard_layout.html' %} {% block content %}
+
+<div id="app">
+  <!-- ================================================================ -->
+  <!-- Navigation -->
+  <!-- ================================================================ -->
+  {% include 'components/nav_dashboard.html' %}
+
+  <!-- ================================================================ -->
+  <!-- Main -->
+  <!-- ================================================================ -->
+  <div id="main">
+    <!-- Burger -->
+    <header class="mb-3">
+      <a href="#" class="burger-btn d-block d-xl-none">
+        <i class="bi bi-justify fs-3"></i>
+      </a>
+    </header>
+
+    <!-- ================================================================ -->
+    <!-- Page -->
+    <!-- ================================================================ -->
+    <div class="page-heading">
+      <!-- ================================================================ -->
+      <!-- Header -->
+      <!-- ================================================================ -->
+      <!-- ================================================================ -->
+      <!-- Header -->
+      <!-- ================================================================ -->
+      <div class="page-title mb-4">
+        <div class="row align-items-center">
+          <div class="col-md-7 col-12">
+            <h3 class="mb-2">Riwayat Pembelian Barang</h3>
+
+            <p class="text-subtitle text-muted mb-0">Kelola seluruh riwayat transaksi pembelian barang dari supplier.</p>
+          </div>
+
+          <div class="col-md-5 col-12">
+            <nav aria-label="breadcrumb" class="breadcrumb-header float-start float-lg-end">
+              <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                  <a href="{{ url_for('dashboard.index') }}"> Dashboard </a>
+                </li>
+
+                <li class="breadcrumb-item active" aria-current="page">Riwayat Pembelian</li>
+              </ol>
+            </nav>
+          </div>
+        </div>
+      </div>
+      <!-- ================================================================ -->
+      <!-- Filter Tanggal -->
+      <!-- ================================================================ -->
+      <section class="section mb-4">
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <h4 class="card-title mb-1">Filter Riwayat Pembelian</h4>
+
+              <p class="text-muted mb-0">Pilih rentang tanggal untuk menampilkan transaksi pembelian.</p>
+            </div>
+          </div>
+
+          <div class="card-body">
+            <div class="row g-3 align-items-end">
+              <div class="col-lg-3">
+                <label class="form-label fw-semibold">Tanggal Awal</label>
+                <input type="date" class="form-control" id="start_date" />
+              </div>
+
+              <div class="col-lg-3">
+                <label class="form-label fw-semibold">Tanggal Akhir</label>
+                <input type="date" class="form-control" id="end_date" />
+              </div>
+
+              <div class="col-lg-3">
+                <label class="form-label fw-semibold">Supplier</label>
+                <select id="supplier_id" class="form-select">
+                  <option value="">Semua Supplier</option>
+                </select>
+              </div>
+
+              <div class="col-lg-3">
+                <label class="form-label">&nbsp;</label>
+
+                <div class="d-flex gap-2">
+                  <button class="btn btn-primary flex-fill" id="btn_filter">
+                    <i class="bi bi-search me-1"></i>
+                    Filter
+                  </button>
+
+                  <button class="btn btn-light-secondary flex-fill" id="btn_reset">
+                    <i class="bi bi-arrow-clockwise me-1"></i>
+                    Reset
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+      <!-- ================================================================ -->
+      <!-- Summary -->
+      <!-- ================================================================ -->
+      <section class="section mb-5">
+        <div class="row">
+          <!-- Total Pembelian -->
+          <div class="col-xl-3 col-md-6 col-sm-12">
+            <div class="card">
+              <div class="card-content">
+                <div class="card-body">
+                  <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                      <h6 class="text-muted font-semibold mb-1">Total Pembelian</h6>
+
+                      <h3 class="font-extrabold mb-1" id="total_purchase">0</h3>
+
+                      <small class="text-muted"> Total transaksi sesuai filter </small>
+                    </div>
+
+                    <div class="stats-icon blue">
+                      <i class="bi bi-cart-check"></i>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Total Pengeluaran -->
+          <div class="col-xl-3 col-md-6 col-sm-12">
+            <div class="card">
+              <div class="card-content">
+                <div class="card-body">
+                  <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                      <h6 class="text-muted font-semibold mb-1">Total Pengeluaran</h6>
+
+                      <h3 class="font-extrabold mb-1" id="total_expense">Rp 0</h3>
+
+                      <small class="text-muted"> Total biaya pembelian sesuai filter </small>
+                    </div>
+
+                    <div class="stats-icon green">
+                      <i class="bi bi-cash-stack"></i>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Pembelian Hari Ini -->
+          <div class="col-xl-3 col-md-6 col-sm-12">
+            <div class="card">
+              <div class="card-content">
+                <div class="card-body">
+                  <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                      <h6 class="text-muted font-semibold mb-1">Pembelian Hari Ini</h6>
+
+                      <h3 class="font-extrabold mb-1" id="today_purchase">Rp 0</h3>
+
+                      <small class="text-muted"> Total pembelian hari ini </small>
+                    </div>
+
+                    <div class="stats-icon purple">
+                      <i class="bi bi-bag-check"></i>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Supplier Aktif -->
+          <div class="col-xl-3 col-md-6 col-sm-12">
+            <div class="card">
+              <div class="card-content">
+                <div class="card-body">
+                  <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                      <h6 class="text-muted font-semibold mb-1">Supplier Aktif</h6>
+
+                      <h3 class="font-extrabold mb-1" id="active_supplier">0</h3>
+
+                      <small class="text-muted"> Supplier yang memiliki transaksi </small>
+                    </div>
+
+                    <div class="stats-icon warning">
+                      <i class="bi bi-truck"></i>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================================================================ -->
+      <!-- Table -->
+      <!-- ================================================================ -->
+      <section class="section">
+        <div class="card">
+          <div class="card-header">
+            <div class="d-flex justify-content-between align-items-center">
+              <div>
+                <h4 class="card-title mb-1">Riwayat Pembelian</h4>
+
+                <p class="text-muted mb-0">Daftar seluruh transaksi penjualan yang telah dilakukan.</p>
+              </div>
+
+              <div class="d-flex align-items-center gap-2">
+                <span id="transaction_count" class="btn btn-light-primary btn-sm disabled"> 0 Pembelian </span>
+                <button class="btn btn-light-primary btn-sm" id="btn_refresh">
+                  <i class="bi bi-arrow-clockwise"></i>
+                  Refresh
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="card-body">
+            <table class="table table-hover mb-0" id="table1">
+              <thead class="table-secondary">
+                <tr>
+                  <th width="60">No</th>
+
+                  <th width="180">Tanggal</th>
+
+                  <th>Supplier</th>
+
+                  <th width="180" class="text-end">Total</th>
+
+                  <th width="120" class="text-center">Aksi</th>
+                </tr>
+              </thead>
+
+              <tbody id="history_purchase_table">
+                <!-- row table set at javascript -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- ================================================================ -->
+    <!-- Footer -->
+    <!-- ================================================================ -->
+    {% include 'components/footer_dashboard.html' %}
+
+    <!-- ================================================================ -->
+    <!-- Detail Modal -->
+    <!-- ================================================================ -->
+    <div class="modal fade text-left" id="detail_modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel33" aria-hidden="true">
+      <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">
+              <i class="bi bi-receipt me-2 text-primary"></i>
+
+              Detail Pembelian
+            </h5>
+
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+
+          <div class="modal-body" id="detail_modal_body">
+            <!-- nanti diisi javascript -->
+          </div>
+
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="{{ url_for('static', filename='javascript/helper/utilities.js') }}"></script>
+<script src="{{ url_for('static', filename='javascript/helper/formatter.js') }}"></script>
+<script src="{{ url_for('static', filename='javascript/helper/swal.js') }}"></script>
+<script src="{{ url_for('static', filename='javascript/helper/validators.js') }}"></script>
+<script src="{{ url_for('static', filename='javascript/api/history_purchase.js') }}"></script>
+
+{% endblock %}

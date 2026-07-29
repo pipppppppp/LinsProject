@@ -29,16 +29,17 @@
     <!--! [Start] Main Content !-->
     <!--! ================================================================ !-->
     <div class="page-heading">
-      <!--! ================================================================ !-->
-      <!--! [Start] Header !-->
-      <!--! ================================================================ !-->
-      <div class="page-title">
-        <div class="row">
-          <div class="col-12 col-md-6 order-md-1 order-last">
-            <h3>LAPORAN PEMBELIAN</h3>
+      <!-- ================================================================ -->
+      <!-- [Start] Header -->
+      <div class="page-title mb-4">
+        <div class="row align-items-center">
+          <div class="col-md-7 col-12">
+            <h3 class="mb-2">Laporan Pembelian</h3>
+
+            <p class="text-subtitle text-muted mb-0">Analisis dan rekap seluruh transaksi penjualan bengkel.</p>
           </div>
 
-          <div class="col-12 col-md-6 order-md-2 order-first">
+          <div class="col-md-5 col-12">
             <nav aria-label="breadcrumb" class="breadcrumb-header float-start float-lg-end">
               <ol class="breadcrumb">
                 <li class="breadcrumb-item">
@@ -51,116 +52,281 @@
           </div>
         </div>
       </div>
-      <!--! ================================================================ !-->
-      <!--! [End] Header !-->
-      <!--! ================================================================ !-->
+      <!-- [End] Header -->
+      <!-- ================================================================ -->
 
-      <!--! ================================================================ !-->
-      <!--! [Start] Filter !-->
-      <!--! ================================================================ !-->
-      <section class="section">
+      <!-- ================================================================ -->
+      <!-- [Start] Filter -->
+      <!-- ================================================================ -->
+      <section class="section mb-4">
         <div class="card">
+          <div class="card-header">
+            <h4 class="card-title mb-1">Filter Laporan</h4>
+
+            <p class="text-muted mb-0">Pilih periode dan kasir untuk menampilkan laporan penjualan.</p>
+          </div>
+
           <div class="card-body">
             <div class="row g-3">
-              <div class="col-md-3">
-                <label>Tanggal Awal</label>
+              <div class="col-lg-3 col-md-6">
+                <label class="form-label"> Tanggal Awal </label>
 
-                <input type="date" id="start_date" class="form-control" />
+                <input type="date" class="form-control" id="start_date" />
               </div>
 
-              <div class="col-md-3">
-                <label>Tanggal Akhir</label>
+              <div class="col-lg-3 col-md-6">
+                <label class="form-label"> Tanggal Akhir </label>
 
-                <input type="date" id="end_date" class="form-control" />
+                <input type="date" class="form-control" id="end_date" />
               </div>
 
-              <div class="col-md-3">
-                <label>Supplier</label>
+              <div class="col-lg-3 col-md-6">
+                <label class="form-label"> Kasir </label>
 
-                <select id="supplier_id" class="form-select">
+                <select class="form-select" id="supplier_id">
                   <option value="">Semua Supplier</option>
                 </select>
               </div>
 
-              <div class="col-md-3">
-                <label>&nbsp;</label>
-
-                <div class="d-flex gap-2">
-                  <button id="btn-search" class="btn btn-primary w-100">
-                    <i class="bi bi-search"></i>
-                    Cari
+              <div class="col-lg-3 col-md-6 d-flex align-items-end">
+                <div class="d-grid gap-2 w-100">
+                  <button class="btn btn-primary" id="btn_filter">
+                    <i class="bi bi-search me-1"></i>
+                    Tampilkan Laporan
                   </button>
+                </div>
+              </div>
+            </div>
 
-                  <button id="btn-excel" class="btn btn-success">
-                    <i class="bi bi-file-earmark-excel-fill"></i>
-                  </button>
+            <hr />
 
-                  <button id="btn-pdf" class="btn btn-danger">
-                    <i class="bi bi-file-earmark-pdf-fill"></i>
-                  </button>
+            <div class="d-flex justify-content-end gap-2">
+              <button class="btn btn-light-secondary" id="btn_reset">
+                <i class="bi bi-arrow-clockwise me-1"></i>
+                Reset
+              </button>
+
+              <button type="button" class="btn btn-success" id="btn_export_excel">
+                <i class="bi bi-file-earmark-excel me-1"></i>
+                Export Excel
+              </button>
+
+              <button class="btn btn-danger" id="btn_export_pdf">
+                <i class="bi bi-file-earmark-pdf me-1"></i>
+                Export PDF
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+      <!-- ================================================================ -->
+      <!-- [End] Filter -->
+      <!-- ================================================================ -->
+
+      <!-- ================================================================ -->
+      <!-- [Start] Summary Card -->
+      <!-- ================================================================ -->
+      <section class="section mb-4">
+        <div class="row">
+          <!-- Total Pembelian -->
+          <div class="col-xl-3 col-md-6 col-sm-12">
+            <div class="card">
+              <div class="card-content">
+                <div class="card-body">
+                  <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                      <h6 class="text-muted font-semibold mb-1">Total Pembelian</h6>
+
+                      <h3 class="font-extrabold mb-1" id="total_purchase">Rp 0</h3>
+
+                      <small class="text-muted"> Total nilai pembelian </small>
+                    </div>
+
+                    <div class="stats-icon blue">
+                      <i class="bi bi-cash-stack"></i>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Total Transaksi -->
+          <div class="col-xl-3 col-md-6 col-sm-12">
+            <div class="card">
+              <div class="card-content">
+                <div class="card-body">
+                  <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                      <h6 class="text-muted font-semibold mb-1">Total Transaksi</h6>
+
+                      <h3 class="font-extrabold mb-1" id="total_transaction">0</h3>
+
+                      <small class="text-muted"> Jumlah transaksi pembelian </small>
+                    </div>
+
+                    <div class="stats-icon green">
+                      <i class="bi bi-receipt"></i>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Total Supplier -->
+          <div class="col-xl-3 col-md-6 col-sm-12">
+            <div class="card">
+              <div class="card-content">
+                <div class="card-body">
+                  <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                      <h6 class="text-muted font-semibold mb-1">Total Supplier</h6>
+
+                      <h3 class="font-extrabold mb-1" id="total_supplier">0</h3>
+
+                      <small class="text-muted"> Supplier yang melakukan transaksi </small>
+                    </div>
+
+                    <div class="stats-icon purple">
+                      <i class="bi bi-truck"></i>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Total Item -->
+          <div class="col-xl-3 col-md-6 col-sm-12">
+            <div class="card">
+              <div class="card-content">
+                <div class="card-body">
+                  <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                      <h6 class="text-muted font-semibold mb-1">Total Item</h6>
+
+                      <h3 class="font-extrabold mb-1" id="total_item">0</h3>
+
+                      <small class="text-muted"> Total item yang dibeli </small>
+                    </div>
+
+                    <div class="stats-icon red">
+                      <i class="bi bi-box-seam"></i>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
       </section>
-      <!--! ================================================================ !-->
-      <!--! [End] Filter !-->
-      <!--! ================================================================ !-->
-      <!--! ================================================================ !-->
-      <!--! [Start] Summary !-->
-      <!--! ================================================================ !-->
-      <section class="section">
+      <!-- ================================================================ -->
+      <!-- [End] Summary Card -->
+      <!-- ================================================================ -->
+      <!-- ================================================================ -->
+      <!-- [Start] Chart & Ranking -->
+      <!-- ================================================================ -->
+      <section class="section mb-4">
+        <!-- ================================================================ -->
+        <!-- Sales Chart & Top Product -->
+        <!-- ================================================================ -->
         <div class="row">
-          <div class="col-md-6">
+          <!-- Sales Chart -->
+          <div class="col-lg-8 col-12">
             <div class="card">
-              <div class="card-body">
-                <h6 class="text-muted">Jumlah Pembelian</h6>
+              <div class="card-header">
+                <h4 class="card-title mb-1">Grafik Penjualan</h4>
 
-                <h3 id="total_purchase">0</h3>
+                <p class="text-muted mb-0">Total penjualan berdasarkan periode yang dipilih.</p>
+              </div>
+
+              <div class="card-body">
+                <div id="purchase_chart"></div>
               </div>
             </div>
           </div>
 
-          <div class="col-md-6">
+          <!-- Top Product -->
+          <div class="col-lg-4 col-12">
             <div class="card">
-              <div class="card-body">
-                <h6 class="text-muted">Total Pengeluaran</h6>
+              <div class="card-header">
+                <h4 class="card-title mb-1">Produk Terlaris</h4>
 
-                <h3 id="total_expense">Rp 0</h3>
+                <p class="text-muted mb-0">5 produk dengan penjualan terbanyak.</p>
+              </div>
+
+              <div class="card-body">
+                <div id="top_products">
+                  <!-- Generate by Javascript -->
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ================================================================ -->
+        <!-- Top Services -->
+        <!-- ================================================================ -->
+        <div class="row">
+          <div class="col-12">
+            <div class="card">
+              <div class="card-header">
+                <h4 class="card-title mb-1">Jasa Terlaris</h4>
+
+                <p class="text-muted mb-0">5 jasa yang paling sering digunakan pelanggan.</p>
+              </div>
+
+              <div class="card-body">
+                <div id="top_suppliers">
+                  <!-- Generate by Javascript -->
+                </div>
               </div>
             </div>
           </div>
         </div>
       </section>
-      <!--! ================================================================ !-->
-      <!--! [End] Summary !-->
-      <!--! ================================================================ !-->
+      <!-- ================================================================ -->
+      <!-- [End] Chart & Ranking -->
+      <!-- ================================================================ -->
 
-      <!--! ================================================================ !-->
-      <!--! [Start] Report Table !-->
-      <!--! ================================================================ !-->
+      <!-- ================================================================ -->
+      <!-- [Start] Report Table -->
+      <!-- ================================================================ -->
       <section class="section">
         <div class="card">
-          <div class="card-body">
-            <table class="table table-striped" id="table1">
-              <thead>
-                <tr>
-                  <th>No</th>
-                  <th>Tanggal</th>
-                  <th>Supplier</th>
-                  <th>Total</th>
-                </tr>
-              </thead>
+          <div class="card-header">
+            <h4 class="card-title mb-1">Data Laporan Penjualan</h4>
 
-              <tbody id="purchase_report_table"></tbody>
-            </table>
+            <p class="text-muted mb-0">Daftar seluruh transaksi sesuai filter yang dipilih.</p>
+          </div>
+
+          <div class="card-body">
+            <div class="table-responsive">
+              <table class="table table-hover" id="table_report_sales">
+                <thead>
+                  <tr>
+                    <th width="5%">No</th>
+                    <th>Invoice</th>
+                    <th>Tanggal</th>
+                    <th>Supplier</th>
+                    <th>Jumlah Item</th>
+                    <th>Total</th>
+                    <th class="text-end">Total</th>
+                  </tr>
+                </thead>
+
+                <tbody>
+                  <!-- Generate by Javascript -->
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
       </section>
-      <!--! ================================================================ !-->
-      <!--! [End] Report Table !-->
-      <!--! ================================================================ !-->
+      <!-- ================================================================ -->
+      <!-- [End] Report Table -->
+      <!-- ================================================================ -->
     </div>
     <!--! ================================================================ !-->
     <!--! [End] Main Content !-->
@@ -168,9 +334,7 @@
 
     <!--! ================================================================ !-->
     <!--! [Start] Footer !-->
-    <!--! ================================================================ !-->
     {% include 'components/footer_dashboard.html' %}
-    <!--! ================================================================ !-->
     <!--! [End] Footer !-->
     <!--! ================================================================ !-->
   </div>
@@ -178,11 +342,13 @@
   <!--! [End] Page Content !-->
   <!--! ================================================================ !-->
 </div>
+<script src="{{ url_for('static', filename='vendors/apexcharts/apexcharts.js') }}"></script>
+<!-- <script src="{{ url_for('static', filename='javascript/pages/dashboard.js') }}"></script> -->
 
 <script src="{{ url_for('static', filename='javascript/helper/utilities.js') }}"></script>
 <script src="{{ url_for('static', filename='javascript/helper/formatter.js') }}"></script>
 <script src="{{ url_for('static', filename='javascript/helper/swal.js') }}"></script>
 <script src="{{ url_for('static', filename='javascript/helper/validators.js') }}"></script>
-<script src="{{ url_for('static', filename='javascript/api/report.js') }}"></script>
 
+<script src="{{ url_for('static', filename='javascript/api/report_purchase.js') }}"></script>
 {% endblock %}

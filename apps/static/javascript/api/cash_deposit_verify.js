@@ -28,12 +28,12 @@ async function loadCashDeposits() {
   const status = document.getElementById("status").value;
   console.log("STATUS :", status);
   const result = await getRequest(`/cash-deposit/view?date=${date}&status=${status}`);
-
+  if (!result) {
+    return;
+  }
   cashDepositsData = result.data.history;
 }
-document.querySelector(".btn-search").addEventListener("click", async () => {
-  await reloadTable(loadCashDeposits, renderTable);
-});
+
 // **************************************************************
 // GET CASH DEPOSIT | END
 // **************************************************************
@@ -193,13 +193,16 @@ async function verifyCashDeposit(id, status) {
   } finally {
     swalClose();
   }
+  if (!result) {
+    return;
+  }
 
-  if (result.status_code == 200) {
-    await swalSuccess(result.message);
+  if (result.status_code === 200) {
+    await swalSuccess("Berhasil", result.message);
 
     await reloadTable(loadCashDeposits, renderTable);
   } else {
-    await swalError(result.message);
+    await swalError("Gagal", result.message);
   }
 }
 // **************************************************************

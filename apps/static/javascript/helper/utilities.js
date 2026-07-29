@@ -1,4 +1,76 @@
 // **************************************************************
+// GET WORKSHOP OPERATIONAL STATUS | START
+// **************************************************************
+async function getWorkshopOperationalStatus() {
+  try {
+    const response = await fetch("/workshop/view", {
+      method: "GET",
+      headers: {
+        Accept: "application/json",
+      },
+    });
+
+    const result = await response.json();
+
+    return String(result?.data?.operational_status || "").toLowerCase();
+  } catch (error) {
+    console.error("WORKSHOP STATUS ERROR:", error);
+
+    return "";
+  }
+}
+// **************************************************************
+// GET WORKSHOP OPERATIONAL STATUS | END
+// **************************************************************
+
+// **************************************************************
+// PROCESS API RESPONSE | START
+// **************************************************************
+async function processApiResponse(response) {
+  let result = null;
+
+  try {
+    result = await response.json();
+  } catch (error) {
+    console.error("INVALID API RESPONSE:", error);
+
+    swalError("Gagal", "Respons server tidak valid.");
+
+    return null;
+  }
+
+  const statusCode = Number(result?.status_code || response.status);
+
+  // LANGGANAN TIDAK AKTIF / KEDALUWARSA
+  if (statusCode === 402) {
+    swalClose();
+
+    const operationalStatus = await getWorkshopOperationalStatus();
+
+    // Bengkel dinonaktifkan administrator
+    if (operationalStatus === "inactive") {
+      await swalWorkshopInactive("Bengkel sedang dinonaktifkan oleh administrator. Hubungi administrator untuk mengaktifkannya kembali.");
+
+      return null;
+    }
+
+    // Belum berlangganan atau kedaluwarsa
+    const confirmation = await swalSubscriptionRequired(result.message);
+
+    if (confirmation.isConfirmed) {
+      window.location.href = "/subscription/";
+    }
+
+    return null;
+  }
+
+  return result;
+}
+// **************************************************************
+// PROCESS API RESPONSE | END
+// **************************************************************
+
+// **************************************************************
 // GET REQUEST | START
 // **************************************************************
 async function getRequest(url) {
@@ -10,9 +82,9 @@ async function getRequest(url) {
       },
     });
 
-    return await response.json();
+    return await processApiResponse(response);
   } catch (error) {
-    swalError("Tidak dapat terhubung ke server.");
+    swalError("Gagal", "Tidak dapat terhubung ke server.");
 
     return null;
   }
@@ -54,9 +126,9 @@ async function postRequest(url, data) {
       body: JSON.stringify(data),
     });
 
-    return await response.json();
+    return await processApiResponse(response);
   } catch (error) {
-    swalError("Tidak dapat terhubung ke server.");
+    console.error(error);
 
     return null;
   }
@@ -75,9 +147,9 @@ async function uploadRequest(url, formData) {
       body: formData,
     });
 
-    return await response.json();
+    return await processApiResponse(response);
   } catch (error) {
-    swalError("Tidak dapat terhubung ke server.");
+    swalError("Gagal", "Tidak dapat terhubung ke server.");
 
     return null;
   }
@@ -99,9 +171,9 @@ async function putRequest(url, data) {
       body: JSON.stringify(data),
     });
 
-    return await response.json();
+    return await processApiResponse(response);
   } catch (error) {
-    swalError("Tidak dapat terhubung ke server.");
+    swalError("Gagal", "Tidak dapat terhubung ke server.");
 
     return null;
   }
@@ -123,9 +195,9 @@ async function deleteRequest(url, data) {
       body: JSON.stringify(data),
     });
 
-    return await response.json();
+    return await processApiResponse(response);
   } catch (error) {
-    swalError("Tidak dapat terhubung ke server.");
+    swalError("Gagal", "Tidak dapat terhubung ke server.");
 
     return null;
   }
@@ -160,7 +232,19 @@ function clearValue(...elements) {
 // CLOSE MODAL | START
 // **************************************************************
 function closeModal(id) {
-  bootstrap.Modal.getInstance(document.getElementById(id)).hide();
+  const modalElement = document.getElementById(id);
+
+  if (!modalElement) {
+    return;
+  }
+
+  let modal = bootstrap.Modal.getInstance(modalElement);
+
+  if (!modal) {
+    modal = new bootstrap.Modal(modalElement);
+  }
+
+  modal.hide();
 }
 // **************************************************************
 // CLOSE MODAL | END

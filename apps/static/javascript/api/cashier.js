@@ -265,70 +265,76 @@ async function loadCustomer() {
 
   const customers = response.data?.customer || [];
 
-  // Kosongkan select
-  form.customer.innerHTML = "";
-
   // Option kosong untuk Select2 placeholder
   form.customer.innerHTML = "";
 
-  const defaultOption = new Option("", "", false, false);
-  form.customer.add(defaultOption);
+  const empty = new Option("Pilih Pelanggan", "");
+  empty.disabled = true;
+  empty.selected = true;
+
+  form.customer.add(empty);
 
   customers.forEach((customer) => {
-    const option = new Option(customer.customer_name, customer.id, false, false);
-
-    form.customer.add(option);
+    form.customer.add(new Option(customer.customer_name, customer.id));
   });
 
-  // Destroy jika sudah pernah diinisialisasi
-  if ($("#customer_id").data("select2")) {
+  if ($("#customer_id").hasClass("select2-hidden-accessible")) {
     $("#customer_id").select2("destroy");
   }
-
-  // Inisialisasi Select2
+  
   $("#customer_id").select2({
     width: "100%",
   });
 
-  // Event ketika customer berubah
-  $("#customer_id")
-    .off("change")
-    .on("change", function () {
-      console.log("change", $(this).val());
-
-      setTimeout(() => {
-        loadVehicle();
-      }, 10);
-    });
+  $("#customer_id").on("change", function () {
+    loadVehicle(this.value);
+  });
 }
 // **************************************************************
 // LOAD CUSTOMER | END
 // **************************************************************
+
 // **************************************************************
 // LOAD VEHICLE | START
 // **************************************************************
+// async function loadVehicle(customer_id) {
+//   console.log(customer_id);
 
-async function loadVehicle() {
-  const customer_id = $("#customer_id").val();
+//   form.vehicle.innerHTML = `<option value="">Pilih Kendaraan</option>`;
 
-  console.log("customer_id:", customer_id);
-  console.log("text:", $("#customer_id option:selected").text());
+//   if (!customer_id) return;
+//   console.log("Request:", `/vehicle/view/${customer_id}`);
 
-  form.vehicle.innerHTML = `<option value="">Pilih Kendaraan</option>`;
+//   const result = await getRequest(`/vehicle/view/${customer_id}`);
+//   console.log(result);
+//   const vehicles = result.data?.vehicles || [];
+//   console.log("vehicles =", vehicles);
+//   console.log("vehicle select =", form.vehicle);
+
+//   vehicles.forEach((vehicle) => {
+//     form.vehicle.innerHTML += `
+//       <option value="${vehicle.id}">
+//         ${vehicle.plate_number} - ${vehicle.vehicle_brand} ${vehicle.vehicle_type}
+//       </option>
+//     `;
+//   });
+// }
+async function loadVehicle(customer_id) {
+  form.vehicle.innerHTML = "";
+
+  form.vehicle.add(new Option("Pilih Kendaraan", ""));
 
   if (!customer_id) return;
 
   const result = await getRequest(`/vehicle/view/${customer_id}`);
 
-  const vehicles = result.data?.vehicles ?? [];
+  const vehicles = result.data?.vehicles || [];
 
   vehicles.forEach((vehicle) => {
-    form.vehicle.innerHTML += `
-      <option value="${vehicle.id}">
-        ${vehicle.plate_number} - ${vehicle.vehicle_brand} ${vehicle.vehicle_type}
-      </option>
-    `;
+    form.vehicle.add(new Option(`${vehicle.plate_number} - ${vehicle.vehicle_brand} ${vehicle.vehicle_type}`, vehicle.id));
   });
+
+  form.vehicle.selectedIndex = 0;
 }
 // **************************************************************
 // LOAD VEHICLE | END

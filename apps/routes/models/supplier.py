@@ -4,7 +4,7 @@ import time
 from ... import db
 from ...database.db_workshops import Workshops
 from ...database.db_suppliers import Suppliers
-from ...utilities.validators import role_validator, supplier_validator
+from ...utilities.validators import role_validator, supplier_validator, subscription_validator
 
 from apps.utilities.responseHelpers import *
 from apps.utilities.utilities import current_timestamp
@@ -21,6 +21,11 @@ class SupplierModels():
             access = role_validator(user_role)
             if not access:
                 return authorization_error()
+            
+            subscription_access = subscription_validator(user_role, workshop_id)
+
+            if not subscription_access:
+                return subscription_required()
             # Access Validation ---------------------------------------- Finish
 
             # Check Request Body ---------------------------------------- Start
@@ -169,6 +174,11 @@ class SupplierModels():
 
             if not access:
                 return authorization_error()
+
+            subscription_access = subscription_validator(user_role, workshop_id)
+
+            if not subscription_access:
+                return subscription_required()
             # Access Validation ---------------------------------------- Finish
 
             # Check Request Body ---------------------------------------- Start
@@ -271,6 +281,11 @@ class SupplierModels():
 
             if not access:
                 return authorization_error()
+
+            subscription_access = subscription_validator(user_role, workshop_id)
+
+            if not subscription_access:
+                return subscription_required()
             # Access Validation ---------------------------------------- Finish
 
             # Check Workshop ---------------------------------------- Start
