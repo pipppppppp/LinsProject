@@ -121,6 +121,7 @@ from .routes.controllers.cashier_management import cashier_management
 from .routes.controllers.dashboard import dashboard
 from .routes.controllers.dashboard_cashier import dashboard_cashier
 from .routes.controllers.dashboard_administrator import dashboard_administrator
+from .routes.controllers.owner_account import owner_account
 from .routes.controllers.cashier import cashier
 from .routes.controllers.category import category
 from .routes.controllers.customer import customer
@@ -145,6 +146,7 @@ app.register_blueprint(cashier_management)
 app.register_blueprint(dashboard)
 app.register_blueprint(dashboard_cashier)
 app.register_blueprint(dashboard_administrator)
+app.register_blueprint(owner_account)
 app.register_blueprint(cashier)
 app.register_blueprint(category)
 app.register_blueprint(workshop)

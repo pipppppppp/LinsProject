@@ -12,6 +12,11 @@ from apps.database.db_products import Products
 from apps.database.db_suppliers import Suppliers
 from apps.database.db_services import Services
 from apps.utilities.utilities import *
+from apps.utilities.utilities import (
+    email_checker,
+    password_checker,
+    password_compare
+)
 
 
 ##########################################################################################################
@@ -173,6 +178,179 @@ def owner_validator(role):
 
     return access
 # OWNER VALIDATION ============================================================ End
+
+# **************************************************************
+# OWNER ACCOUNT VALIDATOR | START
+# **************************************************************
+def owner_account_validator(user_id, owner_name, username, email):
+    checker_result = []
+
+    user_id = int(user_id)
+
+    # Check Current Owner ========================================
+    current_owner = Users.query.filter_by(
+        id=user_id,
+        role="1",
+        is_delete="0"
+    ).first()
+
+    if not current_owner:
+        checker_result.append(
+            "Akun owner tidak ditemukan."
+        )
+
+        return checker_result
+
+    # Empty Validation ========================================
+    if owner_name == "":
+        checker_result.append(
+            "Nama owner tidak boleh kosong."
+        )
+
+    if username == "":
+        checker_result.append(
+            "Username tidak boleh kosong."
+        )
+
+    if email == "":
+        checker_result.append(
+            "Email tidak boleh kosong."
+        )
+
+    # Email Validation ========================================
+    if email != "" and email_checker(email):
+        checker_result.append(
+            "Format email tidak valid."
+        )
+
+    # Duplicate Username Validation ========================================
+    # Hanya dicek ketika username benar-benar diubah.
+    if (
+        username != "" and
+        username.strip().lower()
+        != str(current_owner.username).strip().lower()
+    ):
+        username_check = Users.query.filter(
+            Users.username == username,
+            Users.id != user_id,
+            Users.is_delete == "0"
+        ).first()
+
+        if username_check:
+            checker_result.append(
+                "Username sudah digunakan."
+            )
+
+    # Duplicate Email Validation ========================================
+    # Hanya dicek ketika email benar-benar diubah.
+    if (
+        email != "" and
+        email.strip().lower()
+        != str(current_owner.email).strip().lower()
+    ):
+        email_check = Users.query.filter(
+            Users.email == email,
+            Users.id != user_id,
+            Users.is_delete == "0"
+        ).first()
+
+        if email_check:
+            checker_result.append(
+                "Email sudah digunakan."
+            )
+
+    return checker_result
+# **************************************************************
+# OWNER ACCOUNT VALIDATOR | END
+# **************************************************************
+# **************************************************************
+# OWNER PASSWORD VALIDATOR | START
+# **************************************************************
+def owner_password_validator(old_password, new_password, confirm_password, current_password):
+    checker_result = []
+
+    # Empty Data Validation ======================================== Start
+    if old_password == "":
+        checker_result.append(
+            "Password lama tidak boleh kosong."
+        )
+
+    if new_password == "":
+        checker_result.append(
+            "Password baru tidak boleh kosong."
+        )
+
+    if confirm_password == "":
+        checker_result.append(
+            "Konfirmasi password tidak boleh kosong."
+        )
+    # Empty Data Validation ======================================== Finish
+
+    # Old Password Validation ======================================== Start
+    if old_password != "":
+        password_match = password_compare(
+            current_password,
+            old_password
+        )
+
+        if not password_match:
+            checker_result.append(
+                "Password lama tidak sesuai."
+            )
+    # Old Password Validation ======================================== Finish
+
+    # Confirmation Validation ======================================== Start
+    if (
+        new_password != "" and
+        confirm_password != "" and
+        new_password != confirm_password
+    ):
+        checker_result.append(
+            "Konfirmasi password baru tidak sesuai."
+        )
+    # Confirmation Validation ======================================== Finish
+
+    # Same Password Validation ======================================== Start
+    if new_password != "":
+        password_same = password_compare(
+            current_password,
+            new_password
+        )
+
+        if password_same:
+            checker_result.append(
+                "Password baru tidak boleh sama dengan password lama."
+            )
+    # Same Password Validation ======================================== Finish
+
+    # Password Character Validation ======================================== Start
+    if new_password != "":
+        sanitize_password, char_password = sanitize_passwd_char(
+            new_password
+        )
+
+        if sanitize_password:
+            checker_result.append(
+                f"Password baru tidak boleh mengandung karakter {char_password}."
+            )
+    # Password Character Validation ======================================== Finish
+
+    # Password Format Validation ======================================== Start
+    if new_password != "":
+        password_error, password_message = password_checker(
+            new_password
+        )
+
+        if password_error:
+            checker_result.append(
+                password_message
+            )
+    # Password Format Validation ======================================== Finish
+
+    return checker_result
+# **************************************************************
+# OWNER PASSWORD VALIDATOR | END
+# **************************************************************
 
 # CASHIER VALIDATION ============================================================ Begin
 def cashier_validator(role):

@@ -152,7 +152,14 @@
 
         <!-- AKUN -->
         <li class="sidebar-title">AKUN</li>
+        <li class="sidebar-item {% if active_menu == 'owner_account' %}active{% endif %}">
+          <a href="{{ url_for('owner_account.index') }}" class="sidebar-link">
+            <i class="bi bi-person-gear"></i>
 
+            <span>Pengaturan Akun</span>
+          </a>
+        </li>
+        
         <li class="sidebar-item logout-item">
           <a href="{{ url_for('auth.signout') }}" id="logout" class="sidebar-link text-danger">
             <i class="bi bi-box-arrow-right"></i>
