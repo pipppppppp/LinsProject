@@ -6,3 +6,6 @@ apps/__pycache__/*
 migrations
 migrations/*
 .env
+
+apps/utilities/credentials.json
+token.json

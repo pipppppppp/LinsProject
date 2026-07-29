@@ -65,6 +65,20 @@ def signup_process():
         return bad_request(str(e))
 # SIGNUP PROCESS ============================================================ End
 
+# VERIFY EMAIL ============================================================ Begin
+# GET http://127.0.0.1:5000/auth/verify-email/<token>
+@auth.get('/verify-email/<string:token>')
+def verify_email(token):
+    try:
+        # Request Process ========================================
+        response = AuthModels.verify_email(token)
+
+        # Return Response ========================================
+        return response
+
+    except Exception as e:
+        return bad_request(str(e))
+# VERIFY EMAIL ============================================================ End
 
 # SIGNIN PROCESS ============================================================ Begin
 # POST https://127.0.0.1:5000/auth/signin/account [Done]

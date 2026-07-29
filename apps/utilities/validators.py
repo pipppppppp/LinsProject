@@ -88,7 +88,72 @@ def role_validator(role):
         access = True
 
     return access
+
+def signin_validator(usermail, password):
+    checker_result = []
+
+    # Check Null Value ---------------------------------------- Start
+    if usermail == "":
+        checker_result.append("Username atau email tidak boleh kosong.")
+    if password == "":
+        checker_result.append("Password tidak boleh kosong.")
+    # Check Null Value ---------------------------------------- Finish
+
+    # Sanitize String Content ---------------------------------------- Start
+    sanitMail, charMail = sanitize_email_char(usermail)
+    if sanitMail:
+        checker_result.append(f"Email tidak boleh mengandung karakter {charMail}.")
+    sanitPass, charPass = sanitize_passwd_char(password)
+    if sanitPass:
+        checker_result.append(f"Password tidak boleh mengandung karakter {charPass}.")
+    # Sanitize String Content ---------------------------------------- Finish
     
+    # Check Data in Database ---------------------------------------- Finish
+    # Get data
+    result_data = Users.query.filter_by(email=usermail, is_delete=0).first()
+    if not result_data:
+        result_data = Users.query.filter_by(username=usermail, is_delete=0).first()
+    
+    # Check data ready or not
+    stts = 200
+    if not result_data:
+        stts = 404
+        checker_result.append("Username/Email tidak terdaftar.")
+    # Check Data in Database ---------------------------------------- Finish
+
+    # Password Validation ---------------------------------------- Start
+    if result_data:
+        # Account Status Validation ---------------------------------------- Start
+        if int(result_data.is_active or 0) == 0:
+            stts = 403
+
+            if result_data.email_verified_at is None:
+                checker_result.append(
+                    "Akun Anda belum melakukan verifikasi email."
+                )
+            else:
+                checker_result.append(
+                    "Akun Anda sedang dinonaktifkan."
+                )
+
+            return checker_result, result_data, stts
+        # Account Status Validation ---------------------------------------- Finish
+
+        # Check Password ---------------------------------------- Start
+        password_match = password_compare(
+            result_data.password,
+            password
+        )
+
+        if not password_match:
+            stts = 400
+            checker_result.append("Password salah.")
+        # Check Password ---------------------------------------- Finish
+    # Password Validation ---------------------------------------- Finish
+
+    return checker_result, result_data, stts
+# AUTH VALIDATION ============================================================ End
+
 # ADMINISTRATOR VALIDATION ============================================================ Begin
 def administrator_validator(role):
     access = False
@@ -194,69 +259,6 @@ def subscription_validator(role, workshop_id):
         db.session.rollback()
         return False
 # SUBSCRIPTION VALIDATION ============================================================ End
-
-def signin_validator(usermail, password):
-    checker_result = []
-
-    # Check Null Value ---------------------------------------- Start
-    if usermail == "":
-        checker_result.append("Username atau email tidak boleh kosong.")
-    if password == "":
-        checker_result.append("Password tidak boleh kosong.")
-    # Check Null Value ---------------------------------------- Finish
-
-    # Sanitize String Content ---------------------------------------- Start
-    sanitMail, charMail = sanitize_email_char(usermail)
-    if sanitMail:
-        checker_result.append(f"Email tidak boleh mengandung karakter {charMail}.")
-    sanitPass, charPass = sanitize_passwd_char(password)
-    if sanitPass:
-        checker_result.append(f"Password tidak boleh mengandung karakter {charPass}.")
-    # Sanitize String Content ---------------------------------------- Finish
-    
-    # Check Data in Database ---------------------------------------- Finish
-    # Get data
-    result_data = Users.query.filter_by(email=usermail, is_delete=0).first()
-    if not result_data:
-        result_data = Users.query.filter_by(username=usermail, is_delete=0).first()
-    
-    # Check data ready or not
-    stts = 200
-    if not result_data:
-        stts = 404
-        checker_result.append("Username/Email tidak terdaftar.")
-    # Check Data in Database ---------------------------------------- Finish
-
-    # Password Validation ---------------------------------------- Start
-    # Check password
-    if result_data:
-        # Check activated
-        if result_data.is_active == 0:
-            stts = 403
-            checker_result.append("Akun Anda belum diverifikasi Administrator.")
-            return checker_result, result_data, stts
-        
-        # Cek password
-        password_match = password_compare(result_data.password, password)
-        if not password_match:
-            stts = 400
-            checker_result.append("Password salah.")
-    # Password Validation ---------------------------------------- Finish
-
-    # Get photo profile
-    
-    return checker_result, result_data, stts
-
-# def vld_auth(email):
-    checkResult = []
-    
-    if email_checker(email):
-        checkResult.append(f"Email tidak valid.")
-
-    token = auth_token()
-
-    return checkResult, token
-# AUTH VALIDATION ============================================================ End
 
 # EXCEL FILE VALIDATION ============================================================ Begin
 def excel_file_validator(file):

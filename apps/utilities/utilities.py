@@ -345,7 +345,7 @@ def email_sender(recivier, subject, messages_content):
     # Create an email message
     message = MIMEMultipart()
     message['to'] = recivier
-    message['from'] = 'user.infocvt@creavitation.com'
+    message['from'] = 'posproject@gmail.com'
     message['subject'] = subject
 
     # Attach the HTML content
@@ -355,9 +355,15 @@ def email_sender(recivier, subject, messages_content):
     raw_message = base64.urlsafe_b64encode(message.as_bytes()).decode()
 
     try:
-        message = (service.users().messages().send(userId='me', body={'raw': raw_message}).execute())
-        
-        return success_data(message)
+        result = service.users().messages().send(
+            userId="me",
+            body={
+                "raw": raw_message
+            }
+        ).execute()
+
+        return success_data(result)
+
     except Exception as error:
         
         return bad_request(str(error))
