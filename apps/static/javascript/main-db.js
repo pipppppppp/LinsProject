@@ -66,10 +66,7 @@ for (var i = 0; i < sidebarItems.length; i++) {
 // **************************************************************
 // MAIN DASHBOARD INITIALIZATION | START
 // **************************************************************
-document.addEventListener(
-  "DOMContentLoaded",
-  initMainDashboard
-);
+document.addEventListener("DOMContentLoaded", initMainDashboard);
 
 async function initMainDashboard() {
   setupResponsiveSidebar();
@@ -86,13 +83,11 @@ async function initMainDashboard() {
 // MAIN DASHBOARD INITIALIZATION | END
 // **************************************************************
 
-
 // **************************************************************
 // RESPONSIVE SIDEBAR | START
 // **************************************************************
 function setupResponsiveSidebar() {
-  const sidebar =
-    document.getElementById("sidebar");
+  const sidebar = document.getElementById("sidebar");
 
   if (!sidebar) {
     return;
@@ -108,89 +103,61 @@ function setupResponsiveSidebar() {
 
   updateSidebar();
 
-  window.addEventListener(
-    "resize",
-    updateSidebar
-  );
+  window.addEventListener("resize", updateSidebar);
 }
 // **************************************************************
 // RESPONSIVE SIDEBAR | END
 // **************************************************************
 
-
 // **************************************************************
 // SIDEBAR BUTTONS | START
 // **************************************************************
 function setupSidebarButtons() {
-  const sidebar =
-    document.getElementById("sidebar");
+  const sidebar = document.getElementById("sidebar");
 
-  const burgerButton =
-    document.querySelector(".burger-btn");
+  const burgerButton = document.querySelector(".burger-btn");
 
-  const sidebarHideButton =
-    document.querySelector(".sidebar-hide");
+  const sidebarHideButton = document.querySelector(".sidebar-hide");
 
   if (!sidebar) {
     return;
   }
 
-  burgerButton?.addEventListener(
-    "click",
-    () => {
-      sidebar.classList.toggle("active");
-    }
-  );
+  burgerButton?.addEventListener("click", () => {
+    sidebar.classList.toggle("active");
+  });
 
-  sidebarHideButton?.addEventListener(
-    "click",
-    () => {
-      sidebar.classList.toggle("active");
-    }
-  );
+  sidebarHideButton?.addEventListener("click", () => {
+    sidebar.classList.toggle("active");
+  });
 }
 // **************************************************************
 // SIDEBAR BUTTONS | END
 // **************************************************************
 
-
 // **************************************************************
 // PERFECT SCROLLBAR | START
 // **************************************************************
 function setupPerfectScrollbar() {
-  const container =
-    document.querySelector(
-      ".sidebar-wrapper"
-    );
+  const container = document.querySelector(".sidebar-wrapper");
 
-  if (
-    typeof PerfectScrollbar !==
-      "function" ||
-    !container
-  ) {
+  if (typeof PerfectScrollbar !== "function" || !container) {
     return;
   }
 
-  new PerfectScrollbar(
-    container,
-    {
-      wheelPropagation: false,
-    }
-  );
+  new PerfectScrollbar(container, {
+    wheelPropagation: false,
+  });
 }
 // **************************************************************
 // PERFECT SCROLLBAR | END
 // **************************************************************
 
-
 // **************************************************************
 // ACTIVE SIDEBAR SCROLL | START
 // **************************************************************
 function scrollToActiveSidebar() {
-  const targetElement =
-    document.querySelector(
-      ".sidebar-item.active"
-    );
+  const targetElement = document.querySelector(".sidebar-item.active");
 
   if (!targetElement) {
     return;
@@ -205,83 +172,60 @@ function scrollToActiveSidebar() {
 // ACTIVE SIDEBAR SCROLL | END
 // **************************************************************
 
-
 // **************************************************************
 // LOAD WORKSHOP STATUS | START
 // **************************************************************
 async function loadWorkshopStatusBanner() {
-  const statusUrl =
-    document.body.dataset
-      .workshopStatusUrl;
+  const administratorPage = document.querySelector(".workshop-management-page, .dashboard-administrator-page");
+
+  if (administratorPage) {
+    return;
+  }
+
+  const statusUrl = document.body.dataset.workshopStatusUrl;
 
   if (!statusUrl) {
     return;
   }
 
   try {
-    const response = await fetch(
-      statusUrl,
-      {
-        method: "GET",
-        headers: {
-          Accept: "application/json",
-        },
-      }
-    );
+    const response = await fetch(statusUrl, {
+      method: "GET",
+      headers: {
+        Accept: "application/json",
+      },
+    });
 
-    const result =
-      await response.json();
+    const result = await response.json();
 
-    if (
-      !response.ok ||
-      result.status_code !== 200 ||
-      !result.data
-    ) {
+    if (!response.ok || result.status_code !== 200 || !result.data) {
       return;
     }
 
-    renderWorkshopStatusBanner(
-      result.data
-    );
-
+    renderWorkshopStatusBanner(result.data);
   } catch (error) {
-    console.error(
-      "WORKSHOP STATUS ERROR:",
-      error
-    );
+    console.error("WORKSHOP STATUS ERROR:", error);
   }
 }
 // **************************************************************
 // LOAD WORKSHOP STATUS | END
 // **************************************************************
 
-
 // **************************************************************
 // RENDER WORKSHOP STATUS | START
 // **************************************************************
-function renderWorkshopStatusBanner(
-  workshop
-) {
-  const oldBanner =
-    document.getElementById(
-      "workshop_status_banner"
-    );
+function renderWorkshopStatusBanner(workshop) {
+  const oldBanner = document.getElementById("workshop_status_banner");
 
   if (oldBanner) {
     oldBanner.remove();
   }
 
-  const operationalStatus =
-    String(
-      workshop.operational_status || ""
-    ).toLowerCase();
+  const operationalStatus = String(workshop.operational_status || "").toLowerCase();
 
   // Tidak perlu menampilkan banner
   // jika bengkel dan langganan aktif
-  if (
-    operationalStatus === "active" ||
-    operationalStatus === ""
-  ) {
+  if (operationalStatus === "active" || operationalStatus === "") {
     return;
   }
 
@@ -290,40 +234,33 @@ function renderWorkshopStatusBanner(
       alertClass: "alert-secondary",
       icon: "bi-slash-circle",
       title: "Bengkel Tidak Aktif",
-      message:
-        "Bengkel sedang dinonaktifkan oleh administrator.",
+      message: "Bengkel sedang dinonaktifkan oleh administrator.",
     },
 
     unsubscribed: {
       alertClass: "alert-warning",
       icon: "bi-exclamation-triangle",
       title: "Belum Berlangganan",
-      message:
-        "Fitur tambah, ubah, hapus, dan transaksi sedang dibatasi.",
+      message: "Fitur tambah, ubah, hapus, dan transaksi sedang dibatasi.",
     },
 
     expired: {
       alertClass: "alert-danger",
       icon: "bi-calendar-x",
-      title:
-        "Langganan Kedaluwarsa",
-      message:
-        "Perpanjang langganan agar fitur transaksi dapat digunakan kembali.",
+      title: "Langganan Kedaluwarsa",
+      message: "Perpanjang langganan agar fitur transaksi dapat digunakan kembali.",
     },
   };
 
-  const config =
-    statusConfig[operationalStatus];
+  const config = statusConfig[operationalStatus];
 
   if (!config) {
     return;
   }
 
-  const banner =
-    document.createElement("div");
+  const banner = document.createElement("div");
 
-  banner.id =
-    "workshop_status_banner";
+  banner.id = "workshop_status_banner";
 
   banner.className = `
     alert
@@ -350,23 +287,16 @@ function renderWorkshopStatusBanner(
     </div>
   `;
 
-  const mainElement =
-    document.getElementById("main");
+  const mainElement = document.getElementById("main");
 
   if (!mainElement) {
     return;
   }
 
-  const pageHeading =
-    mainElement.querySelector(
-      ".page-heading"
-    );
+  const pageHeading = mainElement.querySelector(".page-heading");
 
   if (pageHeading) {
-    pageHeading.insertAdjacentElement(
-      "beforebegin",
-      banner
-    );
+    pageHeading.insertAdjacentElement("beforebegin", banner);
 
     return;
   }

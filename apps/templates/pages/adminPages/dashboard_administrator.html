@@ -1,0 +1,241 @@
+{% extends 'layouts/dashboard_layout.html' %} {% block content %}
+
+<div id="app" class="dashboard-administrator-page">
+  <!-- ************************************************************** -->
+  <!-- ADMINISTRATOR SIDEBAR | START -->
+  <!-- ************************************************************** -->
+  {% include 'components/nav_administrator.html' %}
+  <!-- ************************************************************** -->
+  <!-- ADMINISTRATOR SIDEBAR | END -->
+  <!-- ************************************************************** -->
+
+  <!-- ************************************************************** -->
+  <!-- MAIN CONTENT | START -->
+  <!-- ************************************************************** -->
+  <div id="main">
+    <!-- ************************************************************** -->
+    <!-- HEADER | START -->
+    <!-- ************************************************************** -->
+    <header class="mb-3">
+      <a href="#" class="burger-btn d-block d-xl-none">
+        <i class="bi bi-justify fs-3"></i>
+      </a>
+    </header>
+    <!-- ************************************************************** -->
+    <!-- HEADER | END -->
+    <!-- ************************************************************** -->
+
+    <!-- ************************************************************** -->
+    <!-- PAGE HEADING | START -->
+    <!-- ************************************************************** -->
+    <div class="page-heading">
+      <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+        <div>
+          <h3>Dashboard Administrator</h3>
+
+          <p class="text-subtitle text-muted mb-0">Ringkasan bengkel dan pembayaran langganan.</p>
+        </div>
+
+        <div class="text-md-end">
+          <div class="fw-semibold" id="administrator_greeting">Selamat Datang!</div>
+
+          <small class="text-muted" id="administrator_date"> - </small>
+        </div>
+      </div>
+    </div>
+    <!-- ************************************************************** -->
+    <!-- PAGE HEADING | END -->
+    <!-- ************************************************************** -->
+
+    <!-- ************************************************************** -->
+    <!-- PAGE CONTENT | START -->
+    <!-- ************************************************************** -->
+    <div class="page-content">
+      <!-- ============================================================ -->
+      <!-- DASHBOARD SUMMARY -->
+      <!-- ============================================================ -->
+      <section class="row">
+        <!-- Total Workshop -->
+        <div class="col-12 col-sm-6 col-lg-3">
+          <div class="card">
+            <div class="card-body px-4 py-4">
+              <div class="row align-items-center">
+                <div class="col-auto">
+                  <div class="stats-icon purple d-flex align-items-center justify-content-center">
+                    <i class="bi bi-shop"></i>
+                  </div>
+                </div>
+
+                <div class="col">
+                  <h6 class="text-muted font-semibold">Total Bengkel</h6>
+
+                  <h5 class="font-extrabold mb-0" id="total_workshop">0</h5>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Active Workshop -->
+        <div class="col-12 col-sm-6 col-lg-3">
+          <div class="card">
+            <div class="card-body px-4 py-4">
+              <div class="row align-items-center">
+                <div class="col-auto">
+                  <div class="stats-icon green d-flex align-items-center justify-content-center">
+                    <i class="bi bi-check-circle-fill"></i>
+                  </div>
+                </div>
+
+                <div class="col">
+                  <h6 class="text-muted font-semibold">Bengkel Aktif</h6>
+
+                  <h5 class="font-extrabold mb-0" id="active_workshop">0</h5>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Inactive Workshop -->
+        <div class="col-12 col-sm-6 col-lg-3">
+          <div class="card">
+            <div class="card-body px-4 py-4">
+              <div class="row align-items-center">
+                <div class="col-auto">
+                  <div class="stats-icon red d-flex align-items-center justify-content-center">
+                    <i class="bi bi-slash-circle-fill"></i>
+                  </div>
+                </div>
+
+                <div class="col">
+                  <h6 class="text-muted font-semibold">Bengkel Tidak Aktif</h6>
+
+                  <h5 class="font-extrabold mb-0" id="inactive_workshop">0</h5>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Total Revenue -->
+        <div class="col-12 col-sm-6 col-lg-3">
+          <div class="card">
+            <div class="card-body px-4 py-4">
+              <div class="row align-items-center">
+                <div class="col-auto">
+                  <div class="stats-icon blue d-flex align-items-center justify-content-center">
+                    <i class="bi bi-cash-stack"></i>
+                  </div>
+                </div>
+
+                <div class="col">
+                  <h6 class="text-muted font-semibold">Pendapatan Langganan</h6>
+
+                  <h5 class="font-extrabold mb-0" id="total_revenue">Rp 0</h5>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================================================ -->
+      <!-- QUICK ACCESS -->
+      <!-- ============================================================ -->
+      <section class="row">
+        <div class="col-12">
+          <div class="card">
+            <div class="card-header">
+              <h4 class="card-title mb-1">Akses Cepat</h4>
+
+              <small class="text-muted"> Kelola data platform melalui menu berikut. </small>
+            </div>
+
+            <div class="card-body">
+              <div class="row g-3">
+                <div class="col-md-6">
+                  <a
+                    href="{{ url_for(
+                      'workshop_management.workshop_management_page'
+                    ) }}"
+                    class="text-decoration-none"
+                  >
+                    <div class="card border h-100 mb-0">
+                      <div class="card-body">
+                        <div class="d-flex align-items-center gap-3">
+                          <div class="stats-icon purple d-flex align-items-center justify-content-center">
+                            <i class="bi bi-shop"></i>
+                          </div>
+
+                          <div>
+                            <h5 class="mb-1">Manajemen Bengkel</h5>
+
+                            <p class="text-muted mb-0">Kelola detail dan status bengkel.</p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </a>
+                </div>
+
+                <div class="col-md-6">
+                  <a
+                    href="{{ url_for(
+                      'subscription_payment_history.index'
+                    ) }}"
+                    class="text-decoration-none"
+                  >
+                    <div class="card border h-100 mb-0">
+                      <div class="card-body">
+                        <div class="d-flex align-items-center gap-3">
+                          <div class="stats-icon blue d-flex align-items-center justify-content-center">
+                            <i class="bi bi-credit-card-2-front"></i>
+                          </div>
+
+                          <div>
+                            <h5 class="mb-1">Riwayat Pembayaran</h5>
+
+                            <p class="text-muted mb-0">Lihat transaksi langganan bengkel.</p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+    <!-- ************************************************************** -->
+    <!-- PAGE CONTENT | END -->
+    <!-- ************************************************************** -->
+
+    <!-- ************************************************************** -->
+    <!-- FOOTER | START -->
+    <!-- ************************************************************** -->
+    {% include 'components/footer_dashboard.html' %}
+    <!-- ************************************************************** -->
+    <!-- FOOTER | END -->
+    <!-- ************************************************************** -->
+  </div>
+  <!-- ************************************************************** -->
+  <!-- MAIN CONTENT | END -->
+  <!-- ************************************************************** -->
+</div>
+
+<!-- ************************************************************** -->
+<!-- JAVASCRIPT | START -->
+<!-- ************************************************************** -->
+<script src="{{ url_for('static',filename='javascript/helper/formatter.js') }}"></script>
+
+<script src="{{ url_for('static',filename='javascript/helper/swal.js') }}"></script>
+
+<script src="{{ url_for('static',filename='javascript/api/dashboard_administrator.js') }}"></script>
+<!-- ************************************************************** -->
+<!-- JAVASCRIPT | END -->
+<!-- ************************************************************** -->
+
+{% endblock %}

@@ -116,10 +116,11 @@ def index():
 # Blueprint Section ==============================##
 # Import
 from .routes.controllers.auth import auth
+from .routes.controllers.workshop_management import workshop_management
 from .routes.controllers.cashier_management import cashier_management
-from.routes.controllers.administrator import administrator
 from .routes.controllers.dashboard import dashboard
 from .routes.controllers.dashboard_cashier import dashboard_cashier
+from .routes.controllers.dashboard_administrator import dashboard_administrator
 from .routes.controllers.cashier import cashier
 from .routes.controllers.category import category
 from .routes.controllers.customer import customer
@@ -135,13 +136,15 @@ from .routes.controllers.report_sales import report_sales
 from .routes.controllers.report_purchase import report_purchase
 from .routes.controllers.cash_deposit import cash_deposit
 from .routes.controllers.subscription import subscription
+from .routes.controllers.subscription_payment_history import subscription_payment_history
 
 # Register
 app.register_blueprint(auth)
+app.register_blueprint(workshop_management)
 app.register_blueprint(cashier_management)
-app.register_blueprint(administrator)
 app.register_blueprint(dashboard)
 app.register_blueprint(dashboard_cashier)
+app.register_blueprint(dashboard_administrator)
 app.register_blueprint(cashier)
 app.register_blueprint(category)
 app.register_blueprint(workshop)
@@ -157,6 +160,7 @@ app.register_blueprint(report_sales)
 app.register_blueprint(report_purchase)
 app.register_blueprint(cash_deposit)
 app.register_blueprint(subscription)
+app.register_blueprint(subscription_payment_history)
 
 # End Blueprint Section ==========================##
 # ====================== END - ROUTE CONFIGURATION ======================

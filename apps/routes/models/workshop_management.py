@@ -1,72 +1,16 @@
-from datetime import datetime
-import time
-from sqlalchemy import func
 from apps import db
 from apps.database.db_users import Users
 from apps.database.db_workshops import Workshops
+from apps.database.db_subscription_payment import SubscriptionPayments
 
 from apps.utilities.responseHelpers import *
 from apps.utilities.utilities import current_timestamp
 from apps.utilities.validators import administrator_validator
-from apps.utilities.formatter import format_date, format_datetime
+from apps.utilities.formatter import format_datetime
 
 
-# ADMINISTRATOR MODEL CLASS ============================================================ Begin
-class AdministratorModels():
-
-    # DASHBOARD ============================================================ Begin
-    def dashboard(user_role):
-        try:
-             # Access Validation ---------------------------------------- Start
-            access = administrator_validator(user_role)
-            if not access:
-                return authorization_error()
-            # Access Validation ---------------------------------------- Finish
-
-            # Dashboard Data ---------------------------------------- Start
-            total_workshop = Workshops.query.filter_by(
-                is_delete=0
-            ).count()
-
-            active_workshop = Workshops.query.filter_by(
-                is_delete=0,
-                is_active=1
-            ).count()
-
-            inactive_workshop = Workshops.query.filter_by(
-                is_delete=0,
-                is_active=0
-            ).count()
-
-            # total_owner = Users.query.filter_by(
-            #     role='1',
-            #     is_delete=0
-            # ).count()
-
-            total_owner = db.session.query(
-                func.count(func.distinct(Workshops.owner_id))
-            ).filter(
-                Workshops.is_delete == 0
-            ).scalar()
-            # Dashboard Data ---------------------------------------- Finish
-
-            # Response Data ---------------------------------------- Start
-            response = {
-                "total_workshop": total_workshop,
-                "active_workshop": active_workshop,
-                "inactive_workshop": inactive_workshop,
-                "total_owner": total_owner
-            }
-            # Response Data ---------------------------------------- Finish
-
-            # Return Response ========================================
-            return success_data(response)
-
-        except Exception as e:
-            return bad_request(str(e))
-    # DASHBOARD ============================================================ End
-
-
+# WORKSHOP MANAGEMENT MODEL CLASS ============================================================ Begin
+class WorkshopManagementModels():
 
     # VIEW WORKSHOP ============================================================ Begin
     def read_workshop(user_role, status):
@@ -81,39 +25,28 @@ class AdministratorModels():
             query = Workshops.query.filter_by(
                 is_delete=0
             )
-            status = status.strip().lower()
-            
-            if status == "pending":
 
+            status = str(status or "all").strip().lower()
+
+            if status == "active":
                 query = query.filter(
-                    Workshops.is_verified == 0
-                )
-
-            elif status == "active":
-
-                query = query.filter(
-                    Workshops.is_verified == 1,
                     Workshops.is_active == 1
                 )
 
             elif status == "inactive":
-
                 query = query.filter(
-                    Workshops.is_verified == 1,
                     Workshops.is_active == 0
                 )
+
             result = query.order_by(
                 Workshops.created_at.desc()
-            ).all()       
-            # if not result:
-            #     return not_found("Workshop data could not be found.")
+            ).all()
             # Check Data ---------------------------------------- Finish
 
             # Response Data ---------------------------------------- Start
             response = []
 
             for workshop in result:
-
                 owner = Users.query.filter_by(
                     id=workshop.owner_id,
                     is_delete=0
@@ -147,81 +80,15 @@ class AdministratorModels():
             return bad_request(str(e))
     # VIEW WORKSHOP ============================================================ End
 
-    # VERIFY WORKSHOP ============================================================ Begin
-    def verify_workshop(user_role, datas):
-        try:
-            # Access Validation ---------------------------------------- Start
-            access = administrator_validator(user_role)
-            if not access:
-                return authorization_error()
-            # Access Validation ---------------------------------------- Finish
-
-            # Check Request Body ---------------------------------------- Start
-            if datas is None:
-                return invalid_params()
-
-            if "workshop_id" not in datas:
-                return parameter_error("Missing workshop_id in request body.")
-            # Check Request Body ---------------------------------------- Finish
-
-            # Initialize Data ---------------------------------------- Start
-            workshop_id = datas["workshop_id"]
-            # Initialize Data ---------------------------------------- Finish
-
-            # Check Data ---------------------------------------- Start
-            workshop = Workshops.query.filter_by(
-                id=workshop_id,
-                is_delete=0
-            ).first()
-
-            if not workshop:
-                return not_found("Workshop could not be found.")
-
-            owner = Users.query.filter_by(
-                id=workshop.owner_id,
-                is_delete=0
-            ).first()
-
-            if not owner:
-                return not_found("Owner could not be found.")
-
-            if workshop.is_verified == 1:
-                return success(message="Workshop already verified.")
-            # Check Data ---------------------------------------- Finish
-
-            # Update Data ---------------------------------------- Start
-            timestamp = current_timestamp()
-
-            workshop.is_verified = 1
-            workshop.updated_at = timestamp
-
-            owner.is_active = 1
-            owner.updated_at = timestamp
-
-            # Save Data
-            try:
-                db.session.commit()
-            except Exception as e:
-                db.session.rollback()
-                return parameter_error(str(e))
-            # Update Data ---------------------------------------- Finish
-
-            # Return Response ========================================
-            return success(message="Workshop has been verified successfully.")
-
-        except Exception as e:
-            return bad_request(str(e))
-    # VERIFY WORKSHOP ============================================================ End
-
     # DETAIL WORKSHOP ============================================================ Begin
     def detail_workshop(role, workshop_id):
 
         # Role Checker ========================================
         access = administrator_validator(role)
-        
+
         if not access:
             return authorization_error()
-        
+
         # Query ========================================
         workshop = (
             db.session.query(
@@ -233,7 +100,9 @@ class AdministratorModels():
                 Workshops.owner_id == Users.id
             )
             .filter(
-                Workshops.id == workshop_id
+                Workshops.id == workshop_id,
+                Workshops.is_delete == 0,
+                Users.is_delete == 0
             )
             .first()
         )
@@ -258,7 +127,6 @@ class AdministratorModels():
             "workshop_status": workshop_data.is_active,
             "created_at": format_datetime(workshop_data.created_at)
         })
-
     # DETAIL WORKSHOP ============================================================ End
 
     # ACTIVATE WORKSHOP ============================================================ Begin
@@ -290,8 +158,7 @@ class AdministratorModels():
 
             if not workshop:
                 return not_found("Workshop could not be found.")
-            if not workshop.is_verified:
-                return bad_request("Workshop has not been verified.")
+
             if workshop.is_active == 1:
                 return success(message="Workshop already active.")
             # Check Data ---------------------------------------- Finish
@@ -344,6 +211,7 @@ class AdministratorModels():
 
             if not workshop:
                 return not_found("Workshop could not be found.")
+
             if workshop.is_active == 0:
                 return success(message="Workshop already inactive.")
             # Check Data ---------------------------------------- Finish
@@ -366,8 +234,6 @@ class AdministratorModels():
         except Exception as e:
             return bad_request(str(e))
     # DEACTIVATE WORKSHOP ============================================================ End
-
-
 
     # DELETE WORKSHOP ============================================================ Begin
     def delete_workshop(user_role, datas):
@@ -398,11 +264,6 @@ class AdministratorModels():
 
             if not workshop:
                 return not_found("Workshop could not be found.")
-
-            # owner = Users.query.filter_by(
-            #     id=workshop.owner_id,
-            #     is_delete=0
-            # ).first()
             # Check Data ---------------------------------------- Finish
 
             # Delete Data ---------------------------------------- Start
@@ -410,10 +271,6 @@ class AdministratorModels():
 
             workshop.is_delete = 1
             workshop.deleted_at = timestamp
-
-            # if owner:
-            #     owner.is_delete = 1
-            #     owner.deleted_at = timestamp
             # Delete Data ---------------------------------------- Finish
 
             # Save Data ---------------------------------------- Start
@@ -430,4 +287,5 @@ class AdministratorModels():
         except Exception as e:
             return bad_request(str(e))
     # DELETE WORKSHOP ============================================================ End
-# ADMINISTRATOR MODEL CLASS ============================================================ End
+
+# WORKSHOP MANAGEMENT MODEL CLASS ============================================================ End

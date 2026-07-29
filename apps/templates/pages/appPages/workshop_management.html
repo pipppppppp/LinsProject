@@ -1,0 +1,150 @@
+{% extends 'layouts/dashboard_layout.html' %} {% block content %}
+
+<div id="app" class="workshop-management-page">
+  <!--! ================================================================ !-->
+  <!--! [Start] Navigation Section !-->
+  <!--! ================================================================ !-->
+  {% include 'components/nav_administrator.html' %}
+  <!--! ================================================================ !-->
+  <!--! [End] Navigation Section !-->
+  <!--! ================================================================ !-->
+
+  <!--! ================================================================ !-->
+  <!--! [Start] Main Content !-->
+  <!--! ================================================================ !-->
+  <div id="main">
+    <!--! ================================================================ !-->
+    <!--! [Start] Header !-->
+    <!--! ================================================================ !-->
+    <header class="mb-3">
+      <a href="#" class="burger-btn d-block d-xl-none">
+        <i class="bi bi-justify fs-3"></i>
+      </a>
+    </header>
+    <!--! ================================================================ !-->
+    <!--! [End] Header !-->
+    <!--! ================================================================ !-->
+
+    <div class="page-heading">
+      <div class="d-flex justify-content-between align-items-center">
+        <div>
+          <h3>Manajemen Bengkel</h3>
+          <p class="text-subtitle text-muted">Kelola status, detail, dan riwayat langganan bengkel.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="page-content">
+      <section class="row">
+        <!-- ========================================================= -->
+        <!-- WORKSHOP MANAGEMENT -->
+        <!-- ========================================================= -->
+        <div class="col-12">
+          <div class="card">
+            <div class="card-header">
+              <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+                <div>
+                  <h4 class="card-title mb-1">Daftar Bengkel</h4>
+                  <small class="text-muted"> Daftar seluruh bengkel yang telah terdaftar. </small>
+                </div>
+
+                <div class="d-flex flex-column flex-sm-row align-items-sm-center gap-2">
+                  <select id="filter_status" class="form-select" aria-label="Filter status bengkel">
+                    <option value="all">Semua Status</option>
+                    <option value="active">Aktif</option>
+                    <option value="inactive">Tidak Aktif</option>
+                  </select>
+
+                  <button type="button" class="btn btn-primary text-nowrap" id="btn_refresh">
+                    <i class="bi bi-arrow-clockwise me-1"></i>
+                    Refresh
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div class="card-body">
+              <!-- ========================================================= -->
+              <!-- WORKSHOP TABLE -->
+              <!-- ========================================================= -->
+              <div class="table-responsive">
+                <table class="table table-striped" id="workshopManagementTable">
+                  <thead>
+                    <tr>
+                      <th width="5%">No</th>
+                      <th width="8%">Logo</th>
+                      <th>Nama Bengkel</th>
+                      <th>Owner</th>
+                      <th>Email</th>
+                      <th>No. Telepon</th>
+                      <th width="12%">Status Bengkel</th>
+                      <th width="12%">Terdaftar</th>
+                      <th class="text-center" width="12%">Aksi</th>
+                    </tr>
+                  </thead>
+
+                  <tbody id="table_workshop">
+                    <!-- Data diisi melalui workshop_management.js -->
+                  </tbody>
+                </table>
+              </div>
+              <!-- ========================================================= -->
+              <!-- WORKSHOP TABLE -->
+              <!-- ========================================================= -->
+            </div>
+          </div>
+        </div>
+        <!-- ========================================================= -->
+        <!-- WORKSHOP MANAGEMENT -->
+        <!-- ========================================================= -->
+      </section>
+    </div>
+
+    <!--! ================================================================ !-->
+    <!--! [Start] Footer !-->
+    <!--! ================================================================ !-->
+    {% include 'components/footer_dashboard.html' %}
+    <!--! ================================================================ !-->
+    <!--! [End] Footer !-->
+    <!--! ================================================================ !-->
+  </div>
+  <!--! ================================================================ !-->
+  <!--! [End] Main Content !-->
+  <!--! ================================================================ !-->
+</div>
+
+<!-- ========================================================= -->
+<!-- DETAIL WORKSHOP MODAL | START -->
+<!-- ========================================================= -->
+<div class="modal fade" id="detailWorkshopModal" tabindex="-1" aria-labelledby="detailWorkshopModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="detailWorkshopModalLabel">
+          <i class="bi bi-shop me-2"></i>
+          Detail Bengkel
+        </h5>
+
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+
+      <div class="modal-body">
+        <div id="detailWorkshopContent"></div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- ========================================================= -->
+<!-- DETAIL WORKSHOP MODAL | END -->
+<!-- ========================================================= -->
+
+<!-- ========================================================= -->
+<script src="{{ url_for('static', filename='javascript/helper/utilities.js') }}"></script>
+<script src="{{ url_for('static', filename='javascript/helper/swal.js') }}"></script>
+<script src="{{ url_for('static', filename='javascript/api/workshop_management.js') }}"></script>
+
+{% endblock %}
