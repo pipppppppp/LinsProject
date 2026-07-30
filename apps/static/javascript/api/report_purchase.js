@@ -4,6 +4,7 @@
 document.addEventListener("DOMContentLoaded", init);
 
 async function init() {
+  setDefaultDate();
   await loadSuppliers();
   await reloadTable(loadReport, renderTable);
 }
@@ -16,6 +17,25 @@ const form = {
 };
 // **************************************************************
 // BASE INITIALIZATION | END
+// **************************************************************
+
+// **************************************************************
+// DEFAULT DATE | START
+// **************************************************************
+function setDefaultDate() {
+  const today = new Date();
+
+  const year = today.getFullYear();
+  const month = String(today.getMonth() + 1).padStart(2, "0");
+  const day = String(today.getDate()).padStart(2, "0");
+
+  const currentDate = `${year}-${month}-${day}`;
+
+  form.start_date.value = currentDate;
+  form.end_date.value = currentDate;
+}
+// **************************************************************
+// DEFAULT DATE | END
 // **************************************************************
 
 // **************************************************************
@@ -39,27 +59,31 @@ async function loadReport() {
   // Summary
   const summary = await getRequest(`/report-purchase/summary?${params.toString()}`);
 
-  renderSummary(summary.data);
+  renderSummary(summary.data || {});
 
   // Chart
   const chart = await getRequest(`/report-purchase/chart?${params.toString()}`);
 
-  chartData = chart.data.chart;
+  chartData = chart.data?.chart || [];
 
   // Top Products
   const products = await getRequest(`/report-purchase/top-products?${params.toString()}`);
 
-  topProductsData = products.data.top_products;
+  topProductsData = products.data?.top_products || [];
 
-  // Top Services
+  // Top Suppliers
   const suppliers = await getRequest(`/report-purchase/top-suppliers?${params.toString()}`);
 
-  topSuppliersData = suppliers.data.top_suppliers;
+  topSuppliersData = suppliers.data?.top_suppliers || [];
 
   // Table
   const table = await getRequest(`/report-purchase/table?${params.toString()}`);
+  if (table.status_code !== 200) {
+    throw new Error(table.message || "Gagal mengambil tabel laporan pembelian.");
+  }
 
-  reportData = table.data.report;
+  reportData = table.data?.report || [];
+  reportData = table.data?.report || [];
 
   renderPurchaseChart();
   renderTopProducts();
@@ -72,28 +96,31 @@ async function loadReport() {
 // **************************************************************
 // RENDER SUMMARY | START
 // **************************************************************
-function renderSummary(data) {
-  document.getElementById("total_purchase").textContent = formatRupiah(data.total_sales);
+function renderSummary(data = {}) {
+  document.getElementById("total_purchase").textContent = formatRupiah(data.total_purchase || 0);
 
-  document.getElementById("total_transaction").textContent = data.total_transaction;
+  document.getElementById("total_transaction").textContent = data.total_transaction || 0;
 
-  document.getElementById("total_supplier").textContent = data.total_transaction;
+  document.getElementById("total_supplier").textContent = data.active_supplier || 0;
 
-
-  document.getElementById("total_item").textContent = formatRupiah(data.average_transaction);
-
-//   document.getElementById("active_cashier").textContent = data.active_cashier;
+  document.getElementById("total_item").textContent = data.total_item || 0;
 }
 // **************************************************************
 // RENDER SUMMARY | END
 // **************************************************************
 
 // **************************************************************
-// RENDER SALES CHART | START
+// RENDER PURCHASE CHART | START
 // **************************************************************
 let purchaseChart = null;
 
 function renderPurchaseChart() {
+  const chartElement = document.querySelector("#purchase_chart");
+
+  if (!chartElement) {
+    return;
+  }
+
   const options = {
     chart: {
       type: "area",
@@ -115,12 +142,12 @@ function renderPurchaseChart() {
     series: [
       {
         name: "Pembelian",
-        data: chartData.map((item) => item.total),
+        data: chartData.map((item) => item.total_purchase || 0),
       },
     ],
 
     xaxis: {
-      categories: chartData.map((item) => item.date),
+      categories: chartData.map((item) => item.date || "-"),
     },
 
     yaxis: {
@@ -144,12 +171,12 @@ function renderPurchaseChart() {
     purchaseChart.destroy();
   }
 
-  purchaseChart = new ApexCharts(document.querySelector("#purchase_chart"), options);
+  purchaseChart = new ApexCharts(chartElement, options);
 
   purchaseChart.render();
 }
 // **************************************************************
-// RENDER SALES CHART | END
+// RENDER PURCHASE CHART | END
 // **************************************************************
 
 // **************************************************************
@@ -158,7 +185,7 @@ function renderPurchaseChart() {
 function renderTopProducts() {
   let html = "";
 
-  if (topProductsData.length === 0) {
+  if (!Array.isArray(topProductsData) || topProductsData.length === 0) {
     html = `
       <div class="text-center text-muted py-4">
         Tidak ada data produk.
@@ -168,121 +195,138 @@ function renderTopProducts() {
     topProductsData.forEach((product, index) => {
       html += `
         <div class="d-flex justify-content-between align-items-center border-bottom py-3">
-
           <div>
-
             <h6 class="mb-1">
-              ${index + 1}. ${product.product_name}
+              ${index + 1}. ${product.product_name || "-"}
             </h6>
 
             <small class="text-muted">
-              ${product.total_quantity} Terjual
+              Jumlah pembelian produk
             </small>
-
           </div>
 
           <span class="badge bg-light-primary text-primary">
-            ${formatRupiah(product.total_sales)}
+            ${product.total_quantity || 0} Item
           </span>
-
         </div>
       `;
     });
   }
 
-  document.getElementById("top_products").innerHTML = html;
+  const topProductsElement = document.getElementById("top_products");
+
+  if (!topProductsElement) {
+    return;
+  }
+
+  topProductsElement.innerHTML = html;
 }
 // **************************************************************
 // RENDER TOP PRODUCTS | END
-// **************************************************************
+// ****************************************************************************************************************************
 
 // **************************************************************
-// RENDER TOP SERVICES | START
+// RENDER TOP SUPPLIERS | START
 // **************************************************************
 function renderTopSuppliers() {
   let html = "";
 
-  if (topSuppliersData.length === 0) {
+  if (!Array.isArray(topSuppliersData) || topSuppliersData.length === 0) {
     html = `
       <div class="text-center text-muted py-4">
-        Tidak ada data Supplier.
+        Tidak ada data supplier.
       </div>
     `;
   } else {
-    topSuppliersData.forEach((service, index) => {
+    topSuppliersData.forEach((supplier, index) => {
       html += `
         <div class="d-flex justify-content-between align-items-center border-bottom py-3">
-
           <div>
-
             <h6 class="mb-1">
-              ${index + 1}. ${service.service_name}
+              ${index + 1}. ${supplier.name || "-"}
             </h6>
 
             <small class="text-muted">
-              ${service.total_quantity} Digunakan
+              Total nilai pembelian
             </small>
-
           </div>
 
           <span class="badge bg-light-success text-success">
-            ${formatRupiah(service.total_sales)}
+            ${formatRupiah(supplier.total_purchase || 0)}
           </span>
-
         </div>
       `;
     });
   }
 
-  document.getElementById("top_suppliers").innerHTML = html;
+  const topSuppliersElement = document.getElementById("top_suppliers");
+
+  if (!topSuppliersElement) {
+    return;
+  }
+
+  topSuppliersElement.innerHTML = html;
 }
 // **************************************************************
-// RENDER TOP SERVICES | END
+// RENDER TOP SUPPLIERS | END
 // **************************************************************
-
 // **************************************************************
 // RENDER TABLE | START
 // **************************************************************
 function renderTable() {
   let html = "";
 
-  reportData.forEach((report, index) => {
-    html += `
+  if (!Array.isArray(reportData) || reportData.length === 0) {
+    html = `
       <tr>
-
-        <td class="text-center fw-bold">
-          ${index + 1}
+        <td colspan="6" class="text-center text-muted py-4">
+          Tidak ada data laporan pembelian.
         </td>
-
-        <td>
-          ${report.purchase_date}
-        </td>
-
-        <td>
-          ${report.customer_name}
-        </td>
-
-        <td>
-          ${report.plate_number}
-        </td>
-
-        <td>
-          ${report.cashier_name}
-        </td>
-
-        <td class="text-end fw-semibold">
-          ${formatRupiah(report.total)}
-        </td>
-
       </tr>
     `;
-  });
+  } else {
+    reportData.forEach((report, index) => {
+      html += `
+        <tr>
+          <td class="text-center fw-bold">
+            ${index + 1}
+          </td>
 
-  document.getElementById("table_report_purchase").innerHTML = html;
+          <td>
+            ${report.invoice || "-"}
+          </td>
+
+          <td>
+            ${report.purchase_date || "-"}
+          </td>
+
+          <td>
+            ${report.name || "-"}
+          </td>
+
+          <td class="text-center">
+            ${report.total_item || 0}
+          </td>
+
+          <td class="text-end fw-semibold">
+            ${formatRupiah(report.total || 0)}
+          </td>
+        </tr>
+      `;
+    });
+  }
+
+  const tableBody = document.getElementById("table_report_purchase_body");
+
+  if (!tableBody) {
+    return;
+  }
+
+  tableBody.innerHTML = html;
 }
 // **************************************************************
 // RENDER TABLE | END
-// **************************************************************
+// ************************************************************** **************************************************************
 
 // **************************************************************
 // FILTER REPORT | START
@@ -304,9 +348,9 @@ if (btnFilter) {
 // RESET FILTER | START
 // **************************************************************
 async function resetFilter() {
-  form.start_date.value = "";
-  form.end_date.value = "";
   form.supplier_id.value = "";
+
+  setDefaultDate();
 
   await reloadTable(loadReport, renderTable);
 }
@@ -435,23 +479,23 @@ if (btnExportPdf) {
 // **************************************************************
 
 // **************************************************************
-// LOAD CASHIERS | START
+// LOAD SUPPLIERS | START
 // **************************************************************
 async function loadSuppliers() {
   const result = await getRequest("/supplier/view");
 
-  const cashiers = result.data;
+  const suppliers = Array.isArray(result.data) ? result.data : [];
 
   let html = `
     <option value="">
-      Semua Kasir
+      Semua Supplier
     </option>
   `;
 
-  cashiers.forEach((cashier) => {
+  suppliers.forEach((supplier) => {
     html += `
-      <option value="${cashier.id}">
-        ${cashier.username}
+      <option value="${supplier.id}">
+        ${supplier.name || "-"}
       </option>
     `;
   });
@@ -459,5 +503,5 @@ async function loadSuppliers() {
   form.supplier_id.innerHTML = html;
 }
 // **************************************************************
-// LOAD CASHIERS | END
+// LOAD SUPPLIERS | END
 // **************************************************************

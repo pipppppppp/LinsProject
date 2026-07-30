@@ -148,11 +148,11 @@ if (signup) {
 // **************************************************************
 function signin_prosess(role) {
   if (role == 0) {
-    window.location.replace("/administrator/dashboard");
+    window.location.replace("/dashboard-administrator/");
   } else if (role == 1) {
     window.location.replace("/dashboard/");
   } else if (role == 2) {
-    window.location.replace("/cashier/");
+    window.location.replace("/dashboard-cashier/");
   }
 }
 // **************************************************************

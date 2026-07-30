@@ -32,7 +32,7 @@ def index():
         claims = get_jwt()
         
         if claims["role"] == 0:
-            return redirect(url_for("administrator.dashboard"))
+            return redirect(url_for("dashboard_administrator.index"))
         # elif claims["role"] == 1:
         #     return render_template("dashboard.html")   # atau dashboard.index
         elif claims["role"] == 2:

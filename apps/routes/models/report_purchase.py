@@ -97,8 +97,8 @@ def _get_filter_date(start_date="", end_date=""):
             )
 
       return (
-            int(start_datetime.timestamp()),
-            int(end_datetime.timestamp())
+            int(start_datetime.timestamp() * 1000),
+            int(end_datetime.timestamp() * 1000)
       )
 # FILTER DATE HELPER ============================================================ End
 
@@ -142,7 +142,6 @@ class ReportPurchaseModels():
                         end_date
                   ).all()
                   # Get Data ---------------------------------------- Finish
-
                   # Summary ---------------------------------------- Start
                   total_transaction = len(purchases)
 
@@ -150,17 +149,18 @@ class ReportPurchaseModels():
                         purchase.total
                         for purchase in purchases
                   )
-                  average_purchase = (
-                        total_purchase / total_transaction
-                        if total_transaction > 0
-                        else 0
+
+                  total_item = sum(
+                        detail.quantity
+                        for purchase in purchases
+                        for detail in purchase.purchase_details
                   )
 
                   active_supplier = len(
                         set(
-                        purchase.supplier_id
-                        for purchase in purchases
-                        if purchase.supplier_id
+                              purchase.supplier_id
+                              for purchase in purchases
+                              if purchase.supplier_id
                         )
                   )
                   # Summary ---------------------------------------- Finish
@@ -168,15 +168,14 @@ class ReportPurchaseModels():
                   # Response ---------------------------------------- Start
                   return success_data(
                         data={
-                        "total_transaction": total_transaction,
-                        "total_purchase": total_purchase,
-                        "average_purchase": average_purchase,
-                        "active_supplier": active_supplier
+                              "total_transaction": total_transaction,
+                              "total_purchase": total_purchase,
+                              "active_supplier": active_supplier,
+                              "total_item": total_item
                         },
                         status_code=200
                   )
                   # Response ---------------------------------------- Finish
-
             except Exception as e:
                   print("REPORT PURCHASE SUMMARY ERROR :", e)
                   raise
@@ -256,7 +255,7 @@ class ReportPurchaseModels():
                   return bad_request(str(e))
       # PURCHASE CHART ============================================================ End
 
-      # TOP SUPPLIERS ============================================================ Begin
+      # TOP SUPPLIER ============================================================ Begin
       def top_suppliers(user_role,user_id,workshop_id,supplier_id="",start_date=None,end_date=None):
             try:
 
@@ -333,13 +332,13 @@ class ReportPurchaseModels():
 
             except Exception as e:
                   return bad_request(str(e))
-      # TOP SUPPLIERS ============================================================ End
+      # TOP SUPPLIER ============================================================ End
 
-      # TOP SERVICES ============================================================ Begin
-      def top_product(user_role,user_id,workshop_id,supplier_id="",start_date=None,end_date=None):
+      # TOP PRODUCT ============================================================ Begin
+      def top_product(user_role, user_id, workshop_id, supplier_id="", start_date=None, end_date=None):
             try:
 
-                 # Access Validation ---------------------------------------- Start
+                  # Access Validation ---------------------------------------- Start
                   access = role_validator(user_role)
 
                   if not access:
@@ -385,7 +384,11 @@ class ReportPurchaseModels():
                         Products.product_name,
                         func.sum(
                               PurchaseDetails.quantity
-                        ).label("total_quantity")
+                        ).label("total_quantity"),
+                        func.sum(
+                              PurchaseDetails.quantity *
+                              PurchaseDetails.unit_cost
+                        ).label("total_purchase")
                   ).group_by(
                         Products.id,
                         Products.product_name
@@ -398,25 +401,26 @@ class ReportPurchaseModels():
                   data = []
 
                   for product in products:
-
                         data.append({
                               "product_name": product.product_name,
-                              "total_quantity": product.total_quantity
+                              "total_quantity": product.total_quantity,
+                              "total_purchase": product.total_purchase
                         })
                   # Top Products ---------------------------------------- Finish
 
                   # Response ---------------------------------------- Start
                   return success_data(
                         data={
-                              "top_suppliers": data
+                              "top_products": data
                         },
                         status_code=200
                   )
                   # Response ---------------------------------------- Finish
+
             except Exception as e:
                   return bad_request(str(e))
-      # TOP PRODUCTS ============================================================ End
-
+      # TOP PRODUCT ============================================================ End
+      
       # REPORT TABLE ============================================================ Begin
       def report_table(user_role,user_id,workshop_id,supplier_id="",start_date=None,end_date=None):
             try:
@@ -468,7 +472,7 @@ class ReportPurchaseModels():
 
                         report.append({
                               "id": purchase.id,
-                              "invoice": purchase.invoice,
+                              "invoice": f"PB-{purchase.id:06d}",
                               "purchase_date": format_date(
                                     purchase.purchase_date
                               ),
@@ -495,6 +499,7 @@ class ReportPurchaseModels():
                         status_code=200
                   )
             except Exception as e:
+                  print("REPORT PURCHASE TABLE ERROR :", e)
                   return bad_request(str(e))
       # REPOT TABLE ============================================================ End
 
@@ -520,7 +525,9 @@ class ReportPurchaseModels():
                   ).first()
 
                   if not workshop:
-                        return not_found("Workshop could not be found.")
+                        return not_found(
+                              "Workshop could not be found."
+                        )
                   # Check Workshop ---------------------------------------- Finish
 
                   # Filter Date ---------------------------------------- Start
@@ -530,40 +537,44 @@ class ReportPurchaseModels():
                   )
                   # Filter Date ---------------------------------------- Finish
 
-                  # Get History ---------------------------------------- Start
-                  query = _report_sales_helper(
+                  # Get Purchase Data ---------------------------------------- Start
+                  purchases = _report_purchase_helper(
                         workshop_id,
-                        supplier_id=user_id if str(user_role) == "2" else supplier_id,
-                        start_date=start_date,
-                        end_date=end_date
-                  )
-
-                  purchases = query.order_by(
-                        Payments.purchase_date.desc()
+                        supplier_id,
+                        start_date,
+                        end_date
+                  ).order_by(
+                        Purchases.purchase_date.desc()
                   ).all()
-                  # Get History ---------------------------------------- Finish
+                  # Get Purchase Data ---------------------------------------- Finish
 
                   # Summary ---------------------------------------- Start
                   total_transaction = len(purchases)
 
-                  total_sales = sum(
-                        payment.total for payment in purchases
+                  total_item = sum(
+                        detail.quantity
+                        for purchase in purchases
+                        for detail in purchase.purchase_details
+                  )
+
+                  total_purchase = sum(
+                        purchase.total
+                        for purchase in purchases
                   )
                   # Summary ---------------------------------------- Finish
 
                   # Create Workbook ---------------------------------------- Start
                   workbook = Workbook()
                   worksheet = workbook.active
-                  worksheet.title = "Report Sales"
-                  worksheet.merge_cells("A1:I1")
+                  worksheet.title = "Laporan Pembelian"
 
-                  worksheet["A1"] = "LAPORAN PENJUALAN"
+                  worksheet.merge_cells("A1:F1")
 
+                  worksheet["A1"] = "LAPORAN PEMBELIAN"
                   worksheet["A1"].font = Font(
                         bold=True,
                         size=16
                   )
-
                   worksheet["A1"].alignment = Alignment(
                         horizontal="center"
                   )
@@ -577,7 +588,10 @@ class ReportPurchaseModels():
 
                   worksheet.append([
                         "Periode",
-                        f"{format_date(start_date)} s.d. {format_date(end_date)}"
+                        (
+                              f"{format_date(start_date)} "
+                              f"s.d. {format_date(end_date)}"
+                        )
                   ])
 
                   worksheet.append([])
@@ -586,29 +600,50 @@ class ReportPurchaseModels():
                         "No",
                         "Invoice",
                         "Tanggal",
-                        "Customer",
-                        "Plat Nomor",
-                        "Kasir",
-                        "Total",
-                        "Bayar",
-                        "Kembalian"
+                        "Supplier",
+                        "Jumlah Item",
+                        "Total Pembelian"
                   ])
+
+                  # Header Style
+                  for cell in worksheet[6]:
+                        cell.font = Font(bold=True)
+                        cell.alignment = Alignment(
+                              horizontal="center",
+                              vertical="center"
+                        )
                   # Create Workbook ---------------------------------------- Finish
 
                   # Fill Data ---------------------------------------- Start
-                  for index, payment in enumerate(purchases, start=1):
-                       worksheet.append([
+                  for index, purchase in enumerate(
+                        purchases,
+                        start=1
+                  ):
+                        purchase_total_item = sum(
+                              detail.quantity
+                              for detail in purchase.purchase_details
+                        )
+
+                        worksheet.append([
                               index,
-                              payment.invoice,
-                              format_date(payment.purchase_date),
-                              payment.customers.customer_name if payment.customers else "Pelanggan Umum",
-                              payment.vehicles.plate_number if payment.vehicles else "-",
-                              payment.cashier.username if payment.cashier else "-",
-                              f"Rp {payment.total:,}".replace(",", "."),
-                              f"Rp {payment.paid:,}".replace(",", "."),
-                              f"Rp {payment.change:,}".replace(",", ".")
+                              f"PB-{purchase.id:06d}",
+                              format_date(
+                                    purchase.purchase_date
+                              ),
+                              (
+                                    purchase.suppliers.name
+                                    if purchase.suppliers
+                                    else "-"
+                              ),
+                              purchase_total_item,
+                              (
+                                    f"Rp "
+                                    f"{int(purchase.total or 0):,}"
+                              ).replace(",", ".")
                         ])
                   # Fill Data ---------------------------------------- Finish
+
+                  # Summary Data ---------------------------------------- Start
                   worksheet.append([])
 
                   worksheet.append([
@@ -617,37 +652,84 @@ class ReportPurchaseModels():
                   ])
 
                   worksheet.append([
-                        "Total Penjualan",
-                        f"Rp {total_sales:,}".replace(",", ".")
+                        "Total Item",
+                        total_item
                   ])
+
+                  worksheet.append([
+                        "Total Pembelian",
+                        (
+                              f"Rp "
+                              f"{int(total_purchase or 0):,}"
+                        ).replace(",", ".")
+                  ])
+                  # Summary Data ---------------------------------------- Finish
+
+                  # Worksheet Configuration ---------------------------------------- Start
+                  worksheet.column_dimensions["A"].width = 8
+                  worksheet.column_dimensions["B"].width = 25
+                  worksheet.column_dimensions["C"].width = 16
+                  worksheet.column_dimensions["D"].width = 30
+                  worksheet.column_dimensions["E"].width = 15
+                  worksheet.column_dimensions["F"].width = 22
+
+                  worksheet.freeze_panes = "A7"
+
+                  for row in worksheet.iter_rows(
+                        min_row=7,
+                        max_row=worksheet.max_row,
+                        min_col=1,
+                        max_col=6
+                  ):
+                        row[0].alignment = Alignment(
+                              horizontal="center"
+                        )
+
+                        row[2].alignment = Alignment(
+                              horizontal="center"
+                        )
+
+                        row[4].alignment = Alignment(
+                              horizontal="center"
+                        )
+
+                        row[5].alignment = Alignment(
+                              horizontal="right"
+                        )
+                  # Worksheet Configuration ---------------------------------------- Finish
 
                   # Response File ---------------------------------------- Start
                   buffer = BytesIO()
-                  workbook.save(buffer)
 
+                  workbook.save(buffer)
                   buffer.seek(0)
 
                   return send_file(
                         buffer,
                         as_attachment=True,
-                        download_name="sales_report.xlsx",
-                        mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-                  )                        
+                        download_name="report_purchase.xlsx",
+                        mimetype=(
+                              "application/vnd.openxmlformats-"
+                              "officedocument.spreadsheetml.sheet"
+                        )
+                  )
                   # Response File ---------------------------------------- Finish
 
             except Exception as e:
                   return bad_request(str(e))
       # EXPORT EXCEL ============================================================ End
-
+      
       # EXPORT PDF ============================================================ Begin
       def export_pdf(user_role, user_id, workshop_id, supplier_id="", start_date=None, end_date=None):
             try:
 
                   # Access Validation ---------------------------------------- Start
                   access = role_validator(user_role)
+
                   if not access:
                         return authorization_error()
-                  # Hanya owner yang boleh export pdf
+
+                  # Hanya owner
                   if str(user_role) != "1":
                         return authorization_error()
                   # Access Validation ---------------------------------------- Finish
@@ -660,7 +742,7 @@ class ReportPurchaseModels():
 
                   if not workshop:
                         return not_found(
-                        "Workshop could not be found."
+                              "Workshop could not be found."
                         )
                   # Check Workshop ---------------------------------------- Finish
 
@@ -671,52 +753,82 @@ class ReportPurchaseModels():
                   )
                   # Filter Date ---------------------------------------- Finish
 
-                  # Get Report Data ---------------------------------------- Start
-                  query = _report_sales_helper(
+                  # Get Purchase Data ---------------------------------------- Start
+                  purchases = _report_purchase_helper(
                         workshop_id,
-                        supplier_id=user_id if str(user_role) == "2" else supplier_id,
-                        start_date=start_date,
-                        end_date=end_date
-                  )
-
-                  purchases = query.order_by(
-                        Payments.purchase_date.desc()
+                        supplier_id,
+                        start_date,
+                        end_date
+                  ).order_by(
+                        Purchases.purchase_date.desc()
                   ).all()
-                  # Get Report Data ---------------------------------------- Finish
+                  # Get Purchase Data ---------------------------------------- Finish
+
                   # Summary ---------------------------------------- Start
                   total_transaction = len(purchases)
 
-                  total_sales = sum(
-                        purchases.total for purchases in purchases
+                  total_item = sum(
+                        detail.quantity
+                        for purchase in purchases
+                        for detail in purchase.purchase_details
+                  )
+
+                  total_purchase = sum(
+                        purchase.total
+                        for purchase in purchases
                   )
                   # Summary ---------------------------------------- Finish
-                  # Generate PDF ---------------------------------------- Start
-                  
+
+                  # Table Data ---------------------------------------- Start
                   table_data = [
                         [
                               "No",
                               "Invoice",
                               "Tanggal",
-                              "Customer",
-                              "Plat Nomor",
-                              "Kasir",
+                              "Supplier",
+                              "Jumlah Item",
                               "Total"
-
                         ]
                   ]
 
-                  for index, purchases in enumerate(purchases, start=1):
-      
+                  for index, purchase in enumerate(
+                        purchases,
+                        start=1
+                  ):
+                        purchase_total_item = sum(
+                              detail.quantity
+                              for detail in purchase.purchase_details
+                        )
+
                         table_data.append([
                               index,
-                              purchases.invoice,
-                              format_date(purchases.purchase_date),
-                              purchases.customers.customer_name if purchases.customers else "Pelanggan Umum",
-                              purchases.vehicles.plate_number if purchases.vehicles else "-",
-                              purchases.cashier.username if purchases.cashier else "-",
-                              f"Rp {purchases.total:,}".replace(",", ".")
+                              f"PB-{purchase.id:06d}",
+                              format_date(
+                                    purchase.purchase_date
+                              ),
+                              (
+                                    purchase.suppliers.name
+                                    if purchase.suppliers
+                                    else "-"
+                              ),
+                              purchase_total_item,
+                              (
+                                    f"Rp "
+                                    f"{int(purchase.total or 0):,}"
+                              ).replace(",", ".")
                         ])
-                  
+
+                  if len(purchases) == 0:
+                        table_data.append([
+                              "",
+                              "Tidak ada data pembelian",
+                              "",
+                              "",
+                              "",
+                              ""
+                        ])
+                  # Table Data ---------------------------------------- Finish
+
                   # Initialize PDF ---------------------------------------- Start
                   buffer = BytesIO()
 
@@ -725,106 +837,195 @@ class ReportPurchaseModels():
                         pagesize=A4,
                         leftMargin=1.5 * cm,
                         rightMargin=1.5 * cm,
-                        topMargin=2 * cm,
-                        bottomMargin=2 * cm
+                        topMargin=1.5 * cm,
+                        bottomMargin=1.5 * cm
                   )
 
                   styles = getSampleStyleSheet()
-
                   elements = []
-                  # judul
+                  # Initialize PDF ---------------------------------------- Finish
+
+                  # PDF Header ---------------------------------------- Start
                   elements.append(
                         Paragraph(
-                        "<b>LAPORAN PENJUALAN</b>",
-                        styles["Title"]
+                              "<b>LAPORAN PEMBELIAN</b>",
+                              styles["Title"]
                         )
                   )
+
+                  elements.append(
+                        Spacer(1, 0.2 * cm)
+                  )
+
                   elements.append(
                         Paragraph(
-                        f"<b>Nama Bengkel :</b> {workshop.workshop_name}",
-                        styles["Normal"]
+                              (
+                                    f"<b>Nama Bengkel:</b> "
+                                    f"{workshop.workshop_name}"
+                              ),
+                              styles["Normal"]
                         )
                   )
 
                   elements.append(
                         Paragraph(
-                        f"<b>Periode Laporan:</b> "
-                        f"{format_date(start_date)} "
-                        f"s.d "
-                        f"{format_date(end_date)}",
-                        styles["Normal"]
+                              (
+                                    f"<b>Periode Laporan:</b> "
+                                    f"{format_date(start_date)} "
+                                    f"s.d. {format_date(end_date)}"
+                              ),
+                              styles["Normal"]
                         )
                   )
 
-                  elements.append(Spacer(1, 0.4 * cm))
+                  elements.append(
+                        Spacer(1, 0.5 * cm)
+                  )
+                  # PDF Header ---------------------------------------- Finish
 
-                  # data table
+                  # PDF Table ---------------------------------------- Start
                   table = Table(
                         table_data,
                         colWidths=[
-                              1 * cm,      # No
-                              4 * cm,      # Invoice
-                              2.8 * cm,    # Tanggal
-                              4 * cm,      # Customer
-                              3 * cm,      # Plat Nomor
-                              3 * cm,      # Kasir
-                              3 * cm       # Total
+                              1 * cm,       # No
+                              3.8 * cm,     # Invoice
+                              2.6 * cm,     # Tanggal
+                              4.2 * cm,     # Supplier
+                              2.4 * cm,     # Jumlah Item
+                              4 * cm        # Total
                         ],
                         repeatRows=1
                   )
 
                   table.setStyle(
-                  TableStyle([
-                        ("GRID", (0, 0), (-1, -1), 0.5, colors.black),
-
-                        ("BACKGROUND", (0, 0), (-1, 0), colors.HexColor("#0d6efd")),
-                        ("TEXTCOLOR", (0, 0), (-1, 0), colors.white),
-
-                        ("FONTNAME", (0, 0), (-1, 0), "Helvetica-Bold"),
-                        ("FONTSIZE", (0, 0), (-1, -1), 10),
-
-                        ("ALIGN", (0, 0), (0, -1), "CENTER"),   # No
-                        ("ALIGN", (1, 0), (4, -1), "LEFT"),     # Invoice- cashier
-                        ("ALIGN", (5, 0), (5, -1), "RIGHT"),    # Total
-
-                        ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
-
-                        ("BOTTOMPADDING", (0, 0), (-1, 0), 8),
-                        ("TOPPADDING", (0, 1), (-1, -1), 6),
-                        ("BOTTOMPADDING", (0, 1), (-1, -1), 6),
+                        TableStyle([
+                              (
+                                    "GRID",
+                                    (0, 0),
+                                    (-1, -1),
+                                    0.5,
+                                    colors.black
+                              ),
+                              (
+                                    "BACKGROUND",
+                                    (0, 0),
+                                    (-1, 0),
+                                    colors.HexColor("#0d6efd")
+                              ),
+                              (
+                                    "TEXTCOLOR",
+                                    (0, 0),
+                                    (-1, 0),
+                                    colors.white
+                              ),
+                              (
+                                    "FONTNAME",
+                                    (0, 0),
+                                    (-1, 0),
+                                    "Helvetica-Bold"
+                              ),
+                              (
+                                    "FONTSIZE",
+                                    (0, 0),
+                                    (-1, -1),
+                                    9
+                              ),
+                              (
+                                    "ALIGN",
+                                    (0, 0),
+                                    (0, -1),
+                                    "CENTER"
+                              ),
+                              (
+                                    "ALIGN",
+                                    (2, 0),
+                                    (2, -1),
+                                    "CENTER"
+                              ),
+                              (
+                                    "ALIGN",
+                                    (4, 0),
+                                    (4, -1),
+                                    "CENTER"
+                              ),
+                              (
+                                    "ALIGN",
+                                    (5, 1),
+                                    (5, -1),
+                                    "RIGHT"
+                              ),
+                              (
+                                    "VALIGN",
+                                    (0, 0),
+                                    (-1, -1),
+                                    "MIDDLE"
+                              ),
+                              (
+                                    "TOPPADDING",
+                                    (0, 0),
+                                    (-1, -1),
+                                    6
+                              ),
+                              (
+                                    "BOTTOMPADDING",
+                                    (0, 0),
+                                    (-1, -1),
+                                    6
+                              )
                         ])
                   )
 
                   elements.append(table)
+                  # PDF Table ---------------------------------------- Finish
 
-                  elements.append(Spacer(1,0.5*cm))
+                  # PDF Summary ---------------------------------------- Start
+                  elements.append(
+                        Spacer(1, 0.5 * cm)
+                  )
 
                   elements.append(
                         Paragraph(
-                              f"<b>Jumlah Transaksi :</b> {total_transaction}",
+                              (
+                                    f"<b>Jumlah Transaksi:</b> "
+                                    f"{total_transaction}"
+                              ),
                               styles["Normal"]
                         )
                   )
 
                   elements.append(
                         Paragraph(
-                              f"<b>Total Penjualan :</b> Rp {total_sales:,}".replace(",", "."),
+                              (
+                                    f"<b>Total Item:</b> "
+                                    f"{total_item}"
+                              ),
                               styles["Normal"]
                         )
                   )
 
+                  elements.append(
+                        Paragraph(
+                              (
+                                    f"<b>Total Pembelian:</b> "
+                                    f"Rp "
+                                    f"{int(total_purchase or 0):,}"
+                              ).replace(",", "."),
+                              styles["Normal"]
+                        )
+                  )
+                  # PDF Summary ---------------------------------------- Finish
+
+                  # Generate PDF ---------------------------------------- Start
                   document.build(elements)
 
                   buffer.seek(0)
-                  # Initialize PDF ---------------------------------------- Finish
-
                   # Generate PDF ---------------------------------------- Finish
 
                   # Return File ---------------------------------------- Start
                   return send_file(
                         buffer,
                         as_attachment=True,
-                        download_name="sales_report.pdf",
+                        download_name="report_purchase.pdf",
                         mimetype="application/pdf"
                   )
                   # Return File ---------------------------------------- Finish

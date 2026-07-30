@@ -16,7 +16,8 @@
     <!--! ================================================================ !-->
     <!--! [Start] Burger Button !-->
     <!--! ================================================================ !-->
-    <header class="mb-3">
+    <header class="mb-3"><h1>Lagi diedit kan?
+    </h1>
       <a href="#" class="burger-btn d-block d-xl-none">
         <i class="bi bi-justify fs-3"></i>
       </a>
@@ -63,7 +64,7 @@
           <div class="card-header">
             <h4 class="card-title mb-1">Filter Laporan</h4>
 
-            <p class="text-muted mb-0">Pilih periode dan kasir untuk menampilkan laporan penjualan.</p>
+            <p class="text-muted mb-0">Pilih periode dan supplier untuk menampilkan laporan pembelian barang.</p>
           </div>
 
           <div class="card-body">
@@ -81,7 +82,7 @@
               </div>
 
               <div class="col-lg-3 col-md-6">
-                <label class="form-label"> Kasir </label>
+                <label class="form-label"> Supplier </label>
 
                 <select class="form-select" id="supplier_id">
                   <option value="">Semua Supplier</option>
@@ -236,9 +237,9 @@
           <div class="col-lg-8 col-12">
             <div class="card">
               <div class="card-header">
-                <h4 class="card-title mb-1">Grafik Penjualan</h4>
+                <h4 class="card-title mb-1">Grafik Pembelian</h4>
 
-                <p class="text-muted mb-0">Total penjualan berdasarkan periode yang dipilih.</p>
+                <p class="text-muted mb-0">Total Pembelian Barang berdasarkan periode yang dipilih.</p>
               </div>
 
               <div class="card-body">
@@ -251,9 +252,9 @@
           <div class="col-lg-4 col-12">
             <div class="card">
               <div class="card-header">
-                <h4 class="card-title mb-1">Produk Terlaris</h4>
+                <h4 class="card-title mb-1">Produk Paling Banyak Dibeli</h4>
 
-                <p class="text-muted mb-0">5 produk dengan penjualan terbanyak.</p>
+                <p class="text-muted mb-0">5 produk dengan jumlah pembelian terbanyak.</p>
               </div>
 
               <div class="card-body">
@@ -272,9 +273,9 @@
           <div class="col-12">
             <div class="card">
               <div class="card-header">
-                <h4 class="card-title mb-1">Jasa Terlaris</h4>
+                <h4 class="card-title mb-1">Top Supplier</h4>
 
-                <p class="text-muted mb-0">5 jasa yang paling sering digunakan pelanggan.</p>
+                <p class="text-muted mb-0">5 supplier dengan nilai pembelian terbesar.</p>
               </div>
 
               <div class="card-body">
@@ -296,27 +297,26 @@
       <section class="section">
         <div class="card">
           <div class="card-header">
-            <h4 class="card-title mb-1">Data Laporan Penjualan</h4>
+            <h4 class="card-title mb-1">Data Laporan Pembelian</h4>
 
-            <p class="text-muted mb-0">Daftar seluruh transaksi sesuai filter yang dipilih.</p>
+            <p class="text-muted mb-0">Daftar seluruh transaksi pembelian sesuai filter yang dipilih.</p>
           </div>
 
           <div class="card-body">
             <div class="table-responsive">
-              <table class="table table-hover" id="table_report_sales">
+              <table class="table table-hover" id="table_report_purchase">
                 <thead>
                   <tr>
-                    <th width="5%">No</th>
+                    <th width="5%" class="text-center">No</th>
                     <th>Invoice</th>
                     <th>Tanggal</th>
                     <th>Supplier</th>
-                    <th>Jumlah Item</th>
-                    <th>Total</th>
+                    <th class="text-center">Jumlah Item</th>
                     <th class="text-end">Total</th>
                   </tr>
                 </thead>
 
-                <tbody>
+                <tbody id="table_report_purchase_body">
                   <!-- Generate by Javascript -->
                 </tbody>
               </table>

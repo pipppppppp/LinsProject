@@ -32,7 +32,7 @@ def index():
 
 
 # REPORT SUMMARY ============================================================ Begin
-# [GET] https://127.0.0.1:5000/report-sales/summary
+# [GET] https://127.0.0.1:5000/report-purchase/summary
 @report_purchase.get("/summary")
 @jwt_required()
 def report_summary():
@@ -63,7 +63,7 @@ def report_summary():
 
 
 # SALES CHART ============================================================ Begin
-# [GET] https://127.0.0.1:5000/report-sales/chart
+# [GET] https://127.0.0.1:5000/report-purchase/chart
 @report_purchase.get("/chart")
 @jwt_required()
 def sales_chart():
@@ -94,7 +94,7 @@ def sales_chart():
 
 
 # TOP SUPPLIER ============================================================ Begin
-# [GET] https://127.0.0.1:5000/report-sales/top-products
+# [GET] https://127.0.0.1:5000/report-purchase/top-products
 @report_purchase.get("/top-suppliers")
 @jwt_required()
 def top_supplier():
@@ -124,7 +124,7 @@ def top_supplier():
 
 
 # TOP SERVICES ============================================================ Begin
-# [GET] https://127.0.0.1:5000/report-sales/top-services
+# [GET] https://127.0.0.1:5000/report-purchase/top-services
 @report_purchase.get("/top-products")
 @jwt_required()
 def top_products():
@@ -156,7 +156,7 @@ def top_products():
 
 
 # REPORT TABLE ============================================================ Begin
-# [GET] https://127.0.0.1:5000/report-sales/table
+# [GET] https://127.0.0.1:5000/report-purchase/table
 @report_purchase.get("/table")
 @jwt_required()
 def report_table():
@@ -187,7 +187,7 @@ def report_table():
 
 
 # EXPORT EXCEL ============================================================ Begin
-# [POST] https://127.0.0.1:5000/report-sales/export/excel
+# [POST] https://127.0.0.1:5000/report-purchase/export/excel
 @report_purchase.post("/export/excel")
 @jwt_required()
 def export_excel():
@@ -199,11 +199,11 @@ def export_excel():
 
         body = request.json
 
-        response =ReportPurchaseModels.export_excel(
+        response = ReportPurchaseModels.export_excel(
             role,
             user_id,
             ws_id,
-            body.get("cashier_id", ""),
+            body.get("supplier_id", ""),
             body.get("start_date"),
             body.get("end_date"),
         )
@@ -216,7 +216,7 @@ def export_excel():
 
 
 # EXPORT PDF ============================================================ Begin
-# [POST] https://127.0.0.1:5000/report-sales/export/pdf
+# [POST] https://127.0.0.1:5000/report-purchase/export/pdf
 @report_purchase.post("/export/pdf")
 @jwt_required()
 def export_pdf():
@@ -232,7 +232,7 @@ def export_pdf():
             role,
             user_id,
             ws_id,
-            body.get("cashier_id", ""),
+            body.get("supplier_id", ""),
             body.get("start_date"),
             body.get("end_date"),
         )
