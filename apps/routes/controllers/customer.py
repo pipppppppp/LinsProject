@@ -37,10 +37,6 @@ def index():
 def create_customer():
     try:
         role = str(get_jwt()["role"])
-        if role != "1":
-              return authorization_error(
-            "Hanya Owner yang dapat menambah pelanggan."
-        )
         ws_id = str(get_jwt()["ws_id"])
 
         body = request.json

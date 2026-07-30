@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta
 
 import json
+import re
 
 from apps import db
 from apps.database.db_categories import Categories
@@ -704,8 +705,10 @@ def vehicle_validator(
 # PRODUCT VALIDATION ============================================================ Begin
 def product_validator(
     category_id,
+    barcode,
     product_name,
     stock,
+    minimum_stock,
     purchase_price,
     selling_price,
     workshop_id,
@@ -713,97 +716,252 @@ def product_validator(
 ):
     check_result = []
 
+    # Initialize Data ---------------------------------------- Start
+    category_id = (
+        str(category_id).strip()
+        if category_id not in [None, ""]
+        else ""
+    )
+
+    barcode = (
+        str(barcode).strip()
+        if barcode not in [None, ""]
+        else ""
+    )
+
+    product_name = (
+        str(product_name).strip()
+        if product_name not in [None, ""]
+        else ""
+    )
+
+    stock = (
+        str(stock).strip()
+        if stock not in [None, ""]
+        else ""
+    )
+
+    minimum_stock = (
+        str(minimum_stock).strip()
+        if minimum_stock not in [None, ""]
+        else ""
+    )
+
+    purchase_price = (
+        str(purchase_price).strip()
+        if purchase_price not in [None, ""]
+        else ""
+    )
+
+    selling_price = (
+        str(selling_price).strip()
+        if selling_price not in [None, ""]
+        else ""
+    )
+    # Initialize Data ---------------------------------------- Finish
+
     # Check Null Value ---------------------------------------- Start
     if category_id == "":
-        check_result.append("Kategori tidak boleh kosong.")
+        check_result.append(
+            "Kategori tidak boleh kosong."
+        )
 
     if product_name == "":
-        check_result.append("Nama produk tidak boleh kosong.")
+        check_result.append(
+            "Nama produk tidak boleh kosong."
+        )
 
     if stock == "":
-        check_result.append("Stok tidak boleh kosong.")
+        check_result.append(
+            "Stok tidak boleh kosong."
+        )
+
+    if minimum_stock == "":
+        check_result.append(
+            "Stok minimum tidak boleh kosong."
+        )
 
     if purchase_price == "":
-        check_result.append("Harga beli tidak boleh kosong.")
+        check_result.append(
+            "Harga beli tidak boleh kosong."
+        )
 
     if selling_price == "":
-        check_result.append("Harga jual tidak boleh kosong.")
+        check_result.append(
+            "Harga jual tidak boleh kosong."
+        )
     # Check Null Value ---------------------------------------- Finish
 
     # Sanitize String Content ---------------------------------------- Start
-    sanitize_product, char_product = sanitize_title_char(product_name)
-    if sanitize_product:
-        check_result.append(
-            f"Nama produk tidak boleh mengandung karakter {char_product}"
+    if product_name != "":
+        sanitize_product, char_product = sanitize_title_char(
+            product_name
         )
+
+        if sanitize_product:
+            check_result.append(
+                "Nama produk tidak boleh mengandung karakter "
+                f"{char_product}."
+            )
+
+    if barcode != "":
+        barcode_status, barcode_character = sanitize_barcode_char(
+            barcode
+        )
+
+        if barcode_status:
+            check_result.append(
+                "Barcode tidak boleh mengandung karakter "
+                f"{barcode_character}."
+            )
     # Sanitize String Content ---------------------------------------- Finish
 
     # Check Field Content ---------------------------------------- Start
-    if not str(category_id).isdigit():
-        check_result.append("Kategori tidak valid.")
+    if category_id != "" and not category_id.isdigit():
+        check_result.append(
+            "Kategori tidak valid."
+        )
 
-    if not str(stock).isdigit():
-        check_result.append("Stok harus berupa angka.")
+    if barcode != "" and len(barcode) > 100:
+        check_result.append(
+            "Barcode maksimal 100 karakter."
+        )
 
-    if not str(purchase_price).isdigit():
-        check_result.append("Harga beli harus berupa angka.")
+    if stock != "" and not stock.isdigit():
+        check_result.append(
+            "Stok harus berupa angka."
+        )
 
-    if not str(selling_price).isdigit():
-        check_result.append("Harga jual harus berupa angka.")
+    if minimum_stock != "" and not minimum_stock.isdigit():
+        check_result.append(
+            "Stok minimum harus berupa angka."
+        )
 
-    if str(stock).isdigit():
-        if int(stock) < 0:
-            check_result.append("Stok tidak boleh kurang dari 0.")
+    if purchase_price != "" and not purchase_price.isdigit():
+        check_result.append(
+            "Harga beli harus berupa angka."
+        )
 
-    if str(purchase_price).isdigit():
-        if int(purchase_price) < 0:
-            check_result.append("Harga beli tidak boleh kurang dari 0.")
+    if selling_price != "" and not selling_price.isdigit():
+        check_result.append(
+            "Harga jual harus berupa angka."
+        )
 
-    if str(selling_price).isdigit():
-        if int(selling_price) < 0:
-            check_result.append("Harga jual tidak boleh kurang dari 0.")
+    if stock.isdigit() and int(stock) < 0:
+        check_result.append(
+            "Stok tidak boleh kurang dari 0."
+        )
+
+    if minimum_stock.isdigit() and int(minimum_stock) < 0:
+        check_result.append(
+            "Stok minimum tidak boleh kurang dari 0."
+        )
+
+    if purchase_price.isdigit() and int(purchase_price) < 0:
+        check_result.append(
+            "Harga beli tidak boleh kurang dari 0."
+        )
+
+    if selling_price.isdigit() and int(selling_price) < 0:
+        check_result.append(
+            "Harga jual tidak boleh kurang dari 0."
+        )
 
     if (
-        str(purchase_price).isdigit() and
-        str(selling_price).isdigit()
+        purchase_price.isdigit()
+        and selling_price.isdigit()
+        and int(selling_price) < int(purchase_price)
     ):
-        if int(selling_price) < int(purchase_price):
-            check_result.append(
-                "Harga jual tidak boleh lebih kecil dari harga beli."
-            )
+        check_result.append(
+            "Harga jual tidak boleh lebih kecil dari harga beli."
+        )
     # Check Field Content ---------------------------------------- Finish
 
     # Check Category ---------------------------------------- Start
-    if str(category_id).isdigit():
-        result = Categories.query.filter_by(
-            id=category_id,
+    if category_id.isdigit():
+        category = Categories.query.filter_by(
+            id=int(category_id),
             workshop_id=workshop_id,
             is_delete=0
         ).first()
 
-        if not result:
-            check_result.append("Kategori tidak ditemukan.")
+        if not category:
+            check_result.append(
+                "Kategori tidak ditemukan."
+            )
     # Check Category ---------------------------------------- Finish
 
-    # Check Duplicate Product ---------------------------------------- Start
-    query = Products.query.filter(
-        Products.workshop_id == workshop_id,
-        Products.product_name == product_name.strip(),
-        Products.is_delete == 0
-    )
-
-    if product_id is not None:
-        query = query.filter(
-            Products.id != product_id
+    # Check Duplicate Barcode ---------------------------------------- Start
+    if barcode != "":
+        barcode_query = Products.query.filter(
+            Products.workshop_id == workshop_id,
+            Products.barcode == barcode,
+            Products.is_delete == 0
         )
 
-    result = query.first()
+        if product_id is not None:
+            barcode_query = barcode_query.filter(
+                Products.id != product_id
+            )
 
-    if result:
-        check_result.append("Nama produk sudah terdaftar.")
+        barcode_result = barcode_query.first()
+
+        if barcode_result:
+            check_result.append(
+                "Barcode sudah digunakan oleh produk lain."
+            )
+    # Check Duplicate Barcode ---------------------------------------- Finish
+
+    # Check Duplicate Product ---------------------------------------- Start
+    if product_name != "":
+        product_query = Products.query.filter(
+            Products.workshop_id == workshop_id,
+            Products.product_name == product_name,
+            Products.is_delete == 0
+        )
+
+        if product_id is not None:
+            product_query = product_query.filter(
+                Products.id != product_id
+            )
+
+        product_result = product_query.first()
+
+        if product_result:
+            check_result.append(
+                "Nama produk sudah terdaftar."
+            )
     # Check Duplicate Product ---------------------------------------- Finish
+
     return check_result
 # PRODUCT VALIDATION ============================================================ End
+
+# **************************************************************
+# BARCODE CHECKER | START
+# **************************************************************
+def barcode_checker(barcode):
+    if barcode is None:
+        return None
+
+    barcode = str(barcode).strip()
+
+    if barcode == "":
+        return None
+
+    if len(barcode) > 100:
+        raise ValueError("Barcode maksimal 100 karakter.")
+
+    pattern = r"^[A-Za-z0-9\-]+$"
+
+    if not re.fullmatch(pattern, barcode):
+        raise ValueError(
+            "Barcode hanya boleh berisi huruf, angka, dan tanda minus."
+        )
+
+    return barcode
+# **************************************************************
+# BARCODE CHECKER | END
+# **************************************************************
 
 # SUPPLIER VALIDATION ============================================================ Begin
 def supplier_validator(
@@ -1168,32 +1326,92 @@ def purchase_excel_validator(worksheet):
     # Check Empty File ---------------------------------------- Finish
 
     # Check Header ---------------------------------------- Start
-    english = ["Product", "Quantity", "Unit Cost"]
-    indonesia = ["Nama Barang", "Jumlah", "Harga Beli"]
+    english = [
+        "Barcode",
+        "Quantity",
+        "Unit Cost"
+    ]
+
+    indonesia = [
+        "Barcode",
+        "Jumlah",
+        "Harga Beli"
+    ]
 
     headers = [
-        str(worksheet.cell(row=1, column=index).value).strip()
+        str(
+            worksheet.cell(
+                row=1,
+                column=index
+            ).value
+        ).strip()
         for index in range(1, 4)
     ]
 
     if headers != english and headers != indonesia:
-        check_result.append("Invalid Excel template.")
+        check_result.append(
+            "Invalid Excel template. Header must be "
+            "Barcode, Quantity, Unit Cost."
+        )
 
         return check_result
     # Check Header ---------------------------------------- Finish
 
+    # Initialize Data ---------------------------------------- Start
+    has_data = False
+    # Initialize Data ---------------------------------------- Finish
+
     # Check Rows ---------------------------------------- Start
     for row in range(2, worksheet.max_row + 1):
 
-        product = worksheet.cell(row=row, column=1).value
-        quantity = worksheet.cell(row=row, column=2).value
-        unit_cost = worksheet.cell(row=row, column=3).value
+        barcode = worksheet.cell(
+            row=row,
+            column=1
+        ).value
 
-        if not product:
+        quantity = worksheet.cell(
+            row=row,
+            column=2
+        ).value
+
+        unit_cost = worksheet.cell(
+            row=row,
+            column=3
+        ).value
+
+        # Skip Empty Row ---------------------------------------- Start
+        if all(
+            value is None or str(value).strip() == ""
+            for value in [
+                barcode,
+                quantity,
+                unit_cost
+            ]
+        ):
+            continue
+        # Skip Empty Row ---------------------------------------- Finish
+
+        has_data = True
+
+        # Barcode Validation ---------------------------------------- Start
+        if barcode is None or str(barcode).strip() == "":
             check_result.append(
-                f"Row {row}: Product is required."
+                f"Row {row}: Barcode is required."
             )
 
+        else:
+            try:
+                barcode_checker(
+                    barcode
+                )
+
+            except ValueError as error:
+                check_result.append(
+                    f"Row {row}: {str(error)}"
+                )
+        # Barcode Validation ---------------------------------------- Finish
+
+        # Quantity Validation ---------------------------------------- Start
         if quantity in [None, ""]:
             check_result.append(
                 f"Row {row}: Quantity is required."
@@ -1209,6 +1427,13 @@ def purchase_excel_validator(worksheet):
                 f"Row {row}: Quantity must be greater than 0."
             )
 
+        elif int(quantity) != quantity:
+            check_result.append(
+                f"Row {row}: Quantity must be a whole number."
+            )
+        # Quantity Validation ---------------------------------------- Finish
+
+        # Unit Cost Validation ---------------------------------------- Start
         if unit_cost in [None, ""]:
             check_result.append(
                 f"Row {row}: Unit cost is required."
@@ -1223,7 +1448,20 @@ def purchase_excel_validator(worksheet):
             check_result.append(
                 f"Row {row}: Unit cost cannot be less than 0."
             )
+
+        elif int(unit_cost) != unit_cost:
+            check_result.append(
+                f"Row {row}: Unit cost must be a whole number."
+            )
+        # Unit Cost Validation ---------------------------------------- Finish
     # Check Rows ---------------------------------------- Finish
+
+    # Check Data Availability ---------------------------------------- Start
+    if not has_data:
+        check_result.append(
+            "The uploaded Excel file does not contain purchase data."
+        )
+    # Check Data Availability ---------------------------------------- Finish
 
     return check_result
 # PURCHASE EXCEL VALIDATION ============================================================ End

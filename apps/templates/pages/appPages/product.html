@@ -91,7 +91,8 @@
               <thead class="table-secondary">
                 <tr>
                   <th width="60">No</th>
-                  <th>Barang</th>
+                  <th>Barcode</th>
+                  <th>Nama Barang</th>
                   <th width="180">Kategori</th>
                   <th width="120">Stok</th>
                   <th width="180">Harga</th>
@@ -150,7 +151,7 @@
               <input type="hidden" id="product_id" />
 
               <div class="mb-3">
-                <label class="form-label">
+                <label class="form-label" for="product_category">
                   <i class="bi bi-tags me-2"></i>
                   Kategori
                 </label>
@@ -158,8 +159,35 @@
                 <select id="product_category" class="form-select"></select>
               </div>
 
+              <!-- ====================================================== -->
+              <!-- PRODUCT BARCODE -->
+              <!-- ====================================================== -->
               <div class="mb-3">
-                <label class="form-label">
+                <label class="form-label" for="product_barcode">
+                  <i class="bi bi-upc-scan me-2"></i>
+                  Barcode
+                </label>
+
+                <div class="input-group">
+                  <span class="input-group-text">
+                    <i class="bi bi-upc"></i>
+                  </span>
+
+                  <input
+                    type="text"
+                    id="product_barcode"
+                    class="form-control"
+                    maxlength="100"
+                    autocomplete="off"
+                    placeholder="Scan atau masukkan barcode"
+                  />
+                </div>
+
+                <small class="text-muted"> Barcode bersifat opsional dan dapat diisi menggunakan scanner. </small>
+              </div>
+
+              <div class="mb-3">
+                <label class="form-label" for="product_name">
                   <i class="bi bi-box-seam me-2"></i>
                   Nama Barang
                 </label>
@@ -168,37 +196,39 @@
               </div>
 
               <div class="mb-3">
-                <label class="form-label">
+                <label class="form-label" for="product_stock">
                   <i class="bi bi-boxes me-2"></i>
                   Stok
                 </label>
 
-                <input type="number" id="product_stock" class="form-control" placeholder="Masukkan stok" />
+                <input type="number" id="product_stock" class="form-control" min="0" placeholder="Masukkan stok" />
               </div>
 
               <div class="mb-3">
-                <label class="form-label">
+                <label class="form-label" for="product_minimum_stock">
                   <i class="bi bi-exclamation-circle me-2"></i>
                   Stok Minimum
                 </label>
 
-                <input type="number" id="product_minimum_stock" class="form-control" placeholder="Masukkan stok minimum" />
+                <input type="number" id="product_minimum_stock" class="form-control" min="0" placeholder="Masukkan stok minimum" />
               </div>
+
               <div class="mb-3">
-                <label class="form-label">
+                <label class="form-label" for="product_purchase">
                   <i class="bi bi-cash-stack me-2"></i>
                   Harga Beli
                 </label>
 
-                <input type="number" id="product_purchase" class="form-control" placeholder="Masukkan harga beli" />
+                <input type="number" id="product_purchase" class="form-control" min="0" placeholder="Masukkan harga beli" />
               </div>
+
               <div class="mb-3">
-                <label class="form-label">
+                <label class="form-label" for="product_price">
                   <i class="bi bi-currency-dollar me-2"></i>
                   Harga Jual
                 </label>
 
-                <input type="number" id="product_price" class="form-control" placeholder="Masukkan harga jual" />
+                <input type="number" id="product_price" class="form-control" min="0" placeholder="Masukkan harga jual" />
               </div>
             </div>
 
@@ -209,13 +239,11 @@
               <div class="d-flex w-100 gap-3">
                 <button type="button" class="btn btn-outline-secondary flex-fill" data-bs-dismiss="modal">
                   <i class="bi bi-x-lg me-1"></i>
-
                   Batal
                 </button>
 
                 <button type="button" class="btn btn-primary flex-fill btn-save">
                   <i class="bi bi-check-lg me-1"></i>
-
                   Simpan
                 </button>
               </div>

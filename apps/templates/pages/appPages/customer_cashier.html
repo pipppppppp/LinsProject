@@ -143,10 +143,15 @@
               </div>
 
               <div class="d-flex align-items-center gap-2">
-                <span id="customer_count" class="btn btn-light-primary btn-sm disabled"> 20 Pelanggan </span>
+                <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#customer_modal">
+                  <i class="bi bi-person-plus-fill me-1"></i>
+                  Tambah Pelanggan
+                </button>
 
-                <button class="btn btn-light-primary btn-sm" id="btn_refresh">
-                  <i class="bi bi-arrow-clockwise"></i>
+                <span id="customer_count" class="btn btn-light-primary btn-sm disabled"> 0 Pelanggan </span>
+
+                <button type="button" class="btn btn-light-primary btn-sm" id="btn_refresh">
+                  <i class="bi bi-arrow-clockwise me-1"></i>
                   Refresh
                 </button>
               </div>
@@ -181,6 +186,88 @@
     <!--! [Start] Footer !-->
     {% include 'components/footer_dashboard.html' %}
     <!--! [End] Footer !-->
+    <!--! ================================================================ !-->
+    <!--! ================================================================ !-->
+    <!--! [Start] Modal Form !-->
+    <!--! ================================================================ !-->
+    <div class="modal fade" id="customer_modal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+          <!-- ====================================================== -->
+          <!-- MODAL HEADER -->
+          <!-- ====================================================== -->
+          <div class="modal-header border-bottom">
+            <div>
+              <h4 class="modal-title mb-1" id="modal_label">
+                <i class="bi bi-person-plus-fill me-2 text-primary"></i>
+                Tambah Pelanggan
+              </h4>
+
+              <small class="text-muted"> Tambahkan atau ubah informasi pelanggan bengkel. </small>
+            </div>
+
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+
+          <form>
+            <!-- ====================================================== -->
+            <!-- MODAL BODY -->
+            <!-- ====================================================== -->
+            <div class="modal-body px-4 py-3">
+              <input type="hidden" id="customer_id" />
+
+              <div class="mb-3">
+                <label class="form-label">
+                  <i class="bi bi-person me-2"></i>
+                  Nama Lengkap
+                </label>
+
+                <input type="text" id="customer_name" class="form-control" placeholder="Masukkan nama lengkap" />
+              </div>
+
+              <div class="mb-3">
+                <label class="form-label">
+                  <i class="bi bi-geo-alt me-2"></i>
+                  Alamat
+                </label>
+
+                <input type="text" id="customer_address" class="form-control" placeholder="Masukkan alamat" />
+              </div>
+
+              <div class="mb-3">
+                <label class="form-label">
+                  <i class="bi bi-telephone me-2"></i>
+                  No. Telepon
+                </label>
+
+                <input type="text" id="customer_phone" class="form-control" placeholder="Masukkan nomor telepon" />
+              </div>
+            </div>
+
+            <!-- ====================================================== -->
+            <!-- MODAL FOOTER -->
+            <!-- ====================================================== -->
+            <div class="modal-footer border-top">
+              <div class="d-flex w-100 gap-3">
+                <button type="button" class="btn btn-outline-secondary flex-fill" data-bs-dismiss="modal">
+                  <i class="bi bi-x-lg me-1"></i>
+
+                  Batal
+                </button>
+
+                <button type="button" class="btn btn-primary flex-fill btn-save">
+                  <i class="bi bi-check-lg me-1"></i>
+
+                  Simpan
+                </button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+    <!--! ================================================================ !-->
+    <!--! [End] Modal Form !-->
     <!--! ================================================================ !-->
   </div>
   <!--! ================================================================ !-->

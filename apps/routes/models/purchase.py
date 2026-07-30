@@ -245,7 +245,6 @@ class PurchaseModels():
             return bad_request(str(e))
     # READ PURCHASE ============================================================ End
 
-
     # READ PURCHASE DETAIL ============================================================ Begin
     def read_purchase_detail(user_role, workshop_id, id):
         try:
@@ -631,34 +630,42 @@ class PurchaseModels():
             purchase_details = []
             # Initialize Purchase Detail ---------------------------------------- Finish
 
-            # Read Excel ---------------------------------------- Start
-            for row in worksheet.iter_rows(
-                  min_row=2,
-                  values_only=True
+             # Read Excel ---------------------------------------- Start
+            for row_number, row in enumerate(
+                worksheet.iter_rows(
+                    min_row=2,
+                    values_only=True
+                ),
+                start=2
             ):
+                barcode, quantity, unit_cost = row
 
-                  product_name, quantity, unit_cost = row
+                # Ignore Empty Row
+                if barcode in [None, ""] and quantity in [None, ""] and unit_cost in [None, ""]:
+                    continue
 
-                  product = Products.query.filter_by(
-                  product_name=str(product_name).strip(),
-                  workshop_id=workshop_id,
-                  is_delete=0
-                  ).first()
+                barcode = str(barcode).strip()
 
-                  if not product:
-                        return defined_error(
-                              [
-                                    f"Product '{product_name}' could not be found."
-                              ],
-                              "Defined Error",
-                              499
-                        )
+                product = Products.query.filter_by(
+                    barcode=barcode,
+                    workshop_id=workshop_id,
+                    is_delete=0
+                ).first()
 
-                  purchase_details.append({
-                  "product_id": product.id,
-                  "quantity": int(quantity),
-                  "unit_cost": int(unit_cost)
-                  })
+                if not product:
+                    return defined_error(
+                        [
+                            f"Barcode '{barcode}' pada baris {row_number} tidak ditemukan."
+                        ],
+                        "Defined Error",
+                        499
+                    )
+
+                purchase_details.append({
+                    "product_id": product.id,
+                    "quantity": int(quantity),
+                    "unit_cost": int(unit_cost)
+                })
             # Read Excel ---------------------------------------- Finish
 
             # Initialize Data ---------------------------------------- Start

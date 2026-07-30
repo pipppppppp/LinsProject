@@ -35,6 +35,7 @@ class ProductModels():
                 "category_id",
                 "product_name",
                 "stock",
+                "minimum_stock",
                 "purchase",
                 "price"
             ]
@@ -48,8 +49,10 @@ class ProductModels():
 
             # Initialize Data Input ---------------------------------------- Start
             category_id = datas["category_id"]
+            barcode = str(datas.get("barcode", "")).strip()
             product_name = datas["product_name"].strip()
             stock = datas["stock"]
+            minimum_stock = datas["minimum_stock"]
             purchase_price = datas["purchase"]
             selling_price = datas["price"]
             # Initialize Data Input ---------------------------------------- Finish
@@ -57,8 +60,10 @@ class ProductModels():
             # Data Validation ---------------------------------------- Start
             checker_result = product_validator(
                 category_id,
+                barcode,
                 product_name,
                 stock,
+                minimum_stock,
                 purchase_price,
                 selling_price,
                 workshop_id
@@ -91,8 +96,10 @@ class ProductModels():
             data = Products(
                 workshop_id=workshop.id,
                 category_id=category_id,
+                barcode=barcode if barcode != "" else None,
                 product_name=product_name,
                 stock=stock,
+                minimum_stock=minimum_stock,
                 purchase_price=purchase_price,
                 selling_price=selling_price,
                 created_at=timestamp,
@@ -149,26 +156,30 @@ class ProductModels():
             data = []
 
             for product in products:
-                created_at = format_date(product.created_at)
-                updated_at = format_date(product.updated_at)
+                created_date = format_date(product.created_at)
+                updated_date = format_date(product.updated_at)
 
-                deleted_at = None
+                deleted_date = None
 
                 if product.deleted_at:
-                    deleted_at = format_date(product.deleted_at)
+                    deleted_date = format_date(product.deleted_at)
 
                 data.append({
                     "id": product.id,
                     "category_id": product.category_id,
                     "category": product.categories.category,
+                    "barcode": product.barcode,
                     "product_name": product.product_name,
                     "stock": product.stock,
                     "minimum_stock": product.minimum_stock,
                     "purchase_price": product.purchase_price,
                     "selling_price": product.selling_price,
-                    "created_at": created_at,
-                    "updated_at": updated_at,
-                    "deleted_at": deleted_at
+                    "created_at": product.created_at,
+                    "created_date": created_date,
+                    "updated_at": product.updated_at,
+                    "updated_date": updated_date,
+                    "deleted_at": product.deleted_at,
+                    "deleted_date": deleted_date
                 })
             # Initialize Data ---------------------------------------- Finish
 
@@ -181,6 +192,7 @@ class ProductModels():
         except Exception as e:
             return bad_request(str(e))
     # READ PRODUCT ============================================================ End
+    
     # UPDATE PRODUCT ============================================================ Begin
     def update_product(user_role, workshop_id, product_id, datas):
         try:
@@ -203,6 +215,7 @@ class ProductModels():
                 "category_id",
                 "product_name",
                 "stock",
+                "minimum_stock",
                 "purchase",
                 "price"
             ]
@@ -229,8 +242,10 @@ class ProductModels():
 
             # Initialize Data Input ---------------------------------------- Start
             category_id = datas["category_id"]
+            barcode = str(datas.get("barcode", "")).strip()
             product_name = datas["product_name"].strip()
             stock = datas["stock"]
+            minimum_stock = datas["minimum_stock"]
             purchase_price = datas["purchase"]
             selling_price = datas["price"]
             # Initialize Data Input ---------------------------------------- Finish
@@ -240,8 +255,10 @@ class ProductModels():
 
             checker_result = product_validator(
                 category_id,
+                barcode,
                 product_name,
                 stock,
+                minimum_stock,
                 purchase_price,
                 selling_price,
                 workshop_id,
@@ -270,8 +287,10 @@ class ProductModels():
 
             # Update Data ---------------------------------------- Start
             product.category_id = category_id
+            product.barcode = barcode if barcode != "" else None
             product.product_name = product_name
             product.stock = stock
+            product.minimum_stock = minimum_stock
             product.purchase_price = purchase_price
             product.selling_price = selling_price
             product.updated_at = current_timestamp()

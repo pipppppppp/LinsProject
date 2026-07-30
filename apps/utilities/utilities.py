@@ -207,6 +207,23 @@ def sanitize_plate_char(plate_number):
             return True, char
 
     return False, ""
+
+def sanitize_barcode_char(barcode):
+    allowed_characters = (
+        "abcdefghijklmnopqrstuvwxyz"
+        "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+        "0123456789"
+        "-"
+        "_"
+        "."
+    )
+
+    for character in str(barcode):
+        if character not in allowed_characters:
+            return True, character
+
+    return False, None
+
 # **************************************************************
 # SANITIZING STRING | END
 # **************************************************************

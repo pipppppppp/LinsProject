@@ -18,6 +18,7 @@ const form = {
   title: document.getElementById("modal_label"),
   id: document.getElementById("product_id"),
   category: document.getElementById("product_category"),
+  barcode: document.getElementById("product_barcode"),
   name: document.getElementById("product_name"),
   stock: document.getElementById("product_stock"),
   minimum_stock: document.getElementById("product_minimum_stock"),
@@ -44,7 +45,16 @@ let categoriesData = [];
 async function loadProducts() {
   const result = await getRequest("/product/view");
 
-  productsData = result.data;
+  if (!result || result.status_code !== 200) {
+    productsData = [];
+
+    document.getElementById("product_count").textContent = "0 Produk";
+
+    return;
+  }
+
+  productsData = result.data ?? [];
+
   document.getElementById("product_count").textContent = `${productsData.length} Produk`;
 }
 
@@ -99,7 +109,15 @@ function renderTable() {
       <tr>
 
         <td>${index + 1}</td>
-
+        <td>
+          ${
+            product.barcode
+              ? `<span class="badge bg-light-primary text-primary">
+                  ${product.barcode}
+                </span>`
+              : "-"
+          }
+        </td>
         <td class="fw-semibold">
             <i class="bi bi-box-seam text-primary me-2"></i>
               ${product.product_name}
@@ -185,6 +203,7 @@ async function saveProduct() {
   const product = {
     id: form.id.value,
     category_id: form.category.value,
+    barcode: form.barcode.value.trim(),
     product_name: formatTitle(form.name.value),
     stock: form.stock.value,
     minimum_stock: form.minimum_stock.value,
@@ -223,7 +242,7 @@ async function saveProduct() {
 
     closeModal("product_modal");
 
-    clearValue(form.id, form.category, form.name, form.stock, form.minimum_stock, form.purchase, form.price);
+    clearValue(form.id, form.category, form.barcode, form.name, form.stock, form.minimum_stock, form.purchase, form.price);
 
     form.title.textContent = "Tambah Barang";
 
@@ -257,6 +276,7 @@ async function handleTableClick(e) {
 
     form.id.value = product.id;
     form.category.value = product.category_id;
+    form.barcode.value = product.barcode ?? "";
     form.name.value = product.product_name;
     form.stock.value = product.stock;
     form.minimum_stock.value = product.minimum_stock;
@@ -282,7 +302,6 @@ async function handleTableClick(e) {
         product_id: id,
       });
     } finally {
-
       swalClose();
     }
     if (!result) {
@@ -308,7 +327,7 @@ async function handleTableClick(e) {
 function resetForm() {
   form.title.textContent = "Tambah Barang";
 
-  clearValue(form.id, form.name, form.stock, form.minimum_stock, form.purchase, form.price);
+  clearValue(form.id, form.barcode, form.name, form.stock, form.minimum_stock, form.purchase, form.price);
 
   form.minimum_stock.value = 5;
   form.category.value = "";
@@ -320,7 +339,25 @@ function resetForm() {
 // **************************************************************
 // MODAL EVENT | START
 // **************************************************************
-document.getElementById("product_modal").addEventListener("hidden.bs.modal", resetForm);
+const productModal = document.getElementById("product_modal");
+const productForm = productModal.querySelector("form");
+
+// Mencegah form submit otomatis ketika scanner mengirim Enter
+productForm.addEventListener("submit", function (event) {
+  event.preventDefault();
+});
+
+// Setelah barcode di-scan, pindahkan fokus ke nama barang
+form.barcode.addEventListener("keydown", function (event) {
+  if (event.key !== "Enter") return;
+
+  event.preventDefault();
+
+  form.name.focus();
+});
+
+// Reset form ketika modal ditutup
+productModal.addEventListener("hidden.bs.modal", resetForm);
 // **************************************************************
 // MODAL EVENT | END
 // **************************************************************
