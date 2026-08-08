@@ -2,8 +2,10 @@
 // BASE INISIALIZATION | START
 // **************************************************************
 document.addEventListener("DOMContentLoaded", init);
+
 async function init() {
   await reloadTable(loadVehicles, renderTable);
+
   // Refresh button
   document.getElementById("btn_refresh")?.addEventListener("click", async () => {
     await reloadTable(loadVehicles, renderTable);
@@ -26,28 +28,28 @@ const form = {
 // **************************************************************
 
 // **************************************************************
-// GET CUSTOMER | START
+// GET VEHICLE | START
 // **************************************************************
-// Variable Setup -------------------------------------------------
 let vehiclesData = [];
 
-// Load Data -------------------------------------------------
 async function loadVehicles() {
   const customerId = form.customer_id.value;
 
   const result = await getRequest(`/vehicle/view/${customerId}`);
+
   console.log(result);
 
-  if (!result) {
+  if (!result || !result.data) {
     vehiclesData = [];
     return;
   }
 
   const customer = result.data.customer;
 
+  // Customer Name
   document.getElementById("customer_name").textContent = customer.customer_name;
 
-  // Avatar Inisial
+  // Avatar Initial
   const initial = customer.customer_name
     .trim()
     .split(/\s+/)
@@ -56,16 +58,20 @@ async function loadVehicles() {
     .join("");
 
   document.getElementById("customer_initial").textContent = initial;
-  
-  document.getElementById("customer_phone").textContent = customer.customer_phone;
 
-  document.getElementById("customer_address").textContent = customer.customer_address;
+  // Customer Phone
+  document.getElementById("customer_phone").textContent = customer.customer_phone || "-";
 
+  // Customer Address
+  document.getElementById("customer_address").textContent = customer.customer_address || "-";
+
+  // Vehicle Data
   vehiclesData = result.data.vehicles ?? [];
+
   document.getElementById("vehicle_count").textContent = `${vehiclesData.length} Kendaraan`;
 }
 // **************************************************************
-// GET CUSTOMER | END
+// GET VEHICLE | END
 // **************************************************************
 
 // **************************************************************
@@ -74,37 +80,53 @@ async function loadVehicles() {
 function renderTable() {
   let html = "";
 
+  // true jika halaman kasir
+  const isCashier = window.location.pathname.startsWith("/cashier");
+
   vehiclesData.forEach((vehicle, index) => {
+    let action = "-";
+
+    // Edit & Delete hanya untuk Owner
+    if (!isCashier) {
+      action = `
+        <div class="d-flex justify-content-center gap-2">
+
+          <button
+            class="btn btn-warning btn-sm btn-edit"
+            data-bs-toggle="modal"
+            data-bs-target="#vehicle_modal"
+            data-id="${vehicle.id}"
+            title="Ubah">
+
+            <i class="bi bi-pencil-fill"></i>
+          </button>
+
+          <button
+            class="btn btn-danger btn-sm btn-delete"
+            data-id="${vehicle.id}"
+            title="Hapus">
+
+            <i class="bi bi-trash-fill"></i>
+          </button>
+
+        </div>
+      `;
+    }
+
     html += `
       <tr>
-          <td>${index + 1}</td>
-          <td>${vehicle.plate_number}</td>
-          <td>${vehicle.vehicle_brand}</td>
-          <td>${vehicle.vehicle_type}</td>
-          <td>${vehicle.vehicle_year}</td>
-          <td>${vehicle.vehicle_color}</td>
-          <td class="text-center">
-              <div class="d-flex justify-content-center gap-2">
-                  <button
-                      class="btn btn-warning btn-sm btn-edit"
-                      data-bs-toggle="modal"
-                      data-bs-target="#vehicle_modal"
-                      data-id="${vehicle.id}"
-                      title="Ubah">
-                      <i class="bi bi-pencil-fill"></i>
-                  </button>
-      
-                  <button
-                      class="btn btn-danger btn-sm btn-delete"
-                      data-id="${vehicle.id}"
-                      title="Hapus">
-                      <i class="bi bi-trash-fill"></i>
-                  </button>
-      
-              </div>
-          </td>
+        <td>${index + 1}</td>
+        <td>${vehicle.plate_number}</td>
+        <td>${vehicle.vehicle_brand}</td>
+        <td>${vehicle.vehicle_type}</td>
+        <td>${vehicle.vehicle_year}</td>
+        <td>${vehicle.vehicle_color}</td>
+
+        <td class="text-center">
+          ${action}
+        </td>
       </tr>
-      `;
+    `;
   });
 
   document.getElementById("vehicle_table").innerHTML = html;
@@ -114,7 +136,7 @@ function renderTable() {
 // **************************************************************
 
 // **************************************************************
-// SAVE CUSTOMER | START
+// SAVE VEHICLE | START
 // **************************************************************
 async function saveVehicle() {
   const vehicle = {
@@ -135,9 +157,21 @@ async function saveVehicle() {
   try {
     swalLoading();
 
+    // Jika tidak ada ID = Tambah
     if (!vehicle.id) {
       result = await postRequest("/vehicle/add", vehicle);
-    } else {
+    }
+
+    // Jika ada ID = Edit
+    else {
+      // Kasir tidak boleh edit
+      const isCashier = window.location.pathname.startsWith("/cashier");
+
+      if (isCashier) {
+        swalClose();
+        return;
+      }
+
       result = await putRequest(`/vehicle/edit/${vehicle.id}`, vehicle);
     }
   } finally {
@@ -148,7 +182,9 @@ async function saveVehicle() {
     await swalSuccess(result.message);
 
     closeModal("vehicle_modal");
+
     clearValue(form.id, form.plate_number, form.vehicle_brand, form.vehicle_type, form.vehicle_year, form.vehicle_color);
+
     form.title.textContent = "Tambah Kendaraan";
 
     await reloadTable(loadVehicles, renderTable);
@@ -156,26 +192,40 @@ async function saveVehicle() {
     await swalError(result.message);
   }
 }
-document.querySelector(".btn-save").addEventListener("click", saveVehicle);
+
+const btnSave = document.querySelector(".btn-save");
+
+if (btnSave) {
+  btnSave.addEventListener("click", saveVehicle);
+}
 // **************************************************************
-// SAVE PRODUCT | END
+// SAVE VEHICLE | END
 // **************************************************************
 
 // **************************************************************
-// UPDATE & DELETE CUSTOMER | START
+// UPDATE & DELETE VEHICLE | START
 // **************************************************************
-document.getElementById("table1").addEventListener("click", handleTableClick);
+document.getElementById("table1")?.addEventListener("click", handleTableClick);
+
 async function handleTableClick(e) {
+  // Kasir tidak boleh Edit / Delete
+  const isCashier = window.location.pathname.startsWith("/cashier");
+
+  if (isCashier) return;
+
   const editBtn = e.target.closest(".btn-edit");
   const deleteBtn = e.target.closest(".btn-delete");
 
+  // EDIT =======================================================
   if (editBtn) {
-    const id = editBtn.dataset.id;
+    const id = Number(editBtn.dataset.id);
 
-    const vehicle = vehiclesData.find((item) => item.id == id);
+    const vehicle = vehiclesData.find((item) => Number(item.id) === id);
+
     if (!vehicle) return;
 
     form.title.textContent = "Ubah Data Kendaraan";
+
     form.id.value = vehicle.id;
     form.customer_id.value = vehicle.customer_id;
     form.plate_number.value = vehicle.plate_number;
@@ -183,19 +233,23 @@ async function handleTableClick(e) {
     form.vehicle_type.value = vehicle.vehicle_type;
     form.vehicle_year.value = vehicle.vehicle_year;
     form.vehicle_color.value = vehicle.vehicle_color;
+
     return;
   }
 
+  // DELETE =====================================================
   if (deleteBtn) {
     const id = Number(deleteBtn.dataset.id);
 
     const confirmDelete = await swalDelete();
+
     if (!confirmDelete.isConfirmed) return;
 
     let result;
 
     try {
       swalLoading();
+
       result = await deleteRequest(`/vehicle/delete/${id}`);
     } finally {
       swalClose();
@@ -203,6 +257,7 @@ async function handleTableClick(e) {
 
     if (result.status_code === 200) {
       await swalSuccess(result.message);
+
       await reloadTable(loadVehicles, renderTable);
     } else {
       await swalError(result.message);
@@ -210,7 +265,7 @@ async function handleTableClick(e) {
   }
 }
 // **************************************************************
-// UPDATE & DELETE CUSTOMER | END
+// UPDATE & DELETE VEHICLE | END
 // **************************************************************
 
 // **************************************************************
@@ -228,7 +283,11 @@ function resetForm() {
 // **************************************************************
 // MODAL EVENT | START
 // **************************************************************
-document.getElementById("vehicle_modal").addEventListener("hidden.bs.modal", resetForm);
+const vehicleModal = document.getElementById("vehicle_modal");
+
+if (vehicleModal) {
+  vehicleModal.addEventListener("hidden.bs.modal", resetForm);
+}
 // **************************************************************
 // MODAL EVENT | END
 // **************************************************************

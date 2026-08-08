@@ -4,6 +4,7 @@
 document.addEventListener("DOMContentLoaded", init);
 
 async function init() {
+  setTodayDate();
   await loadCashiers();
   await reloadTable(loadReport, renderTable);
 }
@@ -19,9 +20,30 @@ const form = {
 // **************************************************************
 
 // **************************************************************
-// GET REPORT | START
+// TODAY DATE | START
+// **************************************************************
+function setTodayDate() {
+  const now = new Date();
+
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, "0");
+  const day = String(now.getDate()).padStart(2, "0");
+
+  const today = `${year}-${month}-${day}`;
+
+  const startDate = document.getElementById("start_date");
+  const endDate = document.getElementById("end_date");
+
+  if (startDate) startDate.value = today;
+  if (endDate) endDate.value = today;
+}
+// **************************************************************
+// TODAY DATE | END
 // **************************************************************
 
+// **************************************************************
+// GET REPORT | START
+// **************************************************************
 // Variable Setup -------------------------------------------------
 let reportData = [];
 let chartData = [];

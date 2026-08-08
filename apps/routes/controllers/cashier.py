@@ -12,8 +12,6 @@ cashier = Blueprint(
     url_prefix='/cashier',
 )
 # BLUEPRINT ================================================== End
-
-print(cashier.template_folder)
 # CASHIER PAGE ============================================================ Begin
 @cashier.get('/')
 @jwt_required()
@@ -44,8 +42,24 @@ def customer():
 
     except Exception as e:
         return bad_request(str(e))
-
 # CASHIER PAGE ============================================================ End
+
+# VEHICLE PAGE ============================================================ Begin
+@cashier.get("/customer/vehicle/<int:customer_id>")
+@jwt_required()
+def vehicle(customer_id):
+    try:
+
+        return render_template(
+            title="Kendaraan - POS Bengkel",
+            template_name_or_list="vehicle_cashier.html",
+            customer_id=customer_id,
+            active_menu="customer",
+        )
+
+    except Exception as e:
+        return bad_request(str(e))
+# VEHICLE PAGE ============================================================ End
 
 # SEARCH ITEM ============================================================ Begin
 @cashier.get("/search")
