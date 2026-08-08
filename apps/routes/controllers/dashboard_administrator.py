@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template
+from flask import Blueprint, render_template, redirect
 from flask_jwt_extended import get_jwt, jwt_required
 
 from apps.utilities.responseHelpers import bad_request
@@ -21,20 +21,26 @@ dashboard_administrator = Blueprint(
 # DASHBOARD ADMINISTRATOR PAGE ============================================================ Begin
 # GET http://127.0.0.1:5000/dashboard-administrator/
 @dashboard_administrator.get("/")
-@jwt_required()
+@jwt_required(optional=True)
 def index():
     try:
+         # JWT Access Data ---------------------------------------- Start
+        claims = get_jwt()
+
+        # Jika belum login
+        if not claims:
+            return redirect("/auth/signin")
+
+        # Jika bukan administrator
+        if int(claims["role"]) != 0:
+            return redirect(url_for("dashboard.index"))
+        # JWT Access Data ---------------------------------------- Finish
+
         # Return Page ========================================
         return render_template(
-            template_name_or_list=(
-                "dashboard_administrator.html"
-            ),
-            title=(
-                "Dashboard Administrator - POS Bengkel"
-            ),
-            active_menu=(
-                "dashboard_administrator"
-            ),
+            template_name_or_list="dashboard_administrator.html",
+            title="Dashboard Administrator - POS Bengkel",
+            active_menu="dashboard_administrator"
         )
 
     except Exception as e:

@@ -26,11 +26,14 @@ dashboard = Blueprint(
 # DASHBOARD PAGE ============================================================ Begin
 # GET https://127.0.0.1:5000/dashboard/
 @dashboard.get('/')
-@jwt_required()
+@jwt_required(optional=True)
 def index():
     try:
         claims = get_jwt()
-        
+
+        # Jika belum login / cookie JWT tidak ada
+        if not claims:
+            return redirect("/auth/signin")
         if claims["role"] == 0:
             return redirect(url_for("dashboard_administrator.index"))
         # elif claims["role"] == 1:

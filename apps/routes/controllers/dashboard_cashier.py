@@ -26,14 +26,25 @@ dashboard_cashier = Blueprint(
 # DASHBOARD PAGE ============================================================ Begin
 # GET https://127.0.0.1:5000/dashboard_cashier/
 @dashboard_cashier.get('/')
-@jwt_required()
+@jwt_required(optional=True)
 def index():
     try:
-      return render_template(
-            title='Kasir - POS Bengkel',
-            template_name_or_list='dashboard_cashier.html',
-            active_menu="dashboard_cashier",
-      )
+         # JWT Access Data ---------------------------------------- Start
+        claims = get_jwt()
+
+        # Jika belum login
+        if not claims:
+            return redirect("/auth/signin")
+
+        # Jika bukan kasir
+        if int(claims["role"]) != 2:
+            return redirect(url_for("dashboard.index"))
+        # JWT Access Data ---------------------------------------- Finish
+        return render_template(
+                title='Kasir - POS Bengkel',
+                template_name_or_list='dashboard_cashier.html',
+                active_menu="dashboard_cashier",
+        )
 
     except Exception as e:
         return bad_request(str(e))
