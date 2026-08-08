@@ -173,44 +173,82 @@ function renderSearchTable() {
 
   if (searchData.length == 0) {
     tbody.innerHTML = `
-              <tr>
-                  <td colspan="4" class="text-center">
-                      Data tidak ditemukan
-                  </td>
-              </tr>
-          `;
+      <tr>
+        <td colspan="5" class="text-center">
+          Data tidak ditemukan
+        </td>
+      </tr>
+    `;
 
     return;
   }
 
   searchData.forEach((item, index) => {
+    // Status stok
+    let stockDisplay = "-";
+    let buttonDisabled = "";
+
+    if (item.type === "product") {
+      const stock = Number(item.stock);
+
+      if (stock <= 0) {
+        stockDisplay = `
+          <span class="badge bg-light-danger text-danger">
+            Stok Habis
+          </span>
+        `;
+
+        buttonDisabled = "disabled";
+      } else if (stock <= 5) {
+        stockDisplay = `
+          <span class="badge bg-light-warning text-warning">
+            ${stock} Unit
+          </span>
+        `;
+      } else {
+        stockDisplay = `
+          <span class="badge bg-light-success text-success">
+            ${stock} Unit
+          </span>
+        `;
+      }
+    } else {
+      stockDisplay = `
+        <span class="text-muted">
+          -
+        </span>
+      `;
+    }
+
     tbody.innerHTML += `
-  
-              <tr>
-  
-                  <td>${index + 1}</td>
-  
-                  <td>${item.name}</td>
-  
-                  <td>
-                      Rp ${formatNumber(item.price)}
-                  </td>
-  
-                  <td>
-  
-                      <button
-                          class="btn btn-success btn-sm"
-                          onclick="addToCart(searchData[${index}])">
-  
-                          <i class="bi bi-plus-circle"></i>
-  
-                      </button>
-  
-                  </td>
-  
-              </tr>
-  
-          `;
+      <tr>
+
+        <td>${index + 1}</td>
+
+        <td>
+          ${item.name}
+        </td>
+
+        <td>
+          Rp ${formatNumber(item.price)}
+        </td>
+
+        <td>
+          ${stockDisplay}
+        </td>
+
+        <td>
+          <button
+            class="btn btn-success btn-sm"
+            onclick="addToCart(searchData[${index}])"
+            ${buttonDisabled}
+          >
+            <i class="bi bi-plus-circle"></i>
+          </button>
+        </td>
+
+      </tr>
+    `;
   });
 }
 // **************************************************************
@@ -234,19 +272,41 @@ function clearSearchResult() {
 function addToCart(item) {
   const exist = cart.find((x) => x.id == item.id && x.type == item.type);
 
+  // PRODUCT STOCK VALIDATION ================================ Start
+  if (item.type === "product") {
+    const stock = Number(item.stock);
+
+    // Stok habis
+    if (stock <= 0) {
+      swalWarning("Stok barang habis.");
+      return;
+    }
+
+    // Sudah ada di keranjang
+    if (exist && exist.quantity >= stock) {
+      swalWarning(`Jumlah barang tidak boleh melebihi stok tersedia (${stock} unit).`);
+
+      return;
+    }
+  }
+  // PRODUCT STOCK VALIDATION ================================ Finish
+
   if (exist) {
     exist.quantity++;
+
     exist.subtotal = exist.quantity * exist.price;
   } else {
     cart.push({
       id: item.id,
       type: item.type,
       name: item.name,
+      stock: item.type === "product" ? Number(item.stock) : null,
       quantity: 1,
       price: Number(item.price),
       subtotal: Number(item.price),
     });
   }
+
   renderCart();
   calculateTotal();
 
@@ -281,7 +341,7 @@ async function loadCustomer() {
   if ($("#customer_id").hasClass("select2-hidden-accessible")) {
     $("#customer_id").select2("destroy");
   }
-  
+
   $("#customer_id").select2({
     width: "100%",
   });
@@ -445,9 +505,19 @@ function renderCart() {
 // INCREASE QTY | START
 // **************************************************************
 function increaseQty(index) {
-  cart[index].quantity++;
+  const item = cart[index];
 
-  cart[index].subtotal = cart[index].quantity * cart[index].price;
+  // PRODUCT STOCK VALIDATION ================================ Start
+  if (item.type === "product" && item.quantity >= item.stock) {
+    swalWarning(`Stok ${item.name} hanya tersedia ${item.stock} unit.`);
+
+    return;
+  }
+  // PRODUCT STOCK VALIDATION ================================ Finish
+
+  item.quantity++;
+
+  item.subtotal = item.quantity * item.price;
 
   renderCart();
 }

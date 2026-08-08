@@ -6,7 +6,7 @@ from ...database.db_workshops import Workshops
 from ...database.db_customers import Customers
 from ...database.db_vehicles import Vehicles
 
-from ...utilities.validators import role_validator, vehicle_validator
+from ...utilities.validators import role_validator, vehicle_validator, subscription_validator
 
 from apps.utilities.responseHelpers import *
 from apps.utilities.utilities import current_timestamp

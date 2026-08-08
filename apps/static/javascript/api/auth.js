@@ -124,14 +124,16 @@ function signup_process(e) {
           window.location.replace("/auth/signin");
         });
       } else {
-        swalError("Registrasi Gagal", response.message).then(() => {
-          window.location.replace("/auth/signup");
-        });
+        swalClose();
+
+        swalError("Registrasi Gagal", response.message);
       }
     })
     .catch((error) => {
-      swal.fire.close();
+      swalClose();
       console.error(error);
+
+      swalError("Registrasi Gagal", "Terjadi kesalahan pada server.");
     });
 }
 const signup = document.getElementById("signup_form");

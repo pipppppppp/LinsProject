@@ -277,7 +277,7 @@ def string_checker(strings):
 
 def phone_checker(phone_number):
     phone_number = normalize_phone(phone_number)
-    pattern = r"^08[1-9][0-9]{7,10}$"
+    pattern = r"^08[1-9][0-9]{7,10}$" #min 10 max 13
 
     return re.fullmatch(pattern, phone_number) is None
 

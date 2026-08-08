@@ -342,7 +342,13 @@ async function handleTableClick(event) {
   if (vehicleBtn) {
     const id = Number(vehicleBtn.dataset.id);
 
-    window.location.href = `/vehicle/${id}`;
+    const isCashier = window.location.pathname.startsWith("/cashier");
+
+    if (isCashier) {
+      window.location.href = `/cashier/customer/vehicle/${id}`;
+    } else {
+      window.location.href = `/vehicle/${id}`;
+    }
 
     return;
   }
