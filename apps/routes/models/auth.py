@@ -1,5 +1,6 @@
 from flask_jwt_extended import create_access_token, set_access_cookies
-from flask import request
+from flask import request, current_app
+from itsdangerous import URLSafeTimedSerializer, SignatureExpired, BadSignature
 import secrets
 
 from apps import db
@@ -220,6 +221,241 @@ class AuthModels():
             db.session.rollback()
             return bad_request(str(e))
     # VERIFY EMAIL ============================================================ End
+
+    # RESET PASSWORD TOKEN ============================================================ Begin
+    def generate_reset_password_token(user_id):
+        serializer = URLSafeTimedSerializer(
+            current_app.config["SECRET_KEY"]
+        )
+
+        token = serializer.dumps(
+            user_id,
+            salt="reset-password"
+        )
+
+        return token
+    # RESET PASSWORD TOKEN ============================================================ End
+
+    # FORGOT PASSWORD ============================================================ Begin
+    def forgot_password(datas):
+        try:
+            # Validation Request Body ---------------------------------------- Start
+            if datas == None:
+                return invalid_params()
+
+            if "email" not in datas:
+                return parameter_error(
+                    "Missing email in request body."
+                )
+            # Validation Request Body ---------------------------------------- Finish
+
+
+            # Initialize Data Input ---------------------------------------- Start
+            email = datas["email"].strip().lower()
+            # Initialize Data Input ---------------------------------------- Finish
+
+
+            # Data Validation ---------------------------------------- Start
+            if email == "":
+                return defined_error(
+                    ["Email tidak boleh kosong."],
+                    "Bad Request",
+                    status_code=400
+                )
+            # Data Validation ---------------------------------------- Finish
+
+
+            # Get User ---------------------------------------- Start
+            user_data = Users.query.filter_by(
+                email=email,
+                is_delete=0
+            ).first()
+
+            if not user_data:
+                return not_found(
+                    "Email tidak terdaftar."
+                )
+            # Get User ---------------------------------------- Finish
+
+
+            # Generate Reset Token ---------------------------------------- Start
+            reset_token = AuthModels.generate_reset_password_token(
+                user_data.id
+            )
+            # Generate Reset Token ---------------------------------------- Finish
+
+
+            # Generate Reset Password URL ---------------------------------------- Start
+            reset_url = (
+                f"{request.host_url.rstrip('/')}"
+                f"/auth/reset-password/{reset_token}"
+            )
+            # Generate Reset Password URL ---------------------------------------- Finish
+
+
+            # Send Reset Password Email ---------------------------------------- Start
+            email_content = f"""
+            <div style="font-family: Arial, sans-serif;">
+                <h2>Reset Password POS Bengkel</h2>
+
+                <p>Halo {user_data.username},</p>
+
+                <p>
+                    Kami menerima permintaan untuk mengubah password akun Anda.
+                    Silakan klik tombol berikut untuk membuat password baru.
+                </p>
+
+                <a
+                    href="{reset_url}"
+                    style="
+                        display: inline-block;
+                        padding: 12px 20px;
+                        background-color: #435ebe;
+                        color: #ffffff;
+                        text-decoration: none;
+                        border-radius: 5px;
+                    "
+                >
+                    Reset Password
+                </a>
+
+                <p>Link reset password ini berlaku selama 15 menit.</p>
+
+                <p>
+                    Abaikan email ini apabila Anda tidak melakukan
+                    permintaan reset password.
+                </p>
+            </div>
+            """
+
+            email_response = email_sender(
+                user_data.email,
+                "Reset Password POS Bengkel",
+                email_content
+            )
+
+            if email_response.status_code != 200:
+                return bad_request(
+                    "Email reset password gagal dikirim."
+                )
+            # Send Reset Password Email ---------------------------------------- Finish
+
+
+            # Return Response ----------------------------------------
+            return success(
+                message="Link reset password berhasil dikirim ke email."
+            )
+
+        except Exception as e:
+            return bad_request(str(e))
+    # FORGOT PASSWORD ============================================================ End
+
+    # RESET PASSWORD ============================================================ Begin
+    def reset_password(token, datas):
+        try:
+            # Validation Request Body ---------------------------------------- Start
+            if datas == None:
+                return invalid_params()
+
+            required_data = [
+                "password",
+                "retype_password"
+            ]
+
+            for req in required_data:
+                if req not in datas:
+                    return parameter_error(
+                        f"Missing {req} in request body."
+                    )
+            # Validation Request Body ---------------------------------------- Finish
+
+
+            # Initialize Data Input ---------------------------------------- Start
+            password = datas["password"]
+            retype_password = datas["retype_password"]
+            # Initialize Data Input ---------------------------------------- Finish
+
+
+            # Password Validation ---------------------------------------- Start
+            if password.strip() == "":
+                return defined_error(
+                    ["Password tidak boleh kosong."],
+                    "Bad Request",
+                    status_code=400
+                )
+
+            if retype_password.strip() == "":
+                return defined_error(
+                    ["Konfirmasi password tidak boleh kosong."],
+                    "Bad Request",
+                    status_code=400
+                )
+
+            if password != retype_password:
+                return defined_error(
+                    ["Konfirmasi password tidak sesuai."],
+                    "Bad Request",
+                    status_code=400
+                )
+            # Password Validation ---------------------------------------- Finish
+
+
+            # Validate Reset Token ---------------------------------------- Start
+            serializer = URLSafeTimedSerializer(
+                current_app.config["SECRET_KEY"]
+            )
+
+            try:
+                user_id = serializer.loads(
+                    token,
+                    salt="reset-password",
+                    max_age=900 #waktu pembatasan link reset 15 menit
+                )
+
+            except SignatureExpired:
+                return bad_request(
+                    "Link reset password sudah kedaluwarsa."
+                )
+
+            except BadSignature:
+                return bad_request(
+                    "Link reset password tidak valid."
+                )
+            # Validate Reset Token ---------------------------------------- Finish
+
+
+            # Get User ---------------------------------------- Start
+            user_data = Users.query.filter_by(
+                id=user_id,
+                is_delete=0
+            ).first()
+
+            if not user_data:
+                return not_found(
+                    "Data pengguna tidak ditemukan."
+                )
+            # Get User ---------------------------------------- Finish
+
+
+            # Update Password ---------------------------------------- Start
+            timestamp = current_timestamp()
+
+            user_data.password = hash_password(password)
+            user_data.updated_at = timestamp
+
+            db.session.commit()
+            # Update Password ---------------------------------------- Finish
+
+
+            # Return Response ========================================
+            return success(
+                message="Password berhasil diubah. Silakan login kembali."
+            )
+
+        except Exception as e:
+            db.session.rollback()
+            return bad_request(str(e))
+    # RESET PASSWORD ============================================================ End
 
     # SIGN IN ============================================================ Begin
     def signin(datas):

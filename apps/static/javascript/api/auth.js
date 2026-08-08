@@ -46,15 +46,15 @@ function signin_process(e) {
         console.log(response.data);
         localStorage.setItem("username", response.data.name);
         setTimeout(() => {
-          signin_prosess(response.data.role);
+          signin_redirect(response.data.role);
         }, 500);
       } else {
         swalClose();
 
         if (response.status_code === 403) {
-          swalWarning(response.error, response.message);
+          swalWarning("Akun Tidak Dapat Digunakan", response.message);
         } else {
-          swalError(response.error, response.message);
+          swalError("Login Gagal", response.message);
         }
       }
     })
@@ -120,7 +120,7 @@ function signup_process(e) {
     .then((http_response) => http_response.json())
     .then((response) => {
       if (response.status_code == 200) {
-        swalSuccess("Registrasi Berhasil", "Silakan login menggunakan akun yang telah didaftarkan.").then(() => {
+        swalSuccess("Registrasi Berhasil", "Registrasi berhasil. Silakan periksa email untuk melakukan verifikasi akun.").then(() => {
           window.location.replace("/auth/signin");
         });
       } else {
@@ -144,9 +144,9 @@ if (signup) {
 // **************************************************************
 
 // **************************************************************
-// SIGN IN PROCESS | START
+// SIGN IN REDIRECT | START
 // **************************************************************
-function signin_prosess(role) {
+function signin_redirect(role) {
   if (role == 0) {
     window.location.replace("/dashboard-administrator/");
   } else if (role == 1) {
@@ -156,7 +156,144 @@ function signin_prosess(role) {
   }
 }
 // **************************************************************
-// SIGN IN PROCESS | END
+// SIGN IN REDIRECT | END
+// **************************************************************
+
+// **************************************************************
+// FORGOT PASSWORD PROCESS | START
+// **************************************************************
+const forgotPasswordForm = {
+  email: document.getElementById("email"),
+};
+
+function forgot_password_process(e) {
+  e.preventDefault();
+
+  const { email } = forgotPasswordForm;
+
+  // Set API Request Configuration
+  const API = "/auth/forgot-password";
+  const my_headers = new Headers();
+
+  const raw = JSON.stringify({
+    email: email.value,
+  });
+
+  my_headers.append("Content-Type", "application/json");
+
+  const request_options = {
+    method: "POST",
+    headers: my_headers,
+    body: raw,
+    redirect: "follow",
+  };
+
+  // Set Loading UI
+  swalLoading("Tunggu Sebentar...", "Link reset password sedang dikirim.");
+
+  // Request API
+  fetch(API, request_options)
+    .then((http_response) => http_response.json())
+    .then((response) => {
+      if (response.status_code == 200) {
+        swalSuccess("Email Berhasil Dikirim", response.message).then(() => {
+          window.location.replace("/auth/signin");
+        });
+      } else {
+        swalClose();
+
+        swalError("Gagal Mengirim Email", response.message);
+      }
+    })
+    .catch((error) => {
+      swalClose();
+      console.error(error);
+
+      swalError("Gagal Mengirim Email", "Terjadi kesalahan pada server.");
+    });
+}
+
+const forgotPassword = document.getElementById("forgot_password_form");
+
+if (forgotPassword) {
+  forgotPassword.addEventListener("submit", forgot_password_process);
+}
+// **************************************************************
+// FORGOT PASSWORD PROCESS | END
+// **************************************************************
+
+// **************************************************************
+// RESET PASSWORD PROCESS | START
+// **************************************************************
+const resetPasswordForm = {
+  token: document.getElementById("reset_token"),
+  password: document.getElementById("new_password"),
+  retype_password: document.getElementById("retype_password"),
+};
+
+function reset_password_process(e) {
+  e.preventDefault();
+
+  const { token, password, retype_password } = resetPasswordForm;
+
+  // Password Validation
+  if (password.value !== retype_password.value) {
+    swalError("Reset Password Gagal", "Konfirmasi password tidak sesuai.");
+
+    return;
+  }
+
+  // Set API Request Configuration
+  const API = `/auth/reset-password/${encodeURIComponent(token.value)}`;
+
+  const my_headers = new Headers();
+
+  const raw = JSON.stringify({
+    password: password.value,
+    retype_password: retype_password.value,
+  });
+
+  my_headers.append("Content-Type", "application/json");
+
+  const request_options = {
+    method: "PUT",
+    headers: my_headers,
+    body: raw,
+    redirect: "follow",
+  };
+
+  // Set Loading UI
+  swalLoading("Tunggu Sebentar...", "Password sedang diperbarui.");
+
+  // Request API
+  fetch(API, request_options)
+    .then((http_response) => http_response.json())
+    .then((response) => {
+      if (response.status_code == 200) {
+        swalSuccess("Password Berhasil Diubah", response.message).then(() => {
+          window.location.replace("/auth/signin");
+        });
+      } else {
+        swalClose();
+
+        swalError("Reset Password Gagal", response.message);
+      }
+    })
+    .catch((error) => {
+      swalClose();
+      console.error(error);
+
+      swalError("Reset Password Gagal", "Terjadi kesalahan pada server.");
+    });
+}
+
+const resetPassword = document.getElementById("reset_password_form");
+
+if (resetPassword) {
+  resetPassword.addEventListener("submit", reset_password_process);
+}
+// **************************************************************
+// RESET PASSWORD PROCESS | END
 // **************************************************************
 
 // **************************************************************
