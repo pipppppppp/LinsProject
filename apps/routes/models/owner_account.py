@@ -35,7 +35,7 @@ class OwnerAccountModels():
             owner = Users.query.filter_by(
                 id=user_id,
                 role="1",
-                is_delete="0"
+                is_delete=0
             ).first()
 
             if not owner:
@@ -136,7 +136,7 @@ class OwnerAccountModels():
             owner = Users.query.filter_by(
                   id=user_id,
                   role="1",
-                  is_delete="0"
+                  is_delete=0
             ).first()
 
             if not owner:
@@ -227,7 +227,7 @@ class OwnerAccountModels():
             owner = Users.query.filter_by(
                 id=user_id,
                 role="1",
-                is_delete="0"
+                is_delete=0
             ).first()
 
             if not owner:

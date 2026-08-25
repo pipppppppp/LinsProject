@@ -124,13 +124,10 @@ class SubscriptionModels:
                     "is_existing": True
                 }
 
-                return success_data(
-                    data=data,
-                    status_code=200
-                )
+                return success_data(data=data, status_code=200)
             # Check Pending Payment ---------------------------------------- Finish
 
-            # INITIALIZE PACKAGE =================================
+            # INITIALIZE PACKAGE --------------------------------------- Start
             package = SUBSCRIPTION_PACKAGES[package_code]
 
             timestamp = current_timestamp()
@@ -140,8 +137,9 @@ class SubscriptionModels:
             )
 
             amount = package["amount"]
+            # INITIALIZE PACKAGE --------------------------------------- Finish
 
-            # MIDTRANS TRANSACTION DATA ==========================
+            # MIDTRANS TRANSACTION DATA --------------------------------------- Start
             transaction_data = {
                 "transaction_details": {
                     "order_id": order_id,
@@ -156,8 +154,9 @@ class SubscriptionModels:
                     }
                 ],
             }
+             # MIDTRANS TRANSACTION DATA --------------------------------------- Finish
 
-            # CREATE SNAP TOKEN ==================================
+            # CREATE SNAP TOKEN --------------------------------------- Start
             snap = get_snap()
 
             snap_response = snap.create_transaction(
@@ -171,8 +170,9 @@ class SubscriptionModels:
                 return bad_request(
                     "Gagal mendapatkan Snap Token dari Midtrans."
                 )
+            # CREATE SNAP TOKEN --------------------------------------- Finish
 
-            # INSERT PAYMENT =====================================
+            # INSERT PAYMENT --------------------------------------- Start
             payment = SubscriptionPayments(
                 workshop_id=workshop.id,
                 order_id=order_id,
@@ -191,8 +191,9 @@ class SubscriptionModels:
             except Exception as e:
                 db.session.rollback()
                 return parameter_error(str(e))
+            # INSERT PAYMENT --------------------------------------- Finish
 
-            # RESPONSE DATA ======================================
+            # RESPONSE DATA --------------------------------------- Start
             data = {
                 "payment_id": payment.id,
                 "order_id": payment.order_id,
@@ -204,10 +205,8 @@ class SubscriptionModels:
                 "transaction_status": payment.transaction_status,
             }
 
-            return success_data(
-                data=data,
-                status_code=201
-            )
+            return success_data(data=data, status_code=201)
+            # RESPONSE DATA --------------------------------------- Finish
 
         except Exception as e:
             db.session.rollback()

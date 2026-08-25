@@ -15,7 +15,7 @@ class Users(db.Model):
     created_at = db.Column(db.BigInteger, nullable=False)
     updated_at = db.Column(db.BigInteger, nullable=False)
     deleted_at = db.Column(db.BigInteger, nullable=True)
-    is_delete = db.Column(db.String(3), nullable=False, server_default='0')
+    is_delete = db.Column(db.Integer, nullable=False, server_default='0')
 
     # Relationship
     workshops = db.relationship("Workshops", back_populates="users")

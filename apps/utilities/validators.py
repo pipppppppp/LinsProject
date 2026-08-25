@@ -160,6 +160,60 @@ def signin_validator(usermail, password):
     return checker_result, result_data, stts
 # AUTH VALIDATION ============================================================ End
 
+# RESET PASSWORD VALIDATION ============================================================ Begin
+def reset_password_validator(password, retype_password):
+    checker_result = []
+
+    # Check Null Value ---------------------------------------- Start
+    if password == "":
+        checker_result.append(
+            "Password tidak boleh kosong."
+        )
+
+    if retype_password == "":
+        checker_result.append(
+            "Konfirmasi password tidak boleh kosong."
+        )
+    # Check Null Value ---------------------------------------- Finish
+
+
+    # Sanitize Password ---------------------------------------- Start
+    sanitizePass, charPass = sanitize_passwd_char(password)
+
+    if sanitizePass:
+        checker_result.append(
+            f"Password tidak boleh mengandung karakter {charPass}"
+        )
+
+    sanitizeRepass, charRepass = sanitize_passwd_char(
+        retype_password
+    )
+
+    if sanitizeRepass:
+        checker_result.append(
+            f"Konfirmasi password tidak boleh mengandung karakter {charRepass}"
+        )
+    # Sanitize Password ---------------------------------------- Finish
+
+
+    # Password Match ---------------------------------------- Start
+    if password != retype_password:
+        checker_result.append(
+            "Password tidak sama."
+        )
+    # Password Match ---------------------------------------- Finish
+
+
+    # Password Checker ---------------------------------------- Start
+    passwordCheck, message = password_checker(password)
+
+    if passwordCheck:
+        checker_result.append(message)
+    # Password Checker ---------------------------------------- Finish
+
+    return checker_result
+# RESET PASSWORD VALIDATION ============================================================ End
+
 # ADMINISTRATOR VALIDATION ============================================================ Begin
 def administrator_validator(role):
     access = False
@@ -192,7 +246,7 @@ def owner_account_validator(user_id, owner_name, username, email):
     current_owner = Users.query.filter_by(
         id=user_id,
         role="1",
-        is_delete="0"
+        is_delete=0
     ).first()
 
     if not current_owner:
@@ -234,7 +288,7 @@ def owner_account_validator(user_id, owner_name, username, email):
         username_check = Users.query.filter(
             Users.username == username,
             Users.id != user_id,
-            Users.is_delete == "0"
+            Users.is_delete == 0
         ).first()
 
         if username_check:
@@ -252,7 +306,7 @@ def owner_account_validator(user_id, owner_name, username, email):
         email_check = Users.query.filter(
             Users.email == email,
             Users.id != user_id,
-            Users.is_delete == "0"
+            Users.is_delete == 0
         ).first()
 
         if email_check:
@@ -264,6 +318,7 @@ def owner_account_validator(user_id, owner_name, username, email):
 # **************************************************************
 # OWNER ACCOUNT VALIDATOR | END
 # **************************************************************
+
 # **************************************************************
 # OWNER PASSWORD VALIDATOR | START
 # **************************************************************

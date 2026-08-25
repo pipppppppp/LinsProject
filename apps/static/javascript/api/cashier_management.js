@@ -159,7 +159,6 @@ async function handleTableClick(e) {
 
   // EDIT ==================================================
   if (editBtn) {
-    console.log("edit diklik");
     const id = Number(editBtn.dataset.id);
 
     const cashier = cashiersData.find((item) => item.id === id);

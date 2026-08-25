@@ -158,8 +158,6 @@ class HistoryPurchaseModels:
                   end_date
             )
             
-            print("START :", start_date)
-            print("END   :", end_date)
             # Filter Date ---------------------------------------- Finish
 
             # Get History ---------------------------------------- Start
@@ -170,8 +168,7 @@ class HistoryPurchaseModels:
                   end_date=end_date
             )
             # Get History ---------------------------------------- Finish
-            print("WORKSHOP :", workshop_id)
-            print("TOTAL PURCHASE :", Purchases.query.count())
+            
             # Summary ---------------------------------------- Start
             query = Purchases.query.filter(
                   Purchases.workshop_id == workshop_id,
@@ -186,27 +183,6 @@ class HistoryPurchaseModels:
                   )
 
             filter_purchase = query.all()
-
-            all_purchase = Purchases.query.filter_by(
-                  workshop_id=workshop_id,
-                  is_delete=0
-            ).all()
-
-            for p in all_purchase:
-                  print(
-                              "ID:", p.id,
-                              "DATE:", p.purchase_date,
-                              "TYPE:", type(p.purchase_date)
-                        )
-            print("FILTER PURCHASE :", len(filter_purchase))
-
-            for purchase in filter_purchase:
-                  print(
-                        purchase.id,
-                        purchase.purchase_date,
-                        purchase.workshop_id,
-                        purchase.supplier_id
-                  )
 
             total_purchase = len(filter_purchase)
 

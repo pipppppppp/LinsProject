@@ -1,5 +1,5 @@
 # flask library
-from flask import Flask, render_template, url_for
+from flask import Flask, render_template, url_for, redirect
 from flask_jwt_extended import JWTManager
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
@@ -108,8 +108,8 @@ with app.app_context():
 @app.route("/")
 @app.route("/index")
 def index():
-    return render_template(
-        template_name_or_list='pages/index.html'
+    return redirect(
+        url_for('auth.signin_page')
     )
 # End Route Base Section ==========================##
 
