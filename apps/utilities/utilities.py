@@ -5,6 +5,7 @@ import random
 import re
 import string
 import uuid
+import smtplib
 from datetime import datetime
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
@@ -424,67 +425,51 @@ def split_date_time(datetimes):
 # SEND MAIL | START
 # **************************************************************
 def email_sender(recivier, subject, messages_content):
-    """Send an HTML email using the Gmail API."""
-    scopes = ["https://www.googleapis.com/auth/gmail.send"]
-    credentials = None
+    """Send an HTML email using Gmail SMTP."""
+    try:
+        sender_email = os.getenv("SMTP_EMAIL")
+        app_password = os.getenv("SMTP_APP_PASSWORD")
 
-    if os.path.exists("token.json"):
-        credentials = Credentials.from_authorized_user_file(
-            "token.json",
-            scopes,
+        if not sender_email or not app_password:
+            return bad_request(
+                "SMTP_EMAIL atau SMTP_APP_PASSWORD belum dikonfigurasi."
+            )
+
+        # Mengantisipasi App Password Google yang disalin dengan spasi
+        app_password = app_password.replace(" ", "")
+
+        message = MIMEMultipart()
+        message["From"] = sender_email
+        message["To"] = recivier
+        message["Subject"] = subject
+
+        message.attach(
+            MIMEText(messages_content, "html")
         )
 
-    if not credentials or not credentials.valid:
-        if (
-            credentials
-            and credentials.expired
-            and credentials.refresh_token
-        ):
-            try:
-                credentials.refresh(Request())
-
-            except Exception:
-                if os.path.exists("token.json"):
-                    os.remove("token.json")
-
-                credentials = None
-
-        if not credentials or not credentials.valid:
-            flow = InstalledAppFlow.from_client_secrets_file(
-                "apps/utilities/credentials.json",
-                scopes,
+        with smtplib.SMTP_SSL(
+            "smtp.gmail.com",
+            465,
+        ) as server:
+            server.login(
+                sender_email,
+                app_password,
             )
-            credentials = flow.run_local_server(port=5556)
 
-            with open("token.json", "w") as token:
-                token.write(credentials.to_json())
+            server.sendmail(
+                sender_email,
+                recivier,
+                message.as_string(),
+            )
 
-    service = build(
-        "gmail",
-        "v1",
-        credentials=credentials,
-    )
-
-    message = MIMEMultipart()
-    message["to"] = recivier
-    message["from"] = "posproject@gmail.com"
-    message["subject"] = subject
-    message.attach(MIMEText(messages_content, "html"))
-
-    raw_message = base64.urlsafe_b64encode(
-        message.as_bytes()
-    ).decode()
-
-    try:
-        result = service.users().messages().send(
-            userId="me",
-            body={"raw": raw_message},
-        ).execute()
-
-        return success_data(result)
+        return success_data({
+            "message": "Email berhasil dikirim."
+        })
 
     except Exception as error:
         return bad_request(str(error))
+
+
 # **************************************************************
 # SEND MAIL | END
 # **************************************************************
