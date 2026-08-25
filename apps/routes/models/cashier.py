@@ -28,10 +28,7 @@ class CashierModels():
 
             data = []
 
-            # ==================================================
-            # SEARCH PRODUCT BY BARCODE
-            # ==================================================
-
+            # SEARCH PRODUCT BY BARCODE ---------------------------------------- Start
             product = Products.query.filter_by(
                 barcode=keyword,
                 workshop_id=workshop_id,
@@ -50,11 +47,9 @@ class CashierModels():
                 })
 
                 return success_data(data=data,status_code=200)
+            # SEARCH PRODUCT BY BARCODE ---------------------------------------- Finish
 
-            # ==================================================
-            # SEARCH PRODUCT NAME
-            # ==================================================
-
+            # SEARCH PRODUCT NAME ---------------------------------------- Start
             products = Products.query.filter(
                 Products.workshop_id == workshop_id,
                 Products.is_delete == 0,
@@ -70,11 +65,9 @@ class CashierModels():
                     "price": product.selling_price,
                     "stock": product.stock
                 })
+            # SEARCH PRODUCT NAME ---------------------------------------- Finish
 
-            # ==================================================
-            # SEARCH SERVICE NAME
-            # ==================================================
-
+            # SEARCH SERVICE NAME ---------------------------------------- Start
             services = Services.query.filter(
                 Services.workshop_id == workshop_id,
                 Services.is_delete == 0,
@@ -92,6 +85,7 @@ class CashierModels():
                 })
 
             return success_data(data=data,status_code=200)
+            # SEARCH SERVICE NAME ---------------------------------------- Finish
 
         except Exception as e:
             return bad_request(str(e))
@@ -100,7 +94,6 @@ class CashierModels():
     # CHECKOUT ============================================================ Begin
     def checkout(datas):
         try:
-
             claims = get_jwt()
 
             workshop_id = claims["ws_id"]
@@ -112,7 +105,6 @@ class CashierModels():
             # Access Validation ---------------------------------------- Start
             if role not in [OWNER, CASHIER]:
                 return authorization_error()
-
             subscription_access = subscription_validator(
                 role,
                 workshop_id
@@ -142,14 +134,9 @@ class CashierModels():
             if validation:
                 return bad_request(validation)
 
-            # ==================================================
-            # HITUNG TOTAL BARANG
-            # ==================================================
-
+            # HITUNG TOTAL BARANG ---------------------------------------- Start
             total = 0
-
             for item in product_details:
-
                 product = Products.query.filter_by(
                     id=item["product_id"],
                     workshop_id=workshop_id,
@@ -168,12 +155,8 @@ class CashierModels():
 
                 total += product.selling_price * qty
 
-            # ==================================================
-            # HITUNG TOTAL JASA
-            # ==================================================
-
+            # HITUNG TOTAL JASA ---------------------------------------- Start
             for item in service_details:
-
                 service = Services.query.filter_by(
                     id=item["service_id"],
                     workshop_id=workshop_id,
@@ -184,7 +167,6 @@ class CashierModels():
                     return bad_request("Jasa tidak ditemukan.")
 
                 qty = int(item["quantity"])
-
                 total += service.service_fee * qty
 
             payment = int(payment)
@@ -193,36 +175,23 @@ class CashierModels():
                 return bad_request(
                     "Nominal pembayaran kurang."
                 )
-
             change = payment - total
 
             now = int(time.time())
+            # HITUNG TOTAL JASA ---------------------------------------- Finsih
 
-            # ==================================================
-            # HEADER TRANSAKSI
-            # ==================================================
-
+            # HEADER TRANSAKSI ---------------------------------------- Start
             trx = Payments(
                 cashier_id=claims["id"],
-
                 workshop_id=workshop_id,
-
                 customer_id=customer_id or None,
-
                 vehicle_id=vehicle_id or None,
-
                 payment_date=now,
-
                 total=total,
-
                 paid=payment,
-
                 change=change,
-
                 created_at=now,
-
                 updated_at=now
-
             )
 
             db.session.add(trx)
@@ -233,9 +202,11 @@ class CashierModels():
             trx.invoice = (
                 f"INV-{datetime.now().strftime('%Y%m%d')}-{trx.id:06d}"
             )
-            # ==================================================
-            # DETAIL BARANG
-            # ==================================================
+            # HEADER TRANSAKSI ---------------------------------------- Finish
+
+
+            # DETAIL BARANG ---------------------------------------- Start
+
 
             for item in product_details:
 
@@ -246,47 +217,29 @@ class CashierModels():
                 subtotal = qty * product.selling_price
 
                 detail = SaleDetails(
-
                     payment_id=trx.id,
-
                     product_id=product.id,
-
                     quantity=qty,
-
                     unit_price=product.selling_price,
-
                     subtotal=subtotal
-
                 )
 
                 db.session.add(detail)
 
                 product.stock -= qty
 
-            # ==================================================
-            # DETAIL JASA
-            # ==================================================
 
+            # DETAIL JASA ---------------------------------------- Start
             for item in service_details:
-
                 service = Services.query.get(item["service_id"])
-
                 qty = int(item["quantity"])
-
                 subtotal = qty * service.service_fee
-
                 detail = SaleServiceDetails(
-
                     payment_id=trx.id,
-
                     service_id=service.id,
-
                     quantity=qty,
-
                     service_price=service.service_fee,
-
                     subtotal=subtotal
-
                 )
 
                 db.session.add(detail)
@@ -294,21 +247,14 @@ class CashierModels():
             db.session.commit()
 
             return success({
-
                 "payment_id": trx.id,
-
                 "total": total,
-
                 "paid": payment,
-
                 "change": change
-
             })
 
         except Exception as e:
-
             db.session.rollback()
-
             return bad_request(str(e))
     # CHECKOUT ============================================================ End
 

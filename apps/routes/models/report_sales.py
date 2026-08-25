@@ -69,7 +69,6 @@ def _get_filter_date(start_date="", end_date=""):
                   0,
                   0
             )
-
             end_datetime = datetime(
                   today.year,
                   today.month,
@@ -95,7 +94,6 @@ def _get_filter_date(start_date="", end_date=""):
                   minute=59,
                   second=59
             )
-
       return (
             int(start_datetime.timestamp()),
             int(end_datetime.timestamp())

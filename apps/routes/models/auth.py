@@ -10,7 +10,7 @@ from apps.database.db_workshops import Workshops
 from apps.routes.models.workshop import WorkshopModels
 from apps.utilities.responseHelpers import *
 from apps.utilities.utilities import hash_password, email_sender, current_timestamp
-from apps.utilities.validators import signin_validator, signup_validator
+from apps.utilities.validators import signin_validator, signup_validator, reset_password_validator
 
 
 # AUTH MODELS ============================================================ Begin
@@ -376,29 +376,19 @@ class AuthModels():
             # Initialize Data Input ---------------------------------------- Finish
 
 
-            # Password Validation ---------------------------------------- Start
-            if password.strip() == "":
+            # Data Validation ---------------------------------------- Start
+            checker_result = reset_password_validator(
+                password,
+                retype_password
+            )
+
+            if len(checker_result) != 0:
                 return defined_error(
-                    ["Password tidak boleh kosong."],
+                    checker_result,
                     "Bad Request",
                     status_code=400
                 )
-
-            if retype_password.strip() == "":
-                return defined_error(
-                    ["Konfirmasi password tidak boleh kosong."],
-                    "Bad Request",
-                    status_code=400
-                )
-
-            if password != retype_password:
-                return defined_error(
-                    ["Konfirmasi password tidak sesuai."],
-                    "Bad Request",
-                    status_code=400
-                )
-            # Password Validation ---------------------------------------- Finish
-
+            # Data Validation ---------------------------------------- Finish
 
             # Validate Reset Token ---------------------------------------- Start
             serializer = URLSafeTimedSerializer(
