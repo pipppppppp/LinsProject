@@ -1,4 +1,3 @@
-# flask library
 from flask import Flask, render_template, url_for, redirect
 from flask_jwt_extended import JWTManager
 from flask_migrate import Migrate
@@ -6,15 +5,16 @@ from flask_sqlalchemy import SQLAlchemy
 from dotenv import load_dotenv
 import os
 
-# app library
-from .configure import config
-from .configure.configDB import ConnectDB
-
-
+# ========================= LOAD ENV =========================
 load_dotenv(
     os.path.join(os.path.dirname(__file__), ".env"),
     override=True
 )
+
+
+# app library
+from .configure import config
+from .configure.configDB import ConnectDB
 
 env_path = os.path.join(
     os.path.dirname(__file__),
