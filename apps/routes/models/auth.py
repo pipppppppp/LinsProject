@@ -151,6 +151,108 @@ class AuthModels():
             return bad_request(str(e))
     # SIGN UP ============================================================ End
 
+    # RESEND VERIFICATION EMAIL ========================================== Begin
+    def resend_verification(datas):
+        try:
+            # Validation Request
+            if datas is None:
+                return invalid_params()
+
+            if "email" not in datas:
+                return parameter_error(
+                    "Missing email in request body."
+                )
+
+            email = datas["email"].strip().lower()
+
+            if email == "":
+                return bad_request(
+                    "Email tidak boleh kosong."
+                )
+
+            # Get User
+            user_data = Users.query.filter(
+                Users.email.ilike(email),
+                Users.is_delete == 0
+            ).first()
+
+            if not user_data:
+                return not_found(
+                    "Email tidak terdaftar."
+                )
+
+            # Already Verified
+            if user_data.email_verified_at is not None:
+                return bad_request(
+                    "Email sudah diverifikasi."
+                )
+
+            # Create New Verification Token
+            timestamp = current_timestamp()
+
+            user_data.verification_token = secrets.token_urlsafe(32)
+            user_data.verification_token_expired_at = (
+                timestamp + (24 * 60 * 60 * 1000)
+            )
+            user_data.updated_at = timestamp
+
+            db.session.commit()
+
+            # Create Verification URL
+            verification_url = (
+                f"{request.host_url.rstrip('/')}"
+                f"/auth/verify-email/{user_data.verification_token}"
+            )
+
+            email_content = f"""
+            <div style="font-family: Arial, sans-serif;">
+                <h2>Verifikasi Akun POS Bengkel</h2>
+
+                <p>Halo {user_data.owner_name},</p>
+
+                <p>
+                    Silakan klik tombol berikut untuk
+                    mengaktifkan akun Anda.
+                </p>
+
+                <a
+                    href="{verification_url}"
+                    style="
+                        display: inline-block;
+                        padding: 12px 20px;
+                        background-color: #435ebe;
+                        color: #ffffff;
+                        text-decoration: none;
+                        border-radius: 5px;
+                    "
+                >
+                    Verifikasi Akun
+                </a>
+
+                <p>Link verifikasi ini berlaku selama 24 jam.</p>
+            </div>
+            """
+
+            email_response = email_sender(
+                user_data.email,
+                "Verifikasi Akun POS Bengkel",
+                email_content
+            )
+
+            if email_response.status_code != 200:
+                return bad_request(
+                    "Email verifikasi gagal dikirim."
+                )
+
+            return success(
+                message="Email verifikasi berhasil dikirim ulang."
+            )
+
+        except Exception as e:
+            db.session.rollback()
+            return bad_request(str(e))
+    # RESEND VERIFICATION EMAIL ============================================ End
+
     # VERIFY EMAIL ============================================================ Begin
     def verify_email(token):
         try:

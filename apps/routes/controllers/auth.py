@@ -83,6 +83,23 @@ def signup_process():
         return bad_request(str(e))
 # SIGNUP PROCESS ============================================================ End
 
+# RESEND VERIFICATION EMAIL ========================================== Begin
+# POST /auth/resend-verification
+@auth.post('/resend-verification')
+def resend_verification():
+    try:
+        # Request Data
+        body = request.json
+
+        # Request Process
+        response = AuthModels.resend_verification(body)
+
+        # Return Response
+        return response
+
+    except Exception as e:
+        return bad_request(str(e))
+# RESEND VERIFICATION EMAIL ============================================ End
 
 # VERIFY EMAIL ============================================================ Begin
 # GET http://127.0.0.1:5000/auth/verify-email/<token>
