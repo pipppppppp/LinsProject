@@ -116,10 +116,16 @@ def signin_validator(usermail, password):
     
     # Check Data in Database ---------------------------------------- Finish
     # Get data
-    result_data = Users.query.filter_by(email=usermail, is_delete=0).first()
+    result_data = Users.query.filter_by(
+        email=usermail,
+        is_delete=0
+    ).first()
+
     if not result_data:
-        result_data = Users.query.filter_by(username=usermail, is_delete=0).first()
-    
+        result_data = Users.query.filter(
+            Users.username.ilike(usermail),
+            Users.is_delete == 0
+        ).first()
     # Check data ready or not
     stts = 200
     if not result_data:

@@ -4,7 +4,7 @@ from .db_users import Users
 from apps.utilities.utilities import hash_password
 
 def seed_users():
-    admin = Users.query.filter_by(role=0).first()
+    admin = Users.query.filter_by(role="0").first()
 
     if admin:
         return admin

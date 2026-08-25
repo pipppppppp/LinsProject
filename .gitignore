@@ -1,11 +1,13 @@
 venv
 venv/*
-__pycache__/*
-apps/__pycache__
-apps/__pycache__/*
-migrations
-migrations/*
+
+**/__pycache__/
+*.pyc
+
 .env
 
 apps/utilities/credentials.json
+
 token.json
+
+migrations_mysql_backup/
