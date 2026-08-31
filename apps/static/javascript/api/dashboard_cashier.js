@@ -541,6 +541,13 @@ function renderRecentTransactions() {
 //  UPDATE GREETING | START
 // **************************************************************
 function updateGreeting() {
+  const greetingElement = document.getElementById("greeting_text");
+
+  if (!greetingElement) {
+    console.error("Element greeting_text tidak ditemukan.");
+    return;
+  }
+
   const hour = new Date().getHours();
 
   let greeting = "";
@@ -555,7 +562,9 @@ function updateGreeting() {
     greeting = "Selamat Malam";
   }
 
-  document.getElementById("greeting_text").textContent = `${greeting}, ${cashierData.name} 👋`;
+  const cashierName = cashierData.name || cashierData.username || "";
+
+  greetingElement.textContent = `${greeting}, ${cashierName} 👋`;
 }
 // **************************************************************
 // UPDATE GREETING | END
