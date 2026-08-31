@@ -65,8 +65,9 @@ async function loadCashierProfile() {
 }
 
 function renderCashierProfile() {
-  document.getElementById("cashier_name").textContent =  cashierData.name || cashierData.username;
+  document.getElementById("cashier_name").textContent = cashierData.name || cashierData.username;
 
+  document.getElementById("sidebar_workshop_name").textContent = cashierData.workshop_name || "";
   // document.getElementById("cashier_role").textContent = cashierData.role;
 }
 // **************************************************************
