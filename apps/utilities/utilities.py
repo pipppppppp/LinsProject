@@ -78,7 +78,8 @@ def saving_upload_image_supabase(file):
         return None
 
     supabase_url = os.getenv("SUPABASE_URL")
-    supabase_key = os.getenv("SUPABASE_SECRET_KEY")
+    supabase_key = os.getenv("SUPABASE_SERVICE_ROLE_KEY")
+    # supabase_key = os.getenv("SUPABASE_SECRET_KEY")
     bucket_name = os.getenv(
         "SUPABASE_STORAGE_BUCKET",
         "workshop-logos"
@@ -91,7 +92,7 @@ def saving_upload_image_supabase(file):
 
     if not supabase_key:
         raise ValueError(
-            "SUPABASE_SECRET_KEY belum dikonfigurasi."
+            "SUPABASE_SERVICE_ROLE_KEY belum dikonfigurasi."
         )
 
     filename = (
