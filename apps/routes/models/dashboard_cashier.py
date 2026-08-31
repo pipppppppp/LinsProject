@@ -589,7 +589,7 @@ class DashboardCashierModels():
       # DEPOSIT SUMMARY ============================================================ End
       
       # CASHIER PROFILE ============================================================ Begin
-      def cashier_profile(user_role, user_id):
+      def cashier_profile(user_role, user_id, workshop_id):
             try:
                   # Access Validation ---------------------------------------- Start
                   access = role_validator(user_role)
@@ -609,6 +609,18 @@ class DashboardCashierModels():
                               "Cashier could not be found."
                         )
                   # Get Cashier ---------------------------------------- Finish
+
+                  # Get Workshop ---------------------------------------- Start
+                  workshop = Workshops.query.filter_by(
+                        id=workshop_id,
+                        is_delete=0
+                  ).first()
+
+                  if not workshop:
+                        return not_found(
+                              "Workshop could not be found."
+                        )
+                  # Get Workshop ---------------------------------------- Finish
 
                   # Initialize Data ---------------------------------------- Start
                   data = {
