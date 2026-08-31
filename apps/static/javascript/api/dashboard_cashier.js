@@ -67,7 +67,7 @@ async function loadCashierProfile() {
 function renderCashierProfile() {
   document.getElementById("cashier_name").textContent = cashierData.username;
 
-  document.getElementById("cashier_role").textContent = cashierData.role;
+  // document.getElementById("cashier_role").textContent = cashierData.role;
 }
 // **************************************************************
 // CASHIER PROFILE | END
