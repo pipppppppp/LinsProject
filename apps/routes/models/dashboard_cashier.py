@@ -613,6 +613,7 @@ class DashboardCashierModels():
                   # Initialize Data ---------------------------------------- Start
                   data = {
                         "id": cashier.id,
+                        "name": cashier.owner_name,
                         "username": cashier.username,
                         "email": cashier.email,
                         "role": cashier.role,
