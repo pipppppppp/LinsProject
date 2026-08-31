@@ -211,10 +211,12 @@ def cashier_profile():
     try:
         role = str(get_jwt()["role"])
         user_id = str(get_jwt()["id"])
+        ws_id = str(get_jwt()["ws_id"])
 
         response = DashboardCashierModels.cashier_profile(
             role,
-            user_id
+            user_id,
+            ws_id
         )
 
         return response
