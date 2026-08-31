@@ -718,12 +718,10 @@ class ReportSalesModels():
                         "Nama Bengkel",
                         workshop.workshop_name
                   ])
-
                   worksheet.append([
                         "Periode",
                         f"{format_date(start_date)} s.d. {format_date(end_date)}"
                   ])
-
                   worksheet.append([])
 
                   worksheet.append([

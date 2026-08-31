@@ -17,6 +17,8 @@ from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
+
+from supabase import create_client
 from werkzeug.utils import secure_filename
 
 from .responseHelpers import *
@@ -70,6 +72,63 @@ def saving_upload_image(file, folder_path):
     file.save(file_path)
 
     return filename
+
+def saving_upload_image_supabase(file):
+    if file is None or not file.filename:
+        return None
+
+    supabase_url = os.getenv("SUPABASE_URL")
+    supabase_key = os.getenv("SUPABASE_SECRET_KEY")
+    bucket_name = os.getenv(
+        "SUPABASE_STORAGE_BUCKET",
+        "workshop-logos"
+    )
+
+    if not supabase_url:
+        raise ValueError(
+            "SUPABASE_URL belum dikonfigurasi."
+        )
+
+    if not supabase_key:
+        raise ValueError(
+            "SUPABASE_SECRET_KEY belum dikonfigurasi."
+        )
+
+    filename = (
+        f"{uuid.uuid4().hex}_"
+        f"{secure_filename(file.filename)}"
+    )
+
+    storage_path = f"profiles/{filename}"
+
+    supabase = create_client(
+        supabase_url,
+        supabase_key
+    )
+
+    file_data = file.read()
+
+    supabase.storage.from_(
+        bucket_name
+    ).upload(
+        path=storage_path,
+        file=file_data,
+        file_options={
+            "content-type": (
+                file.mimetype
+                or "application/octet-stream"
+            ),
+            "upsert": "false"
+        }
+    )
+
+    public_url = (
+        supabase.storage
+        .from_(bucket_name)
+        .get_public_url(storage_path)
+    )
+
+    return public_url
 # **************************************************************
 # FILE MANAGEMENT | END
 # **************************************************************

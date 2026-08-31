@@ -96,10 +96,19 @@ function renderWorkshop() {
   `;
   // Logo
   if (workshopData.logo) {
-    form.preview.src = `/static/images/profiles/${workshopData.logo}`;
+    if (workshopData.logo.startsWith("http://") || workshopData.logo.startsWith("https://")) {
+      form.preview.src = workshopData.logo;
+    } else {
+      form.preview.src = `/static/images/profiles/${workshopData.logo}`;
+    }
   } else {
     form.preview.src = "/static/images/profiles/default-workshop.png";
   }
+  // if (workshopData.logo) {
+  //   form.preview.src = `/static/images/profiles/${workshopData.logo}`;
+  // } else {
+  //   form.preview.src = "/static/images/profiles/default-workshop.png";
+  // }
 }
 // **************************************************************
 // RENDER WORKSHOP | END
