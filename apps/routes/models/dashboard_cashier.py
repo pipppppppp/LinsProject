@@ -616,7 +616,9 @@ class DashboardCashierModels():
                         "name": cashier.owner_name,
                         "username": cashier.username,
                         "email": cashier.email,
-                        "role": cashier.role,
+                        "role": cashier.role, 
+                        "workshop_id": workshop.id,
+                        "workshop_name": workshop.workshop_name,
                         "created_at": format_date(cashier.created_at)
                   }
                   # Initialize Data ---------------------------------------- Finish
