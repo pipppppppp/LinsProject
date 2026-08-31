@@ -16,21 +16,14 @@ async function init() {
 // LOAD DASHBOARD | START
 // **************************************************************
 async function loadDashboard() {
-  await loadSummary();
-
-  await loadSalesChart();
-
-  await loadTopProducts();
-
-  await loadTopServices();
-
-  await loadRecentTransactions();
-
-  await loadLowStock();
-
-  await loadDepositSummary();
-
   await loadCashierProfile();
+  await loadSummary();
+  await loadSalesChart();
+  await loadTopProducts();
+  await loadTopServices();
+  await loadRecentTransactions();
+  await loadLowStock();
+  await loadDepositSummary();
 }
 // **************************************************************
 // LOAD DASHBOARD | END
@@ -477,6 +470,7 @@ function renderDepositSummary() {
 // **************************************************************
 // DEPOSIT SUMMARY | END
 // **************************************************************
+
 // **************************************************************
 // RECENT TRANSACTION | START
 // **************************************************************
@@ -561,7 +555,7 @@ function updateGreeting() {
     greeting = "Selamat Malam";
   }
 
-  document.getElementById("greeting_text").textContent = `${greeting}, ${cashierData.username} 👋`;
+  document.getElementById("greeting_text").textContent = `${greeting}, ${cashierData.name} 👋`;
 }
 // **************************************************************
 // UPDATE GREETING | END
