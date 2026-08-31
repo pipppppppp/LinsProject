@@ -574,15 +574,6 @@ class AuthModels():
                 return defined_error(checker_result, "Bad Request", status_code=stts)
             # Data Validation ---------------------------------------- Finish
             
-            # Update Data Last Active ---------------------------------------- Start
-            # Update Data Last Active ---------------------------------------- Finish
-            
-            # Log Activity Record ---------------------------------------- Start
-            # Log Activity Record ---------------------------------------- Finish
-
-            # Generate File URL ---------------------------------------- Start
-            # Generate File URL ---------------------------------------- Finish
-            
             # Get Workshop ID ---------------------------------------- Start
             if str(result.role) == "1":
                     ws_id = result.workshops[0].id if result.workshops else None

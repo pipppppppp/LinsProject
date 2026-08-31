@@ -1,7 +1,7 @@
 import time
-import os
+# import os
 
-from apps.configure.config import STATIC_FOLDER_PATH
+# from apps.configure.config import STATIC_FOLDER_PATH
 
 from apps import db
 from apps.database.db_workshops import Workshops
@@ -14,7 +14,7 @@ from apps.utilities.validators import (
     subscription_validator
 )
 
-from apps.utilities.utilities import current_timestamp
+from apps.utilities.utilities import current_timestamp, saving_upload_image_supabase
 
 # WORKSHOP MODEL CLASS ============================================================ Begin
 class WorkshopModels():
@@ -255,17 +255,23 @@ class WorkshopModels():
             # Update Data ---------------------------------------- Start
             timestamp = current_timestamp()
 
+            # if logo:
+            #     filename = saving_upload_image(
+            #         logo,
+            #         os.path.join(
+            #             STATIC_FOLDER_PATH,
+            #             "images",
+            #             "profiles"
+            #         )
+            #     )
+
+            #     workshop.logo = filename
             if logo:
-                filename = saving_upload_image(
-                    logo,
-                    os.path.join(
-                        STATIC_FOLDER_PATH,
-                        "images",
-                        "profiles"
-                    )
+                logo_url = saving_upload_image_supabase(
+                    logo
                 )
 
-                workshop.logo = filename
+                workshop.logo = logo_url
 
             workshop.workshop_name = workshop_name
             workshop.workshop_address = workshop_address
