@@ -3,6 +3,7 @@ import hashlib
 import os
 import random
 import re
+import requests
 import string
 import uuid
 import smtplib
@@ -79,7 +80,6 @@ def saving_upload_image_supabase(file):
 
     supabase_url = os.getenv("SUPABASE_URL")
     supabase_key = os.getenv("SUPABASE_SERVICE_ROLE_KEY")
-    # supabase_key = os.getenv("SUPABASE_SECRET_KEY")
     bucket_name = os.getenv(
         "SUPABASE_STORAGE_BUCKET",
         "workshop-logos"
@@ -102,31 +102,40 @@ def saving_upload_image_supabase(file):
 
     storage_path = f"profiles/{filename}"
 
-    supabase = create_client(
-        supabase_url,
-        supabase_key
+    upload_url = (
+        f"{supabase_url.rstrip('/')}"
+        f"/storage/v1/object/"
+        f"{bucket_name}/{storage_path}"
     )
 
     file_data = file.read()
 
-    supabase.storage.from_(
-        bucket_name
-    ).upload(
-        path=storage_path,
-        file=file_data,
-        file_options={
-            "content-type": (
+    response = requests.post(
+        upload_url,
+        headers={
+            "apikey": supabase_key,
+            "Authorization": f"Bearer {supabase_key}",
+            "Content-Type": (
                 file.mimetype
                 or "application/octet-stream"
             ),
-            "upsert": "false"
-        }
+            "x-upsert": "false"
+        },
+        data=file_data,
+        timeout=30
     )
 
+    if response.status_code not in [200, 201]:
+        raise ValueError(
+            f"Supabase Storage error "
+            f"{response.status_code}: "
+            f"{response.text}"
+        )
+
     public_url = (
-        supabase.storage
-        .from_(bucket_name)
-        .get_public_url(storage_path)
+        f"{supabase_url.rstrip('/')}"
+        f"/storage/v1/object/public/"
+        f"{bucket_name}/{storage_path}"
     )
 
     return public_url
