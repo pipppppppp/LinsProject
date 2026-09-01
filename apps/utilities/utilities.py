@@ -239,10 +239,12 @@ def sanitize_all_char(value):
 def sanitize_title_char(value):
     forbidden_chars = {
         "(", ")", "{", "}", "[", "]", "<", ">",
-        "*", "%", "+", "/", "'", "$", "`", "#",
+        "*", "%", "+", "'", "$", "`", "#",
         ",", '"', ";", ":", "!", "?", "@", "^",
         "=", "~",
     }
+
+    return _find_forbidden_char(value, forbidden_chars)
 
     return _find_forbidden_char(value, forbidden_chars)
 
