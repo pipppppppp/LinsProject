@@ -2,15 +2,14 @@
 // REQUIRED VALIDATION | START
 // **************************************************************
 function required(value, message) {
-
   if (value === null || value === undefined) {
-      swalWarning(message);
-      return false;
+    swalWarning(message);
+    return false;
   }
 
   if (String(value).trim() === "") {
-      swalWarning(message);
-      return false;
+    swalWarning(message);
+    return false;
   }
 
   return true;
@@ -70,9 +69,25 @@ function confirmPassword(password, confirmPassword) {
 // PHONE VALIDATION | START
 // **************************************************************
 function phone(phoneNumber) {
-  const regex = /^[0-9]{6,16}$/;
+  let phone = String(phoneNumber).trim();
 
-  if (!regex.test(phoneNumber)) {
+  // Hapus spasi, -, (, )
+  phone = phone.replace(/[\s\-()]/g, "");
+
+  // Normalisasi +62 / 62 menjadi 0
+  if (phone.startsWith("+62")) {
+    phone = "0" + phone.substring(3);
+  } else if (phone.startsWith("62")) {
+    phone = "0" + phone.substring(2);
+  }
+
+  // Nomor HP
+  const mobilePattern = /^08[1-9][0-9]{7,10}$/;
+
+  // Nomor telepon rumah/kantor
+  const landlinePattern = /^0[2-9][0-9]{7,11}$/;
+
+  if (!mobilePattern.test(phone) && !landlinePattern.test(phone)) {
     swalWarning("Nomor telepon tidak valid.");
     return false;
   }
@@ -263,7 +278,6 @@ function validateSupplier(supplier) {
 // PRODUCT VALIDATION | START
 // **************************************************************
 function validateProduct(product) {
-
   if (!required(product.product_name, "Nama barang wajib diisi")) return false;
 
   if (!required(product.price, "Harga jual wajib diisi")) return false;
@@ -288,7 +302,6 @@ function validateProduct(product) {
 // SERVICE VALIDATION | START
 // **************************************************************
 function validateService(service) {
-
   if (!required(service.name, "Nama jasa wajib diisi")) return false;
 
   if (!required(service.service_fee, "Biaya jasa wajib diisi")) return false;
@@ -305,7 +318,6 @@ function validateService(service) {
 // CASHIER VALIDATION | START
 // **************************************************************
 function validateCashier(cashier) {
-
   if (!required(cashier.owner_name, "Nama wajib diisi")) return false;
 
   if (!required(cashier.username, "Username wajib diisi")) return false;
@@ -338,37 +350,34 @@ function validateCashier(cashier) {
 // VALIDATE PURCHASE | START
 // **************************************************************
 function validatePurchase(purchase) {
-
   if (!required(purchase.purchase_date, "Tanggal Pembelian Harus Diisi")) {
-      return false;
+    return false;
   }
 
   if (!required(purchase.supplier_id, "Supplier Harus Diisi")) {
-      return false;
+    return false;
   }
 
   if (purchase.purchase_details.length === 0) {
-      swalWarning("Minimal tambahkan 1 barang.");
-      return false;
+    swalWarning("Minimal tambahkan 1 barang.");
+    return false;
   }
 
   for (const item of purchase.purchase_details) {
+    if (!item.product_id) {
+      swalWarning("Barang harus dipilih.");
+      return false;
+    }
 
-      if (!item.product_id) {
-          swalWarning("Barang harus dipilih.");
-          return false;
-      }
+    if (Number(item.quantity) <= 0) {
+      swalWarning("Jumlah barang tidak valid.");
+      return false;
+    }
 
-      if (Number(item.quantity) <= 0) {
-          swalWarning("Jumlah barang tidak valid.");
-          return false;
-      }
-
-      if (Number(item.purchase) <= 0) {
-          swalWarning("Harga beli tidak valid.");
-          return false;
-      }
-
+    if (Number(item.purchase) <= 0) {
+      swalWarning("Harga beli tidak valid.");
+      return false;
+    }
   }
 
   return true;
@@ -381,7 +390,6 @@ function validatePurchase(purchase) {
 // PURCHASE IMPORT VALIDATION | START
 // **************************************************************
 function validatePurchaseImport(purchase) {
-
   if (!required(purchase.supplier_id, "Supplier wajib dipilih")) {
     return false;
   }
@@ -395,10 +403,7 @@ function validatePurchaseImport(purchase) {
     return false;
   }
 
-  const extension = purchase.file.name
-    .split(".")
-    .pop()
-    .toLowerCase();
+  const extension = purchase.file.name.split(".").pop().toLowerCase();
 
   if (extension !== "xlsx") {
     swalWarning("File harus berformat .xlsx.");
@@ -415,26 +420,25 @@ function validatePurchaseImport(purchase) {
 // PURCHASE REPORT VALIDATION | START
 // **************************************************************
 function validatePurchaseReport(report) {
-
   if (!required(report.start_date, "Tanggal awal wajib diisi")) {
-      return false;
+    return false;
   }
 
   if (!required(report.end_date, "Tanggal akhir wajib diisi")) {
-      return false;
+    return false;
   }
 
   if (!number(report.start_date, "Tanggal awal tidak valid")) {
-      return false;
+    return false;
   }
 
   if (!number(report.end_date, "Tanggal akhir tidak valid")) {
-      return false;
+    return false;
   }
 
   if (Number(report.start_date) > Number(report.end_date)) {
-      swalWarning("Tanggal awal tidak boleh lebih besar dari tanggal akhir.");
-      return false;
+    swalWarning("Tanggal awal tidak boleh lebih besar dari tanggal akhir.");
+    return false;
   }
 
   return true;
@@ -447,19 +451,14 @@ function validatePurchaseReport(report) {
 // SALE VALIDATION | START
 // **************************************************************
 function validateSale(sale) {
-
   // Customer & Vehicle opsional
 
-  if (
-    sale.product_details.length === 0 &&
-    sale.service_details.length === 0
-  ) {
+  if (sale.product_details.length === 0 && sale.service_details.length === 0) {
     swalWarning("Minimal tambahkan 1 barang atau jasa.");
     return false;
   }
 
   for (const item of sale.product_details) {
-
     if (!item.product_id) {
       swalWarning("Barang harus dipilih.");
       return false;
@@ -473,11 +472,9 @@ function validateSale(sale) {
     if (!price(item.price, "Harga barang tidak valid.")) {
       return false;
     }
-
   }
 
   for (const item of sale.service_details) {
-
     if (!item.service_id) {
       swalWarning("Jasa harus dipilih.");
       return false;
@@ -491,7 +488,6 @@ function validateSale(sale) {
     if (!price(item.price, "Biaya jasa tidak valid.")) {
       return false;
     }
-
   }
 
   if (!required(sale.payment, "Nominal pembayaran wajib diisi")) {
@@ -509,15 +505,14 @@ function validateSale(sale) {
 // **************************************************************
 
 function validateCashDeposit(data) {
-
   if (!data.total_deposit) {
-      swalWarning("Nominal setor tidak boleh kosong.");
-      return false;
+    swalWarning("Nominal setor tidak boleh kosong.");
+    return false;
   }
 
   if (Number(data.total_deposit) <= 0) {
-      swalWarning("Nominal setor harus lebih dari 0.");
-      return false;
+    swalWarning("Nominal setor harus lebih dari 0.");
+    return false;
   }
 
   return true;
