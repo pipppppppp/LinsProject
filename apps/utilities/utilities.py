@@ -344,12 +344,40 @@ def normalize_plate_number(plate_number):
 def string_checker(strings):
     return any(char.isdigit() for char in str(strings))
 
+def phone_checker(phone):
+    if phone is None:
+        return True
 
-def phone_checker(phone_number):
-    phone_number = normalize_phone(phone_number)
-    pattern = r"^08[1-9][0-9]{7,10}$" #min 10 max 13
+    phone = str(phone).strip()
 
-    return re.fullmatch(pattern, phone_number) is None
+    # Hapus spasi, -, (, )
+    phone = re.sub(r"[\s\-\(\)]", "", phone)
+
+    # Ubah format internasional Indonesia menjadi format 0
+    if phone.startswith("+62"):
+        phone = "0" + phone[3:]
+    elif phone.startswith("62"):
+        phone = "0" + phone[2:]
+
+    # Nomor HP Indonesia
+    mobile_pattern = r"^08[1-9][0-9]{7,10}$"
+
+    # Nomor telepon rumah/kantor Indonesia
+    landline_pattern = r"^0[2-9][0-9]{7,11}$"
+
+    if (
+        re.fullmatch(mobile_pattern, phone) or
+        re.fullmatch(landline_pattern, phone)
+    ):
+        return False
+
+    return True
+
+# def phone_checker(phone_number):
+#     phone_number = normalize_phone(phone_number)
+#     pattern = r"^08[1-9][0-9]{7,10}$" #min 10 max 13
+
+#     return re.fullmatch(pattern, phone_number) is None
 
 
 def email_checker(email):
