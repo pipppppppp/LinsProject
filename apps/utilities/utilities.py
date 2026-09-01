@@ -11,8 +11,8 @@ from datetime import datetime
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
-import cv2
-import numpy as np
+from io import BytesIO
+from PIL import Image
 from flask import current_app as app
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
@@ -37,16 +37,27 @@ def default_image():
     with open(file_path, "rb") as file:
         return file.read()
 
-
 def saving_image(encodedData, fileName):
-    encoded_data = encodedData.split(",", 1)[1]
-    image_buffer = np.frombuffer(
-        base64.b64decode(encoded_data),
-        np.uint8,
-    )
-    image = cv2.imdecode(image_buffer, cv2.IMREAD_UNCHANGED)
+    try:
+        encoded_data = encodedData.split(",", 1)[1]
+        image_data = base64.b64decode(encoded_data)
 
-    return cv2.imwrite(fileName, image)
+        image = Image.open(BytesIO(image_data))
+        image.save(fileName)
+
+        return True
+
+    except Exception:
+        return False
+# def saving_image(encodedData, fileName):
+#     encoded_data = encodedData.split(",", 1)[1]
+#     image_buffer = np.frombuffer(
+#         base64.b64decode(encoded_data),
+#         np.uint8,
+#     )
+#     image = cv2.imdecode(image_buffer, cv2.IMREAD_UNCHANGED)
+
+#     return cv2.imwrite(fileName, image)
 
 
 def saving_file(encodedData, fileName):
