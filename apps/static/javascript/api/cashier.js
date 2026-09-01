@@ -10,6 +10,8 @@ async function init() {
   renderCart();
 
   calculateTotal();
+  
+  form.barcode.focus();
 }
 
 // Form =========================================================
