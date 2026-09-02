@@ -58,6 +58,27 @@ function renderTable() {
     const statusBadge =
       Number(cashier.is_active) === 1 ? `<span class="badge bg-success">Aktif</span>` : `<span class="badge bg-danger">Nonaktif</span>`;
 
+    const statusButton =
+      Number(cashier.is_active) === 1
+        ? `
+          <button
+            class="btn btn-warning btn-sm btn-status"
+            data-id="${cashier.id}"
+            data-status="0"
+            title="Nonaktifkan Kasir">
+            <i class="bi bi-pause-circle-fill"></i>
+          </button>
+        `
+        : `
+          <button
+            class="btn btn-success btn-sm btn-status"
+            data-id="${cashier.id}"
+            data-status="1"
+            title="Aktifkan Kasir">
+            <i class="bi bi-play-circle-fill"></i>
+          </button>
+        `;
+
     html += `
           <tr>
             <td>${index + 1}</td>
@@ -73,6 +94,9 @@ function renderTable() {
                       data-id="${cashier.id}">
                       <i class="bi bi-pencil-square"></i>
                   </button>
+
+                  ${statusButton}
+
               </div>
             </td>
           </tr>
@@ -148,7 +172,7 @@ document.getElementById("table1").addEventListener("click", handleTableClick);
 
 async function handleTableClick(e) {
   const editBtn = e.target.closest(".btn-edit");
-  const deleteBtn = e.target.closest(".btn-delete");
+  const deleteBtn = e.target.closest(".btn-status");
 
   // EDIT ==================================================
   if (editBtn) {
@@ -205,9 +229,61 @@ async function handleTableClick(e) {
       await swalError("Gagal", result.message);
     }
   }
+
+  // ACTIVE / NONACTIVE ============================================
+  if (statusBtn) {
+    const id = Number(statusBtn.dataset.id);
+    const newStatus = Number(statusBtn.dataset.status);
+
+    const cashier = cashiersData.find((item) => item.id === id);
+
+    if (!cashier) return;
+
+    const actionText = newStatus === 1 ? "Aktifkan" : "Nonaktifkan";
+
+    const confirm = await swalConfirm(
+      `${actionText} Kasir?`,
+      newStatus === 1 ? "Akun kasir akan diaktifkan kembali." : "Akun kasir akan dinonaktifkan.",
+      actionText
+    );
+
+    if (!confirm.isConfirmed) return;
+
+    let result;
+
+    try {
+      swalLoading();
+
+      const data = {
+        id: cashier.id,
+        owner_name: cashier.owner_name,
+        username: cashier.username,
+        email: cashier.email,
+        password: "",
+        role: cashier.role,
+        is_active: newStatus,
+      };
+
+      result = await putRequest(`/cashier-management/edit/${cashier.id}`, data);
+    } finally {
+      swalClose();
+    }
+
+    if (!result) return;
+
+    if (result.status_code === 200) {
+      await reloadTable(loadCashiers, renderTable);
+
+      await swalSuccess("Berhasil", newStatus === 1 ? "Kasir berhasil diaktifkan." : "Kasir berhasil dinonaktifkan.");
+    } else {
+      await swalError("Gagal", result.message);
+    }
+
+    return;
+  }
 }
 // **************************************************************
-// UPDATE & DELETE CASHIER | END
+// UPDATE & ACTIVE NONACTIVE CASHIER | END
 // **************************************************************
 
 // **************************************************************
