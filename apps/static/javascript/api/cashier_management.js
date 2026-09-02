@@ -80,30 +80,36 @@ function renderTable() {
         `;
 
     html += `
-          <tr>
-            <td>${index + 1}</td>
-            <td>${cashier.owner_name}</td>
-            <td>${cashier.username}</td>
-            <td>${cashier.email}</td>
-            <td class="text-center">${statusBadge}</td>
-            <td class="text-center">
-              <div class="d-inline-flex gap-2">
+      <tr>
+        <td>${index + 1}</td>
+        <td>${cashier.owner_name}</td>
+        <td>${cashier.username}</td>
+        <td>${cashier.email}</td>
 
-                  <button
-                      class="btn btn-warning btn-sm btn-edit"
-                      data-id="${cashier.id}">
-                      <i class="bi bi-pencil-square"></i>
-                  </button>
+        <td class="text-center">
+          ${statusBadge}
+        </td>
 
-                  ${statusButton}
+        <td class="text-center">
+          <div class="d-inline-flex gap-2">
 
-              </div>
-            </td>
-          </tr>
-        `;
+            <button
+              class="btn btn-warning btn-sm btn-edit"
+              data-id="${cashier.id}"
+              title="Ubah Kasir">
+              <i class="bi bi-pencil-square"></i>
+            </button>
+
+            ${statusButton}
+
+          </div>
+        </td>
+      </tr>
+    `;
   });
 
   document.getElementById("cashier_table").innerHTML = html;
+
   renderSummary();
 }
 // **************************************************************
@@ -166,7 +172,10 @@ document.querySelector(".btn-save").addEventListener("click", saveCashier);
 // **************************************************************
 
 // **************************************************************
-// UPDATE & DELETE CASHIER | START
+// UPDATE & ACTIVE NONACTIVE CASHIER | START
+// **************************************************************
+// **************************************************************
+// UPDATE & ACTIVE NONACTIVE CASHIER | START
 // **************************************************************
 document.getElementById("table1").addEventListener("click", handleTableClick);
 
@@ -199,38 +208,7 @@ async function handleTableClick(e) {
     return;
   }
 
-  // DELETE ==================================================
-  if (deleteBtn) {
-    const id = Number(deleteBtn.dataset.id);
-
-    const confirmDelete = await swalDelete();
-
-    if (!confirmDelete.isConfirmed) return;
-
-    let result;
-
-    try {
-      swalLoading();
-
-      result = await deleteRequest(`/cashier-management/delete/${id}`);
-    } finally {
-      swalClose();
-    }
-
-    if (!result) {
-      return;
-    }
-
-    if (result.status_code === 200) {
-      await swalSuccess("Berhasil", result.message);
-
-      await reloadTable(loadCashiers, renderTable);
-    } else {
-      await swalError("Gagal", result.message);
-    }
-  }
-
-  // ACTIVE / NONACTIVE ============================================
+  // ACTIVE / NONACTIVE =====================================
   if (statusBtn) {
     const id = Number(statusBtn.dataset.id);
     const newStatus = Number(statusBtn.dataset.status);
@@ -282,6 +260,9 @@ async function handleTableClick(e) {
     return;
   }
 }
+// **************************************************************
+// UPDATE & ACTIVE NONACTIVE CASHIER | END
+// **************************************************************
 // **************************************************************
 // UPDATE & ACTIVE NONACTIVE CASHIER | END
 // **************************************************************
