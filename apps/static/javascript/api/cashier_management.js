@@ -62,7 +62,7 @@ function renderTable() {
       Number(cashier.is_active) === 1
         ? `
           <button
-            class="btn btn-warning btn-sm btn-status"
+            class="btn btn-secondary btn-sm btn-status"
             data-id="${cashier.id}"
             data-status="0"
             title="Nonaktifkan Kasir">
@@ -94,7 +94,7 @@ function renderTable() {
           <div class="d-inline-flex gap-2">
 
             <button
-              class="btn btn-primary btn-sm btn-edit"
+              class="btn btn-warning btn-sm btn-edit"
               data-id="${cashier.id}"
               title="Ubah Kasir">
               <i class="bi bi-pencil-square"></i>
