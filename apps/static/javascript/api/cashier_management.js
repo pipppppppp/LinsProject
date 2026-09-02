@@ -62,7 +62,7 @@ function renderTable() {
       Number(cashier.is_active) === 1
         ? `
           <button
-            class="btn btn-secondary btn-sm btn-status"
+            class="btn btn-secondary btn-sm cashier-status-btn"
             data-id="${cashier.id}"
             data-status="0"
             title="Nonaktifkan Kasir">
@@ -181,7 +181,7 @@ document.getElementById("table1").addEventListener("click", handleTableClick);
 
 async function handleTableClick(e) {
   const editBtn = e.target.closest(".btn-edit");
-  const statusBtn = e.target.closest(".btn-status");
+  const statusBtn = e.target.closest(".cashier-status-btn");
 
   // EDIT ==================================================
   if (editBtn) {
