@@ -62,7 +62,7 @@ function renderTable() {
       Number(cashier.is_active) === 1
         ? `
           <button
-            class="btn btn-secondary btn-sm btn-status"
+            class="btn btn-secondsry btn-sm btn-status"
             data-id="${cashier.id}"
             data-status="0"
             title="Nonaktifkan Kasir">
