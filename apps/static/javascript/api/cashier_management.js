@@ -172,7 +172,7 @@ document.getElementById("table1").addEventListener("click", handleTableClick);
 
 async function handleTableClick(e) {
   const editBtn = e.target.closest(".btn-edit");
-  const deleteBtn = e.target.closest(".btn-status");
+  const statusBtn = e.target.closest(".btn-status");
 
   // EDIT ==================================================
   if (editBtn) {
