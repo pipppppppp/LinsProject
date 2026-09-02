@@ -73,13 +73,6 @@ function renderTable() {
                       data-id="${cashier.id}">
                       <i class="bi bi-pencil-square"></i>
                   </button>
-
-                  <button
-                      class="btn btn-danger btn-sm btn-delete"
-                      data-id="${cashier.id}">
-                      <i class="bi bi-trash"></i>
-                  </button>
-
               </div>
             </td>
           </tr>

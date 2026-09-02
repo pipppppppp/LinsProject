@@ -23,7 +23,7 @@ class WorkshopModels():
         try:
             # Access Validation ---------------------------------------- Start
             access = role_validator(user_role)
-            if not access: # Access = True -> Owner/ Administrator
+            if not access: # Access = True -> Owner/
                 return authorization_error()
             # Access Validation ---------------------------------------- Finish
 
