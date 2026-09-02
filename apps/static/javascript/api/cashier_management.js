@@ -94,7 +94,7 @@ function renderTable() {
           <div class="d-inline-flex gap-2">
 
             <button
-              class="btn btn-warning btn-sm btn-edit"
+              class="btn btn-primary btn-sm btn-edit"
               data-id="${cashier.id}"
               title="Ubah Kasir">
               <i class="bi bi-pencil-square"></i>
