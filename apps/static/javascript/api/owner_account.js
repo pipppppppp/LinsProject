@@ -66,7 +66,7 @@ function initializeEventListeners() {
 // **************************************************************
 async function loadOwnerAccount() {
   const result = await getRequest(API.view);
-
+  console.log("OWNER ACCOUNT:", result);
   if (!result) return;
 
   if (result.status_code !== 200) {

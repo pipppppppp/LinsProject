@@ -60,12 +60,28 @@ function renderSummary() {
   document.getElementById("total_product").textContent = summaryData.total_product;
 
   document.getElementById("total_service").textContent = summaryData.total_service;
+  const greetingElement = document.getElementById("owner_greeting");
 
-  document.getElementById("current_user").textContent = `👋 Selamat Datang, ${summaryData.owner_name}!`;
+  if (greetingElement) {
+    const hour = new Date().getHours();
+
+    let greeting = "Pagi";
+
+    if (hour >= 11 && hour < 15) {
+      greeting = "Siang";
+    } else if (hour >= 15 && hour < 18) {
+      greeting = "Sore";
+    } else if (hour >= 18) {
+      greeting = "Malam";
+    }
+
+    greetingElement.textContent = `Selamat ${greeting}, ${summaryData.owner_name}!👋`;
+  }
 }
 // **************************************************************
 // SUMMARY | END
 // **************************************************************
+
 // **************************************************************
 // SALES CHART | START
 // **************************************************************
@@ -400,14 +416,37 @@ function renderRecentTransactions() {
 // RECENT TRANSACTION | END
 // **************************************************************
 function renderHeader() {
-  const today = new Date();
+  const now = new Date();
 
-  const date = today.toLocaleDateString("id-ID", {
-    weekday: "long",
+  // Tanggal
+  const date = now.toLocaleDateString("id-ID", {
     day: "numeric",
     month: "long",
     year: "numeric",
   });
 
-  document.getElementById("current_date").textContent = date;
+  // Jam
+  const time = now.toLocaleTimeString("id-ID", {
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+
+  // Owner
+  const ownerName = localStorage.getItem("owner_name") || "Owner";
+
+  const dateElement = document.getElementById("owner_current_date");
+  const timeElement = document.getElementById("owner_current_time");
+  const ownerElement = document.getElementById("header_owner_name");
+
+  if (dateElement) {
+    dateElement.textContent = date;
+  }
+
+  if (timeElement) {
+    timeElement.textContent = time;
+  }
+
+  if (ownerElement) {
+    ownerElement.textContent = ownerName;
+  }
 }

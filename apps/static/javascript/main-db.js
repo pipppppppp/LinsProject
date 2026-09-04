@@ -202,6 +202,14 @@ async function loadWorkshopStatusBanner() {
       return;
     }
 
+    // Tampilkan nama bengkel di sidebar
+    const workshopName = document.getElementById("sidebar_workshop_name");
+
+    if (workshopName && result.data.workshop_name) {
+      workshopName.textContent = result.data.workshop_name;
+    }
+
+    // Tampilkan status bengkel
     renderWorkshopStatusBanner(result.data);
   } catch (error) {
     console.error("WORKSHOP STATUS ERROR:", error);
@@ -311,4 +319,75 @@ function renderWorkshopStatusBanner(workshop) {
 
 // **************************************************************
 // RENDER WORKSHOP STATUS | END
+// **************************************************************
+
+// **************************************************************
+// OWNER HEADER | START
+// **************************************************************
+
+document.addEventListener("DOMContentLoaded", initOwnerHeader);
+
+function initOwnerHeader() {
+  const dateElement = document.getElementById("owner_current_date");
+  const timeElement = document.getElementById("owner_current_time");
+  const ownerElement = document.getElementById("owner_name");
+  const greetingElement = document.getElementById("owner_greeting");
+
+  if (!dateElement && !timeElement && !ownerElement) {
+    return;
+  }
+
+  updateOwnerDateTime();
+
+  setInterval(updateOwnerDateTime, 1000);
+
+  const ownerName = localStorage.getItem("owner_name") || "Owner";
+
+  if (ownerElement) {
+    ownerElement.textContent = ownerName;
+  }
+
+  if (greetingElement) {
+    const hour = new Date().getHours();
+
+    let greeting = "Selamat Datang";
+
+    if (hour >= 5 && hour < 12) {
+      greeting = "Selamat Pagi";
+    } else if (hour >= 12 && hour < 15) {
+      greeting = "Selamat Siang";
+    } else if (hour >= 15 && hour < 18) {
+      greeting = "Selamat Sore";
+    } else {
+      greeting = "Selamat Malam";
+    }
+
+    greetingElement.textContent = `${greeting}, ${ownerName} 👋`;
+  }
+}
+
+function updateOwnerDateTime() {
+  const now = new Date();
+
+  const dateElement = document.getElementById("owner_current_date");
+  const timeElement = document.getElementById("owner_current_time");
+
+  if (dateElement) {
+    dateElement.textContent = now.toLocaleDateString("id-ID", {
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+    });
+  }
+
+  if (timeElement) {
+    timeElement.textContent = now.toLocaleTimeString("id-ID", {
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  }
+}
+
+// **************************************************************
+// OWNER HEADER | END
 // **************************************************************

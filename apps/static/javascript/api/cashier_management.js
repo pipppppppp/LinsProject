@@ -18,6 +18,21 @@ const form = {
   role: document.getElementById("role"),
   is_active: document.getElementById("is_active"),
 };
+
+const togglePassword = document.getElementById("toggle_password");
+const passwordIcon = document.getElementById("password_icon");
+
+togglePassword.addEventListener("click", function () {
+  if (form.password.type === "password") {
+    form.password.type = "text";
+    passwordIcon.classList.remove("bi-eye");
+    passwordIcon.classList.add("bi-eye-slash");
+  } else {
+    form.password.type = "password";
+    passwordIcon.classList.remove("bi-eye-slash");
+    passwordIcon.classList.add("bi-eye");
+  }
+});
 // **************************************************************
 // BASE INITIALIZATION | END
 // **************************************************************
@@ -62,7 +77,7 @@ function renderTable() {
       Number(cashier.is_active) === 1
         ? `
           <button
-            class="btn btn-secondary btn-sm cashier-status-btn"
+            class="btn btn-secondary text-white btn-sm btn-status"
             data-id="${cashier.id}"
             data-status="0"
             title="Nonaktifkan Kasir">
@@ -181,7 +196,7 @@ document.getElementById("table1").addEventListener("click", handleTableClick);
 
 async function handleTableClick(e) {
   const editBtn = e.target.closest(".btn-edit");
-  const statusBtn = e.target.closest(".cashier-status-btn");
+  const statusBtn = e.target.closest(".btn-status");
 
   // EDIT ==================================================
   if (editBtn) {
@@ -260,9 +275,6 @@ async function handleTableClick(e) {
     return;
   }
 }
-// **************************************************************
-// UPDATE & ACTIVE NONACTIVE CASHIER | END
-// **************************************************************
 // **************************************************************
 // UPDATE & ACTIVE NONACTIVE CASHIER | END
 // **************************************************************

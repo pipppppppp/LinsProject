@@ -29,6 +29,7 @@
     <!--! [Start] Main Content !-->
     <!--! ================================================================ !-->
     <div class="page-heading">
+      {% include 'components/header_owner.html' %}
       <!--! ================================================================ !-->
       <!--! [Start] Header !-->
       <!--! ================================================================ !-->
@@ -250,8 +251,23 @@
                     Password
                   </label>
 
-                  <input type="password" id="password" class="form-control" placeholder="Masukkan password" />
+                  <div class="input-group">
+                    <input type="password" id="password" class="form-control" placeholder="Masukkan password" />
+
+                    <button class="btn btn-outline-secondary" type="button" id="toggle_password" title="Lihat Password">
+                      <i class="bi bi-eye" id="password_icon"></i>
+                    </button>
+                  </div>
                 </div>
+
+                <!-- <div class="mb-3">
+                  <label class="form-label">
+                    <i class="bi bi-lock me-2"></i>
+                    Password
+                  </label>
+
+                  <input type="password" id="password" class="form-control" placeholder="Masukkan password" />
+                </div> -->
 
                 <div class="row">
                   <div class="col-md-6">
@@ -305,7 +321,6 @@
       <!--! ================================================================ !-->
       <!--! [End] Modal Form !-->
       <!--! ================================================================ !-->
-    
     </div>
     <!--! ================================================================ !-->
     <!--! [End] Page Content !-->

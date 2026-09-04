@@ -6,8 +6,9 @@
     <!-- SIDEBAR HEADER -->
     <div class="sidebar-header">
       <div class="d-flex justify-content-between">
-        <div class="logo text-center">
-          <h4>POS Bengkel</h4>
+        <div class="logo">
+          <h4 class="mb-1">POS Bengkel</h4>
+          <small class="text-muted" id="sidebar_workshop_name">-</small>
         </div>
 
         <div class="toggler">
@@ -159,7 +160,7 @@
             <span>Pengaturan Akun</span>
           </a>
         </li>
-        
+
         <li class="sidebar-item logout-item">
           <a href="{{ url_for('auth.signout') }}" id="logout" class="sidebar-link text-danger">
             <i class="bi bi-box-arrow-right"></i>
