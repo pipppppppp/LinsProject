@@ -11,6 +11,55 @@ const signinForm = {
 // **************************************************************
 
 // **************************************************************
+// SHOW / HIDE PASSWORD | START
+// **************************************************************
+
+// Password
+const password = document.getElementById("password");
+const togglePassword = document.getElementById("toggle_password");
+const passwordIcon = document.getElementById("password_icon");
+
+if (password && togglePassword && passwordIcon) {
+  togglePassword.addEventListener("click", function () {
+    if (password.type === "password") {
+      password.type = "text";
+
+      passwordIcon.classList.remove("bi-eye");
+      passwordIcon.classList.add("bi-eye-slash");
+    } else {
+      password.type = "password";
+
+      passwordIcon.classList.remove("bi-eye-slash");
+      passwordIcon.classList.add("bi-eye");
+    }
+  });
+}
+
+// Konfirmasi Password
+const retypePassword = document.getElementById("retype_password");
+const toggleRetypePassword = document.getElementById("toggle_retype_password");
+const retypePasswordIcon = document.getElementById("retype_password_icon");
+
+if (retypePassword && toggleRetypePassword && retypePasswordIcon) {
+  toggleRetypePassword.addEventListener("click", function () {
+    if (retypePassword.type === "password") {
+      retypePassword.type = "text";
+
+      retypePasswordIcon.classList.remove("bi-eye");
+      retypePasswordIcon.classList.add("bi-eye-slash");
+    } else {
+      retypePassword.type = "password";
+
+      retypePasswordIcon.classList.remove("bi-eye-slash");
+      retypePasswordIcon.classList.add("bi-eye");
+    }
+  });
+}
+// **************************************************************
+// SHOW / HIDE PASSWORD | END
+// **************************************************************
+
+// **************************************************************
 // SIGN IN PROCESS | START
 // **************************************************************
 function signin_process(e) {
@@ -44,7 +93,7 @@ function signin_process(e) {
         // Biarkan loading terlihat sebentar
         console.log("LOGIN BERHASIL");
         console.log(response.data);
-        localStorage.setItem("username", response.data.name);
+        localStorage.setItem("owner_name", response.data.owner_name);
         setTimeout(() => {
           signin_redirect(response.data.role);
         }, 500);

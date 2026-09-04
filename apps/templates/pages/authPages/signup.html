@@ -79,23 +79,37 @@
                       <!-- Password -->
 
                       <div class="mb-3">
-                        <label class="form-label"> Password </label>
+                        <label class="form-label">Password</label>
 
-                        <input type="password" id="password" name="password" class="form-control rounded-3" placeholder="Masukkan password" />
+                        <div class="input-group">
+                          <input type="password" id="password" name="password" class="form-control rounded-start-3" placeholder="Masukkan password" />
+
+                          <button type="button" class="btn btn-outline-secondary" id="toggle_password">
+                            <i class="bi bi-eye" id="password_icon"></i>
+                          </button>
+                        </div>
                       </div>
 
                       <!-- Confirm Password -->
 
-                      <div>
-                        <label class="form-label"> Konfirmasi Password </label>
+                      <!-- Confirm Password -->
 
-                        <input
-                          type="password"
-                          id="retype_password"
-                          name="retype_password"
-                          class="form-control rounded-3"
-                          placeholder="Konfirmasi password"
-                        />
+                      <div>
+                        <label class="form-label">Konfirmasi Password</label>
+
+                        <div class="input-group">
+                          <input
+                            type="password"
+                            id="retype_password"
+                            name="retype_password"
+                            class="form-control rounded-start-3"
+                            placeholder="Konfirmasi password"
+                          />
+
+                          <button type="button" class="btn btn-outline-secondary" id="toggle_retype_password">
+                            <i class="bi bi-eye" id="retype_password_icon"></i>
+                          </button>
+                        </div>
                       </div>
                     </div>
                     <!-- ====================================================== -->

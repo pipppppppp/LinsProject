@@ -595,7 +595,7 @@ class AuthModels():
             jwt_payload = {
                 "id" : result.id,
                 "email" : result.email,
-                "name" : result.username,
+                "name" : result.owner_name,
                 "role" : result.role,
                 "ws_id" : ws_id
             }
@@ -608,7 +608,7 @@ class AuthModels():
             response = success_data({
                 "access_token" : access_token,
                 "role" : result.role,
-                "name": result.username
+                "owner_name": result.owner_name
             })
             set_access_cookies(response, access_token)
             # Data Response ---------------------------------------- Finish

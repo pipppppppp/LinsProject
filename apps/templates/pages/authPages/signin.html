@@ -42,7 +42,12 @@
                     <div class="form-control-icon">
                       <i class="bi bi-shield-lock"></i>
                     </div>
+
+                    <button type="button" id="toggle_password" class="btn position-absolute top-50 end-0 translate-middle-y me-2" style="z-index: 10">
+                      <i class="bi bi-eye" id="password_icon"></i>
+                    </button>
                   </div>
+
                   <div class="text-end mb-4">
                     <a href="{{ url_for('auth.forgot_password') }}" class="text-decoration-none"> Lupa Password? </a>
                   </div>
