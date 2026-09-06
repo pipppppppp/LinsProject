@@ -36,6 +36,7 @@ class VehicleModels():
 
             required_data = [
                 "customer_id",
+                "vehicle_category",
                 "plate_number",
                 "vehicle_brand",
                 "vehicle_type",
@@ -52,6 +53,7 @@ class VehicleModels():
 
             # Initialize Data Input ---------------------------------------- Start
             customer_id = datas["customer_id"]
+            vehicle_category = datas["vehicle_category"].strip()
             plate_number = datas["plate_number"].strip().upper()
             vehicle_brand = datas["vehicle_brand"].strip()
             vehicle_type = datas["vehicle_type"].strip()
@@ -62,6 +64,7 @@ class VehicleModels():
             # Data Validation ---------------------------------------- Start
             checker_result = vehicle_validator(
                 customer_id,
+                vehicle_category,
                 plate_number,
                 vehicle_brand,
                 vehicle_type,
@@ -109,6 +112,7 @@ class VehicleModels():
             data = Vehicles(
                 workshop_id=workshop_id,
                 customer_id=customer_id,
+                vehicle_category=vehicle_category,
                 plate_number=plate_number,
                 vehicle_brand=vehicle_brand,
                 vehicle_type=vehicle_type,
@@ -198,6 +202,7 @@ class VehicleModels():
                 data.append({
                     "id": vehicle.id,
                     "customer_id": vehicle.customer_id,
+                    "vehicle_category": vehicle.vehicle_category,
                     "plate_number": vehicle.plate_number,
                     "vehicle_brand": vehicle.vehicle_brand,
                     "vehicle_type": vehicle.vehicle_type,
@@ -249,6 +254,7 @@ class VehicleModels():
 
             required_data = [
                 "customer_id",
+                "vehicle_category",
                 "plate_number",
                 "vehicle_brand",
                 "vehicle_type",
@@ -265,6 +271,7 @@ class VehicleModels():
 
             # Initialize Data Input ---------------------------------------- Start
             customer_id = datas["customer_id"]
+            vehicle_category = datas["vehicle_category"].strip()
             plate_number = datas["plate_number"].strip().upper()
             vehicle_brand = datas["vehicle_brand"].strip()
             vehicle_type = datas["vehicle_type"].strip()
@@ -275,6 +282,7 @@ class VehicleModels():
             # Data Validation ---------------------------------------- Start
             checker_result = vehicle_validator(
                 customer_id,
+                vehicle_category,
                 plate_number,
                 vehicle_brand,
                 vehicle_type,
@@ -334,6 +342,7 @@ class VehicleModels():
             timestamp = current_timestamp()
 
             data.customer_id = customer_id
+            data.vehicle_category = vehicle_category
             data.plate_number = plate_number
             data.vehicle_brand = vehicle_brand
             data.vehicle_type = vehicle_type

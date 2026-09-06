@@ -661,6 +661,7 @@ def customer_validator(
 # VEHICLE VALIDATION ============================================================ Begin
 def vehicle_validator(
     customer_id,
+    vehicle_category,
     plate_number,
     vehicle_brand,
     vehicle_type,
@@ -675,6 +676,9 @@ def vehicle_validator(
     if customer_id == "":
         check_result.append("Pelanggan tidak boleh kosong.")
 
+    if vehicle_category == "":
+            check_result.append("Jenis kendaraan tidak boleh kosong.")
+
     if plate_number == "":
         check_result.append("Plat nomor kendaraan tidak boleh kosong.")
 
@@ -686,6 +690,9 @@ def vehicle_validator(
 
     if vehicle_year == "":
         check_result.append("Tahun kendaraan tidak boleh kosong.")
+
+    if vehicle_category not in ["Motor", "Mobil"]:
+          check_result.append("Jenis kendaraan tidak valid.")
 
     if vehicle_color == "":
         check_result.append("Warna kendaraan tidak boleh kosong.")
@@ -704,12 +711,6 @@ def vehicle_validator(
             f"Merek kendaraan tidak boleh mengandung karakter {char_brand}"
         )
 
-    # sanitize_type, char_type = sanitize_all_char(vehicle_type)
-    # if sanitize_type:
-    #     check_result.append(
-    #         f"Tipe kendaraan tidak boleh mengandung karakter {char_type}"
-    #     )
-
     sanitize_color, char_color = sanitize_all_char(vehicle_color)
     if sanitize_color:
         check_result.append(
@@ -726,9 +727,6 @@ def vehicle_validator(
 
     if string_checker(vehicle_brand):
         check_result.append("Merek kendaraan tidak valid.")
-
-    # if string_checker(vehicle_type):
-    #     check_result.append("Tipe kendaraan tidak valid.")
 
     if string_checker(vehicle_color):
         check_result.append("Warna kendaraan tidak valid.")
