@@ -49,6 +49,10 @@ async function loadSummary() {
 
 // Render Data -------------------------------------------------
 function renderSummary() {
+  document.getElementById("total_product_sales").textContent = formatRupiah(summaryData.total_product_sales);
+
+  document.getElementById("total_service_sales").textContent = formatRupiah(summaryData.total_service_sales);
+
   document.getElementById("total_payments").textContent = formatRupiah(summaryData.total_payments);
 
   document.getElementById("total_purchase").textContent = formatRupiah(summaryData.total_purchase);
