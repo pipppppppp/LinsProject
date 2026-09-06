@@ -29,59 +29,41 @@
     <!--! [Start] Main Content !-->
     <!--! ================================================================ !-->
     <div class="page-heading">
-      <!--! ================================================================ !-->
-      <!--! [Start] Header !-->
-      <div class="page-title">
-        <div class="d-flex justify-content-between align-items-start flex-wrap mb-3">
-          <div>
-            <h3>Data Kendaraan</h3>
+      <!-- ================================================================ -->
+      <!-- [Start] Header -->
+      <div class="page-title mb-4">
+        <div class="row align-items-center">
+          <!-- Judul Halaman -->
+          <div class="col-md-7 col-12">
+            <h3 class="mb-2">Data Kendaraan</h3>
 
-            <p class="text-muted mb-0">Kelola seluruh kendaraan milik pelanggan.</p>
+            <p class="text-subtitle text-muted mb-0">Kelola seluruh kendaraan milik pelanggan.</p>
           </div>
 
-          <nav aria-label="breadcrumb" class="breadcrumb-header">
-            <ol class="breadcrumb">
-              <li class="breadcrumb-item">
-                <a href="{{ url_for('dashboard_cashier.index') }}">Dashboard</a>
-              </li>
-              <li class="breadcrumb-item">
-                <a href="{{ url_for('cashier.customer') }}">Pelanggan</a>
-              </li>
-              <li class="breadcrumb-item active" aria-current="page">Kendaraan</li>
-            </ol>
-          </nav>
-        </div>
+          <div class="col-md-5 col-12">
+            <!-- Tanggal, Jam, Kasir -->
+            {% include 'components/header_cashier.html' %}
 
-        <!-- Customer Card -->
-        <div class="card shadow-sm border-0">
-          <div class="card-body py-3 px-4">
-            <div class="d-flex align-items-center">
-              <div class="avatar avatar-xl bg-primary me-3">
-                <span class="avatar-content fw-bold fs-5" id="customer_initial">
-                  <i class="bi bi-person-fill text-white"></i>
-                </span>
-              </div>
-
-              <div>
-                <h5 class="mb-1 fw-bold" id="customer_name">-</h5>
-
-                <div class="text-muted mb-1">
-                  <i class="bi bi-telephone me-1"></i>
-                  <span id="customer_phone">-</span>
-                </div>
-
-                <div class="text-muted">
-                  <i class="bi bi-geo-alt me-1"></i>
-                  <span id="customer_address">-</span>
-                </div>
-              </div>
+            <!-- Breadcrumb -->
+            <div class="d-flex justify-content-end mt-2">
+              <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                  <li class="breadcrumb-item">
+                    <a href="{{ url_for('dashboard_cashier.index') }}">Dashboard</a>
+                  </li>
+                  <li class="breadcrumb-item">
+                    <a href="{{ url_for('cashier.customer') }}">Pelanggan</a>
+                  </li>
+                  <li class="breadcrumb-item active" aria-current="page">Kendaraan</li>
+                </ol>
+              </nav>
             </div>
           </div>
         </div>
       </div>
-      <!--! [End] Header !-->
-      <!--! ================================================================ !-->
-
+      <!-- [End] Header -->
+      <!-- ================================================================ -->
+     
       <!-- ================================================================ -->
       <!-- [Start] Content -->
       <section class="section">
@@ -257,5 +239,6 @@
 <script src="{{ url_for('static', filename='javascript/helper/formatter.js') }}"></script>
 <script src="{{ url_for('static', filename='javascript/helper/swal.js') }}"></script>
 <script src="{{ url_for('static', filename='javascript/helper/validators.js') }}"></script>
+<script src="{{ url_for('static', filename='javascript/api/dashboard_cashier.js') }}"></script>
 <script src="{{ url_for('static', filename='javascript/api/vehicle.js') }}"></script>
 {% endblock %}

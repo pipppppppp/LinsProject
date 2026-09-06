@@ -90,14 +90,27 @@ async function loadSummary() {
 }
 
 // Render Data -------------------------------------------------
+// function renderSummary() {
+//   total_sales.textContent = formatRupiah(summaryData.total_sales);
+
+//   total_transaction.textContent = summaryData.total_transaction;
+
+//   today_customer.textContent = summaryData.today_customer;
+
+//   deposit_status.textContent = summaryData.deposit_status;
+// }
 function renderSummary() {
-  total_sales.textContent = formatRupiah(summaryData.total_sales);
+  document.getElementById("total_product_sales").textContent = formatRupiah(summaryData.total_product_sales);
 
-  total_transaction.textContent = summaryData.total_transaction;
+  document.getElementById("total_service_sales").textContent = formatRupiah(summaryData.total_service_sales);
 
-  today_customer.textContent = summaryData.today_customer;
+  document.getElementById("total_sales").textContent = formatRupiah(summaryData.total_sales);
 
-  deposit_status.textContent = summaryData.deposit_status;
+  document.getElementById("total_transaction").textContent = summaryData.total_transaction;
+
+  document.getElementById("today_customer").textContent = summaryData.today_customer;
+
+  document.getElementById("deposit_status").textContent = summaryData.deposit_status;
 }
 // function renderSummary() {
 //   document.getElementById("total_payments").textContent = formatRupiah(summaryData.total_payments);

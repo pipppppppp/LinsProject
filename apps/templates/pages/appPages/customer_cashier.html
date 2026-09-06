@@ -33,6 +33,7 @@
       <!-- [Start] Header -->
       <div class="page-title mb-4">
         <div class="row align-items-center">
+          <!-- Judul Halaman -->
           <div class="col-md-7 col-12">
             <h3 class="mb-2">Data Pelanggan</h3>
 
@@ -40,14 +41,21 @@
           </div>
 
           <div class="col-md-5 col-12">
-            <nav aria-label="breadcrumb" class="breadcrumb-header float-start float-lg-end">
-              <ol class="breadcrumb">
-                <li class="breadcrumb-item">
-                  <a href="{{ url_for('dashboard.index') }}">Dashboard</a>
-                </li>
-                <li class="breadcrumb-item active" aria-current="page">Pelanggan</li>
-              </ol>
-            </nav>
+            <!-- Tanggal, Jam, Kasir -->
+            {% include 'components/header_cashier.html' %}
+
+            <!-- Breadcrumb -->
+            <div class="d-flex justify-content-end mt-2">
+              <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-0">
+                  <li class="breadcrumb-item">
+                    <a href="{{ url_for('dashboard_cashier.index') }}"> Dashboard </a>
+                  </li>
+
+                  <li class="breadcrumb-item active" aria-current="page">Pelanggan</li>
+                </ol>
+              </nav>
+            </div>
           </div>
         </div>
       </div>
@@ -284,5 +292,6 @@
 <script src="{{ url_for('static', filename='javascript/helper/formatter.js') }}"></script>
 <script src="{{ url_for('static', filename='javascript/helper/swal.js') }}"></script>
 <script src="{{ url_for('static', filename='javascript/helper/validators.js') }}"></script>
+<script src="{{ url_for('static', filename='javascript/api/dashboard_cashier.js') }}"></script>
 <script src="{{ url_for('static', filename='javascript/api/customer.js') }}"></script>
 {% endblock %}

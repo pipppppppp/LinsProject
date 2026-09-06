@@ -56,8 +56,13 @@ class DashboardCashierModels():
                         datetime.max.time()
                   ).timestamp())
                   # Today Timestamp ---------------------------------------- Finish
-                  today_sales = db.session.query(
-                        func.coalesce(func.sum(Payments.total), 0)
+                
+                  # Total Pendapatan Penjualan Barang ---------------------------------------- Start
+                  total_product_sales = db.session.query(
+                        func.coalesce(func.sum(SaleDetails.subtotal), 0)
+                  ).join(
+                        Payments,
+                        Payments.id == SaleDetails.payment_id
                   ).filter(
                         Payments.workshop_id == workshop_id,
                         Payments.cashier_id == user_id,
@@ -65,15 +70,15 @@ class DashboardCashierModels():
                         Payments.payment_date <= end_date,
                         Payments.is_delete == 0
                   ).scalar()
+                  # Total Pendapatan Penjualan Barang ---------------------------------------- Finish
 
-                  print("WORKSHOP :", workshop_id)
-                  print("USER :", user_id)
-                  print("START :", start_date)
-                  print("END :", end_date)
-                  print("TODAY SALES :", today_sales)
-                  # Total Sales ---------------------------------------- Start
-                  total_sales = db.session.query(
-                        func.coalesce(func.sum(Payments.total), 0)
+
+                  # Total Pendapatan Jasa Servis ---------------------------------------- Start
+                  total_service_sales = db.session.query(
+                        func.coalesce(func.sum(SaleServiceDetails.subtotal), 0)
+                  ).join(
+                        Payments,
+                        Payments.id == SaleServiceDetails.payment_id
                   ).filter(
                         Payments.workshop_id == workshop_id,
                         Payments.cashier_id == user_id,
@@ -81,7 +86,11 @@ class DashboardCashierModels():
                         Payments.payment_date <= end_date,
                         Payments.is_delete == 0
                   ).scalar()
-                  # Total Sales ---------------------------------------- Finish
+                  # Total Pendapatan Jasa Servis ---------------------------------------- Finish
+
+                  # Total Penjualan ---------------------------------------- Start
+                  total_sales = total_product_sales + total_service_sales
+                  # Total Penjualan ---------------------------------------- Finish
 
                   # Total Transaction ---------------------------------------- Start
                   total_transaction = Payments.query.filter(
@@ -104,35 +113,39 @@ class DashboardCashierModels():
                   ).count()
                   # Customer Today ---------------------------------------- Finish
 
-                  # Deposit Status ---------------------------------------- Start
-                  deposit = CashDeposits.query.filter(
+                 # Deposit Status ---------------------------------------- Start
+                  start_deposit = start_date * 1000
+                  end_deposit = end_date * 1000
+
+                  deposits = CashDeposits.query.filter(
                         CashDeposits.workshop_id == workshop_id,
                         CashDeposits.user_id == user_id,
                         CashDeposits.is_deleted == 0,
-                        CashDeposits.deposit_date >= start_date,
-                        CashDeposits.deposit_date <= end_date
+                        CashDeposits.deposit_date >= start_deposit,
+                        CashDeposits.deposit_date <= end_deposit
                   ).order_by(
                         CashDeposits.deposit_date.desc()
-                  ).first()
+                  ).all()
 
-                  if deposit is None:
+                  if not deposits:
                         deposit_status = "Belum Setor"
                   else:
-                        if deposit.status == 0:
+                        statuses = [deposit.status for deposit in deposits]
+
+                        if 0 in statuses:
                               deposit_status = "Menunggu"
-
-                        elif deposit.status == 1:
+                        elif 1 in statuses:
                               deposit_status = "Disetujui"
-
-                        elif deposit.status == 2:
+                        elif all(status == 2 for status in statuses):
                               deposit_status = "Ditolak"
-
                         else:
                               deposit_status = "-"
                   # Deposit Status ---------------------------------------- Finish
 
                   # Initialize Data ---------------------------------------- Start
                   data = {
+                        "total_product_sales": total_product_sales,
+                        "total_service_sales": total_service_sales,
                         "total_sales": total_sales,
                         "total_transaction": total_transaction,
                         "today_customer": today_customer,
@@ -517,11 +530,10 @@ class DashboardCashierModels():
                         datetime.max.time()
                   ).timestamp())
                   # Today Timestamp ---------------------------------------- Finish
+
                   start_deposit = start_date * 1000
                   end_deposit = end_date * 1000
-                  print("START :", start_date)
-                  print("END   :", end_date)
-                  
+
                   # Today Sales ---------------------------------------- Start
                   today_sales = db.session.query(
                         func.coalesce(func.sum(Payments.total), 0)
@@ -532,11 +544,10 @@ class DashboardCashierModels():
                         Payments.payment_date <= end_date,
                         Payments.is_delete == 0
                   ).scalar()
-                  print("TODAY SALES =", today_sales)
                   # Today Sales ---------------------------------------- Finish
-                  
-                  # Get Deposit ---------------------------------------- Start
-                  deposit = CashDeposits.query.filter(
+
+                  # Get Deposits ---------------------------------------- Start
+                  deposits = CashDeposits.query.filter(
                         CashDeposits.workshop_id == workshop_id,
                         CashDeposits.user_id == user_id,
                         CashDeposits.deposit_date >= start_deposit,
@@ -544,40 +555,66 @@ class DashboardCashierModels():
                         CashDeposits.is_deleted == 0
                   ).order_by(
                         CashDeposits.deposit_date.desc()
-                  ).first()
-                  # Get Deposit ---------------------------------------- Finish
-                  print("DEPOSIT :", deposit)
-                  # Initialize Data ---------------------------------------- Start
-                  if deposit:
+                  ).all()
+                  # Get Deposits ---------------------------------------- Finish
 
-                        if deposit.status == 0:
-                              status = "Menunggu"
+                  # Total Deposit ---------------------------------------- Start
+                  total_deposit = sum(
+                        deposit.total_deposit
+                        for deposit in deposits
+                        if deposit.status in [0, 1]
+                  )
+                  # Total Deposit ---------------------------------------- Finish
 
-                        elif deposit.status == 1:
-                              status = "Disetujui"
+                  # Difference ---------------------------------------- Start
+                  difference = max(
+                        0,
+                        today_sales - total_deposit
+                  )
+                  # Difference ---------------------------------------- Finish
 
-                        elif deposit.status == 2:
-                              status = "Ditolak"
+                  # Deposit Status ---------------------------------------- Start
+                  if not deposits:
+                        status = "Belum Setor"
 
-                        else:
-                              status = "-"
+                  elif any(
+                        deposit.status == 0
+                        for deposit in deposits
+                  ):
+                        status = "Menunggu"
 
-                        data = {
-                              "total_sales": deposit.total_sales,
-                              "total_deposit": deposit.total_deposit,
-                              "difference": deposit.difference,
-                              "status": status,
-                              "deposit_date": format_date(deposit.deposit_date)
-                        }
+                  elif all(
+                        deposit.status == 1
+                        for deposit in deposits
+                  ):
+                        status = "Disetujui"
+
+                  elif all(
+                        deposit.status == 2
+                        for deposit in deposits
+                  ):
+                        status = "Ditolak"
 
                   else:
-                        data = {
-                              "total_sales": today_sales,
-                              "total_deposit": 0,
-                              "difference": today_sales,
-                              "status": "Belum Setor",
-                              "deposit_date": "-"
-                        }
+                        status = "-"
+                  # Deposit Status ---------------------------------------- Finish
+
+                  # Deposit Date ---------------------------------------- Start
+                  deposit_date = (
+                        format_date(deposits[0].deposit_date)
+                        if deposits
+                        else "-"
+                  )
+                  # Deposit Date ---------------------------------------- Finish
+
+                  # Initialize Data ---------------------------------------- Start
+                  data = {
+                        "total_sales": today_sales,
+                        "total_deposit": total_deposit,
+                        "difference": difference,
+                        "status": status,
+                        "deposit_date": deposit_date
+                  }
                   # Initialize Data ---------------------------------------- Finish
 
                   # Return Response ---------------------------------------- Start
