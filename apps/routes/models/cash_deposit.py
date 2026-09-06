@@ -19,14 +19,19 @@ class CashDepositModels():
         try:
             # Access Validation ---------------------------------------- Start
             access = role_validator(user_role)
+
             if not access:
                 return authorization_error()
 
-            subscription_access = subscription_validator(user_role, workshop_id)
+            subscription_access = subscription_validator(
+                user_role,
+                workshop_id
+            )
 
             if not subscription_access:
                 return subscription_required()
             # Access Validation ---------------------------------------- Finish
+
 
             # Check Request Body ---------------------------------------- Start
             if datas is None:
@@ -43,11 +48,13 @@ class CashDepositModels():
                         f"Missing {req} in request body."
                     )
             # Check Request Body ---------------------------------------- Finish
-            
-           # Initialize Data Input ---------------------------------------- Start
+
+
+            # Initialize Data Input ---------------------------------------- Start
             total_deposit = int(datas["total_deposit"])
             notes = datas["notes"].strip()
             # Initialize Data Input ---------------------------------------- Finish
+
 
             # Check Workshop ---------------------------------------- Start
             workshop = Workshops.query.filter_by(
@@ -61,57 +68,73 @@ class CashDepositModels():
                 )
             # Check Workshop ---------------------------------------- Finish
 
+
             # Get Total Sales ---------------------------------------- Start
             today = datetime.now().date()
 
             start_timestamp = int(
-                datetime.combine(today, datetime.min.time()).timestamp()
+                datetime.combine(
+                    today,
+                    datetime.min.time()
+                ).timestamp()
             )
 
             end_timestamp = int(
-                datetime.combine(today, datetime.max.time()).timestamp()
+                datetime.combine(
+                    today,
+                    datetime.max.time()
+                ).timestamp()
             )
 
-            # Timestamp For Deposit (Milliseconds) -------------------- Start
+            # Timestamp For Deposit (Milliseconds)
             start_deposit = start_timestamp * 1000
             end_deposit = end_timestamp * 1000
-            # Timestamp For Deposit (Milliseconds) -------------------- Finish
-           
+
             total_sales = db.session.query(
-                  db.func.coalesce(func.sum(Payments.total),0)
+                func.coalesce(
+                    func.sum(Payments.total),
+                    0
+                )
             ).filter(
-                  Payments.workshop_id == workshop_id,
-                  Payments.cashier_id == user_id,
-                  Payments.payment_date >= start_timestamp,
-                  Payments.payment_date <= end_timestamp,
-                  Payments.is_delete == 0
+                Payments.workshop_id == workshop_id,
+                Payments.cashier_id == user_id,
+                Payments.payment_date >= start_timestamp,
+                Payments.payment_date <= end_timestamp,
+                Payments.is_delete == 0
             ).scalar()
+
             timestamp = current_timestamp()
             # Get Total Sales ---------------------------------------- Finish
-            
-            # Approved Deposit ---------------------------------------- Start
-            approved_deposit = db.session.query(
-                func.coalesce(func.sum(CashDeposits.total_deposit), 0)
+
+
+            # Get Total Deposit Today ---------------------------------------- Start
+            # Setoran dengan status Menunggu dan Disetujui
+            # tetap diperhitungkan sebagai setoran hari ini.
+            # Setoran yang Ditolak tidak diperhitungkan.
+            total_deposit_today = db.session.query(
+                func.coalesce(
+                    func.sum(CashDeposits.total_deposit),
+                    0
+                )
             ).filter(
                 CashDeposits.workshop_id == workshop_id,
                 CashDeposits.user_id == user_id,
                 CashDeposits.deposit_date >= start_deposit,
                 CashDeposits.deposit_date <= end_deposit,
-                CashDeposits.status == 1,
+                CashDeposits.status.in_([0, 1]),
                 CashDeposits.is_deleted == 0
             ).scalar()
-            approved_data = CashDeposits.query.filter(
-                CashDeposits.workshop_id == workshop_id,
-                CashDeposits.user_id == user_id,
-                CashDeposits.deposit_date >= start_deposit,
-                CashDeposits.deposit_date <= end_deposit,
-                CashDeposits.status == 1,
-                CashDeposits.is_deleted == 0
-            ).all()
+            # Get Total Deposit Today ---------------------------------------- Finish
 
-            remaining = max(0, total_sales - approved_deposit)
-            # Approved Deposit ---------------------------------------- Finish
-            
+
+            # Calculate Remaining ---------------------------------------- Start
+            remaining = max(
+                0,
+                total_sales - total_deposit_today
+            )
+            # Calculate Remaining ---------------------------------------- Finish
+
+
             # Check Remaining Deposit ---------------------------------------- Start
             if remaining == 0:
                 return defined_error(
@@ -121,8 +144,12 @@ class CashDepositModels():
                 )
             # Check Remaining Deposit ---------------------------------------- Finish
 
+
             # Data Validation ---------------------------------------- Start
-            checker_result = cash_deposit_validator(total_deposit, remaining)
+            checker_result = cash_deposit_validator(
+                total_deposit,
+                remaining
+            )
 
             if len(checker_result) != 0:
                 return defined_error(
@@ -131,26 +158,12 @@ class CashDepositModels():
                     499
                 )
             # Data Validation ---------------------------------------- Finish
-            
-            # Check Pending Deposit ---------------------------------------- Start
-            pending_deposit = CashDeposits.query.filter_by(
-                workshop_id=workshop_id,
-                user_id=user_id,
-                status=0,
-                is_deleted=0
-            ).first()
 
-            if pending_deposit:
-                return defined_error(
-                    "Masih ada setor kas yang menunggu verifikasi.",
-                    "Defined Error",
-                    499
-                )
-            # Check Pending Deposit ---------------------------------------- Finish
 
             # Calculate Difference ---------------------------------------- Start
             difference = remaining - total_deposit
             # Calculate Difference ---------------------------------------- Finish
+
 
             # Insert Data ---------------------------------------- Start
             data = CashDeposits(
@@ -175,16 +188,189 @@ class CashDepositModels():
                 return parameter_error(str(e))
             # Insert Data ---------------------------------------- Finish
 
-            # Return Response ======================================== 
-            # return success(statusCode=201)
+
+            # Return Response ========================================
             return success(
                 status_code=201
             )
-        
+
         except Exception as e:
             db.session.rollback()
             return bad_request(str(e))
+
     # CREATE CASH DEPOSIT ============================================================ End
+
+    # # CREATE CASH DEPOSIT ============================================================ Begin
+    # def create_cash_deposit(user_role, workshop_id, user_id, datas):
+    #     try:
+    #         # Access Validation ---------------------------------------- Start
+    #         access = role_validator(user_role)
+    #         if not access:
+    #             return authorization_error()
+
+    #         subscription_access = subscription_validator(user_role, workshop_id)
+
+    #         if not subscription_access:
+    #             return subscription_required()
+    #         # Access Validation ---------------------------------------- Finish
+
+    #         # Check Request Body ---------------------------------------- Start
+    #         if datas is None:
+    #             return invalid_params()
+
+    #         required_data = [
+    #             "total_deposit",
+    #             "notes"
+    #         ]
+
+    #         for req in required_data:
+    #             if req not in datas:
+    #                 return parameter_error(
+    #                     f"Missing {req} in request body."
+    #                 )
+    #         # Check Request Body ---------------------------------------- Finish
+            
+    #        # Initialize Data Input ---------------------------------------- Start
+    #         total_deposit = int(datas["total_deposit"])
+    #         notes = datas["notes"].strip()
+    #         # Initialize Data Input ---------------------------------------- Finish
+
+    #         # Check Workshop ---------------------------------------- Start
+    #         workshop = Workshops.query.filter_by(
+    #             id=workshop_id,
+    #             is_delete=0
+    #         ).first()
+
+    #         if not workshop:
+    #             return not_found(
+    #                 "Workshop could not be found."
+    #             )
+    #         # Check Workshop ---------------------------------------- Finish
+
+    #         # Get Total Sales ---------------------------------------- Start
+    #         today = datetime.now().date()
+
+    #         start_timestamp = int(
+    #             datetime.combine(today, datetime.min.time()).timestamp()
+    #         )
+
+    #         end_timestamp = int(
+    #             datetime.combine(today, datetime.max.time()).timestamp()
+    #         )
+
+    #         # Timestamp For Deposit (Milliseconds) -------------------- Start
+    #         start_deposit = start_timestamp * 1000
+    #         end_deposit = end_timestamp * 1000
+    #         # Timestamp For Deposit (Milliseconds) -------------------- Finish
+           
+    #         total_sales = db.session.query(
+    #               db.func.coalesce(func.sum(Payments.total),0)
+    #         ).filter(
+    #               Payments.workshop_id == workshop_id,
+    #               Payments.cashier_id == user_id,
+    #               Payments.payment_date >= start_timestamp,
+    #               Payments.payment_date <= end_timestamp,
+    #               Payments.is_delete == 0
+    #         ).scalar()
+    #         timestamp = current_timestamp()
+    #         # Get Total Sales ---------------------------------------- Finish
+            
+    #         # Approved Deposit ---------------------------------------- Start
+    #         approved_deposit = db.session.query(
+    #             func.coalesce(func.sum(CashDeposits.total_deposit), 0)
+    #         ).filter(
+    #             CashDeposits.workshop_id == workshop_id,
+    #             CashDeposits.user_id == user_id,
+    #             CashDeposits.deposit_date >= start_deposit,
+    #             CashDeposits.deposit_date <= end_deposit,
+    #             CashDeposits.status == 1,
+    #             CashDeposits.is_deleted == 0
+    #         ).scalar()
+    #         approved_data = CashDeposits.query.filter(
+    #             CashDeposits.workshop_id == workshop_id,
+    #             CashDeposits.user_id == user_id,
+    #             CashDeposits.deposit_date >= start_deposit,
+    #             CashDeposits.deposit_date <= end_deposit,
+    #             CashDeposits.status == 1,
+    #             CashDeposits.is_deleted == 0
+    #         ).all()
+
+    #         remaining = max(0, total_sales - approved_deposit)
+    #         # Approved Deposit ---------------------------------------- Finish
+            
+    #         # Check Remaining Deposit ---------------------------------------- Start
+    #         if remaining == 0:
+    #             return defined_error(
+    #                 "Seluruh hasil penjualan hari ini sudah disetor.",
+    #                 "Defined Error",
+    #                 499
+    #             )
+    #         # Check Remaining Deposit ---------------------------------------- Finish
+
+    #         # Data Validation ---------------------------------------- Start
+    #         checker_result = cash_deposit_validator(total_deposit, remaining)
+
+    #         if len(checker_result) != 0:
+    #             return defined_error(
+    #                 checker_result,
+    #                 "Defined Error",
+    #                 499
+    #             )
+    #         # Data Validation ---------------------------------------- Finish
+            
+    #         # Check Pending Deposit ---------------------------------------- Start
+    #         pending_deposit = CashDeposits.query.filter_by(
+    #             workshop_id=workshop_id,
+    #             user_id=user_id,
+    #             status=0,
+    #             is_deleted=0
+    #         ).first()
+
+    #         if pending_deposit:
+    #             return defined_error(
+    #                 "Masih ada setor kas yang menunggu verifikasi.",
+    #                 "Defined Error",
+    #                 499
+    #             )
+    #         # Check Pending Deposit ---------------------------------------- Finish
+
+    #         # Calculate Difference ---------------------------------------- Start
+    #         difference = remaining - total_deposit
+    #         # Calculate Difference ---------------------------------------- Finish
+
+    #         # Insert Data ---------------------------------------- Start
+    #         data = CashDeposits(
+    #             workshop_id=workshop_id,
+    #             user_id=user_id,
+    #             deposit_date=timestamp,
+    #             total_sales=total_sales,
+    #             total_deposit=total_deposit,
+    #             difference=difference,
+    #             notes=notes,
+    #             status=0,
+    #             created_at=timestamp,
+    #             updated_at=timestamp
+    #         )
+
+    #         try:
+    #             db.session.add(data)
+    #             db.session.commit()
+
+    #         except Exception as e:
+    #             db.session.rollback()
+    #             return parameter_error(str(e))
+    #         # Insert Data ---------------------------------------- Finish
+
+    #         # Return Response ======================================== 
+    #         # return success(statusCode=201)
+    #         return success(
+    #             status_code=201
+    #         )
+        
+    #     except Exception as e:
+    #         db.session.rollback()
+    #         return bad_request(str(e))
+    # # CREATE CASH DEPOSIT ============================================================ End
 
     # READ CASH DEPOSIT ============================================================ Begin
     def read_cash_deposit(user_role, workshop_id, user_id, date="", status=""):
@@ -233,13 +419,16 @@ class CashDepositModels():
                 ).scalar()
 
                 total_deposit = db.session.query(
-                    func.coalesce(func.sum(CashDeposits.total_deposit), 0)
+                    func.coalesce(
+                        func.sum(CashDeposits.total_deposit),
+                        0
+                    )
                 ).filter(
                     CashDeposits.workshop_id == workshop_id,
                     CashDeposits.user_id == user_id,
                     CashDeposits.deposit_date >= start_deposit,
                     CashDeposits.deposit_date <= end_deposit,
-                    CashDeposits.status == 1,
+                    CashDeposits.status.in_([0, 1]),
                     CashDeposits.is_deleted == 0
                 ).scalar()
 
@@ -267,6 +456,34 @@ class CashDepositModels():
             remaining = max(0, today_sales - total_deposit)
             # Summary ---------------------------------------------- Finish
             
+            # Today Deposit Status ---------------------------------------- Start
+            today_deposits = CashDeposits.query.filter(
+                CashDeposits.workshop_id == workshop_id,
+                CashDeposits.user_id == user_id,
+                CashDeposits.deposit_date >= start_deposit,
+                CashDeposits.deposit_date <= end_deposit,
+                CashDeposits.is_deleted == 0
+            ).order_by(
+                CashDeposits.deposit_date.desc()
+            ).all()
+
+            today_status = "Belum Setor"
+
+            if today_deposits:
+                latest_today = today_deposits[0]
+
+                if latest_today.status == 0:
+                    today_status = "Menunggu"
+                elif latest_today.status == 1:
+                    if remaining == 0:
+                        today_status = "Disetujui"
+                    else:
+                        today_status = "Sebagian Disetujui"
+                elif latest_today.status == 2:
+                    today_status = "Ditolak"
+
+            # Today Deposit Status ---------------------------------------- Finish
+
             # Get Query ----------------------------------------------- Start
             if str(user_role) == "2":
 
@@ -374,7 +591,9 @@ class CashDepositModels():
                     "history": data,
                     "today_sales": today_sales,
                     "total_deposit": total_deposit,
-                    "remaining": remaining
+                    "remaining": remaining,
+                    "today_status": today_status,
+                    "deposit_count": len(today_deposits)
                 },
                 status_code=200
             )
