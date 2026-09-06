@@ -10,14 +10,8 @@ async function init() {
 
   // Default tanggal hari ini
   form.purchaseDate.value = new Date().toISOString().split("T")[0];
+
   form.importDate.value = new Date().toISOString().split("T")[0];
-
-  renderPurchaseTable();
-  const table = document.querySelector("#table1");
-
-  if (table) {
-    new simpleDatatables.DataTable(table);
-  }
 
   // Refresh button
   document.getElementById("btn_refresh")?.addEventListener("click", async () => {
@@ -41,11 +35,29 @@ const form = {
 // **************************************************************
 
 // **************************************************************
+// DATATABLE | START
+// **************************************************************
+
+function destroyPurchaseDataTable() {
+  if (purchaseDataTable) {
+    purchaseDataTable.destroy();
+
+    purchaseDataTable = null;
+  }
+}
+
+// **************************************************************
+// DATATABLE | END
+// **************************************************************
+
+// **************************************************************
 // VARIABLE SETUP | START
 // **************************************************************
 let suppliersData = [];
 let productsData = [];
 let purchaseItems = [];
+let isSupplierSearchMode = false;
+let purchaseDataTable = null;
 // **************************************************************
 // VARIABLE SETUP | END
 // **************************************************************
@@ -355,6 +367,8 @@ async function importPurchase() {
 // LOAD PURCHASE | START
 // **************************************************************
 async function loadPurchases() {
+  destroyPurchaseDataTable();
+
   const result = await getRequest("/purchase/view");
 
   if (!result) {
@@ -419,6 +433,7 @@ async function loadPurchases() {
 
   document.getElementById("purchase_table").innerHTML = html;
   document.getElementById("purchase_count").textContent = `${result.data.length} Pembelian`;
+  purchaseDataTable = new simpleDatatables.DataTable("#table1");
 }
 // **************************************************************
 // LOAD PURCHASE | END
@@ -476,6 +491,376 @@ async function loadPurchaseDetail(id) {
 // **************************************************************
 
 // **************************************************************
+// SEARCH SUPPLIER BY PRODUCT | START
+// **************************************************************
+
+async function searchSupplierByProduct() {
+  const input = document.getElementById("search_product_supplier");
+
+  const keyword = input.value.trim();
+
+  if (keyword === "") {
+    await swalError("Silakan masukkan nama barang terlebih dahulu.");
+
+    return;
+  }
+
+  const result = await getRequest(`/purchase/search-supplier/${encodeURIComponent(keyword)}`);
+
+  if (!result) {
+    return;
+  }
+
+  if (result.status_code !== 200) {
+    await swalError(result.message);
+
+    return;
+  }
+
+  isSupplierSearchMode = true;
+
+  closeModal("search_supplier_modal");
+
+  renderSupplierSearchTable(result.data);
+}
+
+// **************************************************************
+// RENDER SEARCH RESULT | START
+// **************************************************************
+
+// function renderSupplierSearchResult(data) {
+//   const table = document.getElementById("search_supplier_table");
+
+//   let html = "";
+
+//   let rowNumber = 1;
+
+//   // Tidak ada supplier
+//   if (data.length === 0) {
+//     table.innerHTML = `
+//       <tr>
+//         <td
+//           colspan="5"
+//           class="text-center text-muted py-4"
+//         >
+
+//           <i class="bi bi-search fs-4 d-block mb-2"></i>
+
+//           Barang tidak ditemukan.
+
+//         </td>
+//       </tr>
+//     `;
+
+//     return;
+//   }
+
+//   data.forEach((product) => {
+//     // Barang ditemukan tetapi belum pernah dibeli
+//     if (!product.suppliers || product.suppliers.length === 0) {
+//       html += `
+//         <tr>
+
+//           <td>
+//             ${rowNumber++}
+//           </td>
+
+//           <td>
+//             <div class="fw-semibold">
+//               <i class="bi bi-box-seam me-2 text-primary"></i>
+//               ${product.product_name}
+//             </div>
+//           </td>
+
+//           <td colspan="3">
+//             <span class="text-muted">
+//               Belum terdapat riwayat supplier.
+//             </span>
+//           </td>
+
+//         </tr>
+//       `;
+
+//       return;
+//     }
+
+//     // Tampilkan supplier
+//     product.suppliers.forEach((supplier) => {
+//       html += `
+//         <tr>
+
+//           <td>
+//             ${rowNumber++}
+//           </td>
+
+//           <td>
+//             <div class="fw-semibold">
+//               <i class="bi bi-box-seam me-2 text-primary"></i>
+//               ${product.product_name}
+//             </div>
+//           </td>
+
+//           <td>
+//             <div class="fw-semibold">
+//               <i class="bi bi-building me-2 text-secondary"></i>
+//               ${supplier.supplier_name}
+//             </div>
+//           </td>
+
+//           <td>
+//             <div class="fw-semibold">
+//               <i class="bi bi-calendar-event me-2 text-primary"></i>
+//               ${supplier.purchase_date}
+//             </div>
+//           </td>
+
+//           <td>
+//             <div class="fw-bold text-success">
+//               ${formatRupiah(supplier.unit_cost)}
+//             </div>
+//           </td>
+
+//         </tr>
+//       `;
+//     });
+//   });
+
+//   table.innerHTML = html;
+// }
+
+// **************************************************************
+// RENDER SEARCH RESULT | END
+// **************************************************************
+
+// **************************************************************
+// SEARCH SUPPLIER BY PRODUCT | END
+// **************************************************************
+
+// **************************************************************
+// RENDER SUPPLIER SEARCH TABLE | START
+// **************************************************************
+
+function renderSupplierSearchTable(data) {
+  // Hancurkan DataTable lama
+  destroyPurchaseDataTable();
+
+  const title = document.getElementById("purchase_table_title");
+
+  const subtitle = document.getElementById("purchase_table_subtitle");
+
+  const table = document.getElementById("purchase_table");
+
+  const tableHead = document.querySelector("#table1 thead tr");
+  // Ubah Header
+  title.textContent = "Supplier Berdasarkan Barang";
+
+  subtitle.textContent = "Menampilkan supplier berdasarkan riwayat pembelian barang.";
+
+  // Ubah kolom tabel
+  tableHead.innerHTML = `
+    <th width="60">No</th>
+    <th>Barang</th>
+    <th>Supplier</th>
+    <th width="170">Tanggal Pembelian</th>
+    <th width="100">Qty</th>
+    <th width="160">Harga Beli</th>
+  `;
+
+  let html = "";
+
+  let rowNumber = 1;
+
+  // Tidak ada data
+  if (!data || data.length === 0) {
+    table.innerHTML = `
+      <tr>
+  
+        <td
+          colspan="5"
+          class="text-center text-muted py-4"
+        >
+  
+          <i
+            class="bi bi-search fs-4 d-block mb-2"
+          ></i>
+  
+          Barang tidak ditemukan.
+  
+        </td>
+  
+      </tr>
+    `;
+
+    renderSupplierSearchToolbar();
+
+    purchaseDataTable = new simpleDatatables.DataTable("#table1");
+
+    return;
+  }
+
+  // Gabungkan seluruh riwayat pembelian dari semua barang
+  const rows = [];
+
+  data.forEach((product) => {
+    if (!product.suppliers || product.suppliers.length === 0) {
+      return;
+    }
+
+    product.suppliers.forEach((supplier) => {
+      rows.push({
+        product_name: product.product_name,
+        supplier_name: supplier.supplier_name,
+        purchase_date: supplier.purchase_date,
+        quantity: supplier.quantity,
+        unit_cost: supplier.unit_cost,
+      });
+    });
+  });
+
+  // Urutkan semua data berdasarkan tanggal terbaru
+  rows.sort((a, b) => {
+    const [dayA, monthA, yearA] = a.purchase_date.split("-");
+    const [dayB, monthB, yearB] = b.purchase_date.split("-");
+
+    const dateA = new Date(yearA, monthA - 1, dayA);
+    const dateB = new Date(yearB, monthB - 1, dayB);
+
+    return dateB - dateA;
+  });
+
+  // Render seluruh hasil
+  rows.forEach((row) => {
+    html += `
+    <tr>
+
+      <td>
+        ${rowNumber++}
+      </td>
+
+      <td>
+        <div class="fw-semibold">
+          <i class="bi bi-box-seam me-2 text-primary"></i>
+          ${row.product_name}
+        </div>
+      </td>
+
+      <td>
+        <div class="fw-semibold">
+          <i class="bi bi-building me-2 text-secondary"></i>
+          ${row.supplier_name}
+        </div>
+      </td>
+
+      <td>
+        <div class="fw-semibold">
+          <i class="bi bi-calendar-event me-2 text-primary"></i>
+          ${row.purchase_date}
+        </div>
+      </td>
+
+      <td>
+        <span class="badge bg-light-primary text-primary">
+          ${row.quantity} Barang
+        </span>
+      </td>
+
+      <td>
+        <div class="fw-bold text-success">
+          ${formatRupiah(row.unit_cost)}
+        </div>
+      </td>
+
+    </tr>
+  `;
+  });
+
+  table.innerHTML = html;
+
+  // Ubah toolbar
+  renderSupplierSearchToolbar();
+
+  // Inisialisasi kembali DataTable
+  purchaseDataTable = new simpleDatatables.DataTable("#table1");
+}
+
+// **************************************************************
+// RENDER SUPPLIER SEARCH TABLE | END
+// **************************************************************
+
+// **************************************************************
+// SUPPLIER SEARCH TOOLBAR | START
+// **************************************************************
+
+function renderSupplierSearchToolbar() {
+  const button = document.getElementById("btn_search_supplier_modal");
+
+  button.innerHTML = `
+    <i class="bi bi-arrow-left me-1"></i>
+    Kembali
+  `;
+
+  button.classList.remove("btn-light-primary");
+  button.classList.add("btn-light-secondary");
+
+  button.removeAttribute("data-bs-toggle");
+  button.removeAttribute("data-bs-target");
+
+  button.onclick = returnPurchaseHistory;
+}
+
+// **************************************************************
+// SUPPLIER SEARCH TOOLBAR | END
+// **************************************************************
+
+// **************************************************************
+// RETURN PURCHASE HISTORY | START
+// **************************************************************
+
+async function returnPurchaseHistory() {
+  isSupplierSearchMode = false;
+
+  // Hancurkan DataTable mode pencarian terlebih dahulu
+  destroyPurchaseDataTable();
+
+  const title = document.getElementById("purchase_table_title");
+  const subtitle = document.getElementById("purchase_table_subtitle");
+  const tableHead = document.querySelector("#table1 thead tr");
+
+  title.textContent = "Data Pembelian";
+
+  subtitle.textContent = "Daftar seluruh transaksi pembelian barang.";
+
+  tableHead.innerHTML = `
+    <th width="60">No</th>
+    <th width="180">Tanggal</th>
+    <th>Supplier</th>
+    <th width="130">Total Item</th>
+    <th width="180">Total Pembelian</th>
+    <th width="150" class="text-center">Aksi</th>
+  `;
+
+  const button = document.getElementById("btn_search_supplier_modal");
+
+  button.innerHTML = `
+    <i class="bi bi-search me-1"></i>
+    Cari Supplier
+  `;
+
+  button.classList.remove("btn-light-secondary");
+  button.classList.add("btn-light-primary");
+
+  button.setAttribute("data-bs-toggle", "modal");
+  button.setAttribute("data-bs-target", "#search_supplier_modal");
+
+  button.onclick = null;
+
+  await loadPurchases();
+}
+// **************************************************************
+// RETURN PURCHASE HISTORY | END
+// **************************************************************
+
+// **************************************************************
 // RESET FORM | START
 // **************************************************************
 function resetForm() {
@@ -506,6 +891,18 @@ document.getElementById("btn_add_item").addEventListener("click", addItem);
 
 // Simpan Pembelian
 document.getElementById("btn-save").addEventListener("click", savePurchase);
+
+// Cari Supplier Berdasarkan Barang
+document.getElementById("btn_search_product_supplier").addEventListener("click", searchSupplierByProduct);
+
+// Enter pada Input Search
+document.getElementById("search_product_supplier").addEventListener("keydown", function (e) {
+  if (e.key === "Enter") {
+    e.preventDefault();
+
+    searchSupplierByProduct();
+  }
+});
 
 // Import Excel
 document.getElementById("btn_import_purchase").addEventListener("click", importPurchase);
@@ -563,13 +960,14 @@ document.getElementById("purchase_detail_table").addEventListener("click", funct
 });
 
 // Detail Pembelian
-document.getElementById("purchase_table").addEventListener("click", function (e) {
+document.getElementById("table1").addEventListener("click", function (e) {
   const btn = e.target.closest(".btn-detail");
 
   if (!btn) return;
 
   loadPurchaseDetail(btn.dataset.id);
 });
+
 // **************************************************************
 // EVENT LISTENER | END
 // **************************************************************

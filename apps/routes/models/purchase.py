@@ -688,4 +688,101 @@ class PurchaseModels():
             return bad_request(str(e))
     # IMPORT PURCHASE ============================================================ End
 
+    # SEARCH SUPPLIER BY PRODUCT ============================================================ Begin
+    def search_supplier_by_product(user_role, workshop_id, keyword):
+        try:
+            # Access Validation ---------------------------------------- Start
+            access = role_validator(user_role)
+
+            if not access:
+                return authorization_error()
+            # Access Validation ---------------------------------------- Finish
+
+            # Check Keyword ---------------------------------------- Start
+            if not keyword:
+                return parameter_error(
+                    "Keyword could not be empty."
+                )
+            # Check Keyword ---------------------------------------- Finish
+
+            # Get Data ---------------------------------------- Start
+            products = Products.query.filter(
+                Products.workshop_id == workshop_id,
+                Products.is_delete == 0,
+                Products.product_name.ilike(
+                    f"%{keyword}%"
+                )
+            ).all()
+            # Get Data ---------------------------------------- Finish
+
+            # Check Product ---------------------------------------- Start
+            if not products:
+                return not_found(
+                    "Product could not be found."
+                )
+            # Check Product ---------------------------------------- Finish
+
+            # Initialize Data ---------------------------------------- Start
+            data = []
+            # Initialize Data ---------------------------------------- Finish
+
+            # Get Supplier By Product ---------------------------------------- Start
+            for product in products:
+
+                purchase_details = PurchaseDetails.query.filter_by(
+                    product_id=product.id
+                ).all()
+
+                suppliers = []
+
+                for detail in purchase_details:
+                    purchase = Purchases.query.filter_by(
+                        id=detail.purchase_id,
+                        workshop_id=workshop_id,
+                        is_delete=0
+                    ).first()
+
+                    if not purchase:
+                        continue
+
+                    supplier = purchase.suppliers
+
+                    if not supplier:
+                        continue
+
+                    suppliers.append({
+                        "supplier_id": supplier.id,
+                        "supplier_name": supplier.name,
+                        "purchase_date": purchase.purchase_date,
+                        "quantity": detail.quantity,
+                        "unit_cost": detail.unit_cost
+                    })
+
+                # Urutkan dari pembelian terbaru
+                suppliers.sort(
+                    key=lambda item: item["purchase_date"],
+                    reverse=True
+                )
+
+                # Format tanggal setelah pengurutan
+                for supplier in suppliers:
+                    supplier["purchase_date"] = format_date(
+                        supplier["purchase_date"]
+                    )
+
+                data.append({
+                    "product_id": product.id,
+                    "product_name": product.product_name,
+                    "suppliers": suppliers
+                })
+                
+            # Return Response ========================================
+            return success_data(
+                data=data,
+                status_code=200
+            )
+
+        except Exception as e:
+            return bad_request(str(e))
+    # SEARCH SUPPLIER BY PRODUCT ============================================================ End
 # PURCHASE MODEL CLASS ============================================================ End

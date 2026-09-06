@@ -126,19 +126,16 @@ def import_purchase():
         return bad_request(str(e))
 # IMPORT PURCHASE ============================================================ End
 
-# @purchase.route("/history")
-# @jwt_required()
-# def history():
-#     try:
+# SEARCH SUPPLIER BY PRODUCT ============================================================ Begin
+# GET https://127.0.0.1:5000/purchase/search-supplier/<keyword>
+@purchase.get("/search-supplier/<string:keyword>")
+@jwt_required()
+def search_supplier_by_product(keyword):
+    claims = get_jwt()
 
-#         return render_template(
-#             "purchase_history.html",
-#             title="Riwayat Pembelian - POS Bengkel",
-#             active_menu="purchase_history",
-#         )
-        
-#     except Exception as e:
-#         return {
-#             "status": False,
-#             "message": str(e)
-#         }, 500
+    return PurchaseModels.search_supplier_by_product(
+        claims["role"],
+        claims["ws_id"],
+        keyword
+    )
+# SEARCH SUPPLIER BY PRODUCT ============================================================ End
