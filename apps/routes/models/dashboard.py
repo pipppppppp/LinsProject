@@ -43,12 +43,31 @@ class DashboardModels():
                   # Check Workshop ---------------------------------------- Finish
 
                   # Total Payment/penjualan ---------------------------------------- Start
-                  total_payments = db.session.query(
-                        func.coalesce(func.sum(Payments.total), 0)
+                  
+                  # Total Pendapatan Penjualan Barang
+                  total_product_sales = db.session.query(
+                        func.coalesce(func.sum(SaleDetails.subtotal), 0)
+                  ).join(
+                        Payments,
+                        Payments.id == SaleDetails.payment_id
                   ).filter(
                         Payments.workshop_id == workshop_id,
                         Payments.is_delete == 0
                   ).scalar()
+
+                  # Total Pendapatan Jasa Servis
+                  total_service_sales = db.session.query(
+                        func.coalesce(func.sum(SaleServiceDetails.subtotal), 0)
+                  ).join(
+                        Payments,
+                        Payments.id == SaleServiceDetails.payment_id
+                  ).filter(
+                        Payments.workshop_id == workshop_id,
+                        Payments.is_delete == 0
+                  ).scalar()
+
+                  # Total Pendapatan
+                  total_payments = total_product_sales + total_service_sales
                   # Total Payment/penjualan ---------------------------------------- Finish
                   
                   # Total Purchase ---------------------------------------- Start
@@ -91,6 +110,8 @@ class DashboardModels():
                   # Initialize Data ---------------------------------------- Start
                   data = {
                         "owner_name": workshop.workshop_name,
+                        "total_product_sales": total_product_sales,
+                        "total_service_sales": total_service_sales,
                         "total_payments": total_payments,
                         "total_purchase": total_purchase,
                         "total_transaction": total_transaction,
