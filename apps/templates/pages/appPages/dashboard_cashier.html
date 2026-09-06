@@ -36,47 +36,11 @@
         <div class="row align-items-center">
           <div class="col-lg-6 col-md-12">
             <h3 class="mb-2">Dashboard Kasir</h3>
-            <p class="mb-1 fw-semibold text-primary" id="greeting_text"></p>
+            <p class="text-primary fw-bold fs-5 mb-1" id="greeting_text"></p>
             <p class="text-subtitle text-muted mb-0">Ringkasan aktivitas dan transaksi bengkel hari ini.</p>
           </div>
 
-          <div class="col-lg-6 col-md-12">
-            <div class="d-flex justify-content-end align-items-center gap-5 flex-wrap">
-              <!-- Tanggal -->
-              <div class="d-flex align-items-center">
-                <i class="bi bi-calendar3 text-primary fs-5 me-2"></i>
-
-                <div>
-                  <small class="text-muted d-block">Tanggal</small>
-                  <span id="current_date"></span>
-                </div>
-              </div>
-
-              <!-- Jam -->
-              <div class="d-flex align-items-center">
-                <i class="bi bi-clock text-success fs-5 me-2"></i>
-
-                <div>
-                  <small class="text-muted d-block">Jam</small>
-                  <span id="current_time"></span>
-                </div>
-              </div>
-
-              <!-- Kasir -->
-              <div class="d-flex align-items-center">
-                <div class="avatar avatar-md bg-primary me-2">
-                  <span class="avatar-content">
-                    <i class="bi bi-person-fill"></i>
-                  </span>
-                </div>
-
-                <div>
-                  <div id="cashier_name" class="fw-bold"></div>
-                  <small class="text-muted">Kasir</small>
-                </div>
-              </div>
-            </div>
-          </div>
+          <div class="col-12 col-md-6">{% include 'components/header_cashier.html' %}</div>
         </div>
       </div>
       <!--! ================================================================ !-->
@@ -88,8 +52,50 @@
       <!--! ================================================================ !-->
       <section class="section mb-4">
         <div class="row">
+          <!-- Penjualan Barang -->
+          <div class="col-xl-4 col-md-6 col-sm-12">
+            <div class="card">
+              <div class="card-body py-4">
+                <div class="d-flex justify-content-between align-items-center">
+                  <div>
+                    <h6 class="text-muted font-semibold mb-1">Penjualan Barang</h6>
+
+                    <h3 class="font-extrabold mb-1" id="total_product_sales">Rp 0</h3>
+
+                    <small class="text-muted">Hari Ini</small>
+                  </div>
+
+                  <div class="stats-icon blue">
+                    <i class="bi bi-box-seam"></i>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Penjualan Jasa -->
+          <div class="col-xl-4 col-md-6 col-sm-12">
+            <div class="card">
+              <div class="card-body py-4">
+                <div class="d-flex justify-content-between align-items-center">
+                  <div>
+                    <h6 class="text-muted font-semibold mb-1">Penjualan Jasa</h6>
+
+                    <h3 class="font-extrabold mb-1" id="total_service_sales">Rp 0</h3>
+
+                    <small class="text-muted">Hari Ini</small>
+                  </div>
+
+                  <div class="stats-icon orange">
+                    <i class="bi bi-tools"></i>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
           <!-- Total Penjualan -->
-          <div class="col-xl-3 col-md-6 col-sm-12">
+          <div class="col-xl-4 col-md-6 col-sm-12">
             <div class="card">
               <div class="card-body py-4">
                 <div class="d-flex justify-content-between align-items-center">
@@ -98,7 +104,7 @@
 
                     <h3 class="font-extrabold mb-1" id="total_sales">Rp 0</h3>
 
-                    <small class="text-muted"> Hari Ini </small>
+                    <small class="text-muted">Hari Ini</small>
                   </div>
 
                   <div class="stats-icon green">
@@ -108,6 +114,7 @@
               </div>
             </div>
           </div>
+
           <!-- Total Transaksi -->
           <div class="col-xl-3 col-md-6 col-sm-12">
             <div class="card">
