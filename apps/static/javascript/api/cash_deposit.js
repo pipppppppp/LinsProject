@@ -32,38 +32,49 @@ async function loadCashDeposits() {
   if (!result) {
     return;
   }
-  
+
   cashDepositsData = result.data.history;
 
-  form.totalSales.value = formatRupiah(result.data.today_sales);
+  form.totalSales.value = formatRupiah(result.data.remaining);
 
   document.getElementById("today_sales").textContent = formatRupiah(result.data.today_sales);
   document.getElementById("today_deposit").textContent = formatRupiah(result.data.total_deposit);
 
   document.getElementById("remaining_deposit").textContent = formatRupiah(result.data.remaining);
-  document.getElementById("deposit_count").textContent = `${cashDepositsData.length} kali setor`;
+  document.getElementById("deposit_count").textContent = `${result.data.deposit_count} kali setor`;
+  // =============================================================
+  // STATUS SETORAN HARI INI
+  // =============================================================
 
-  let statusText = "Belum Setor";
+  const status = result.data.today_status;
 
-  if (cashDepositsData.length > 0) {
-    const latest = cashDepositsData[0];
+  document.getElementById("deposit_status").textContent = status;
 
-    switch (latest.status) {
-      case 0:
-        statusText = "Menunggu";
-        break;
+  let statusDesc = "";
 
-      case 1:
-        statusText = "Disetujui";
-        break;
+  switch (status) {
+    case "Belum Setor":
+      statusDesc = "Belum ada setoran hari ini.";
+      break;
 
-      case 2:
-        statusText = "Ditolak";
-        break;
-    }
+    case "Menunggu":
+      statusDesc = "Menunggu konfirmasi owner.";
+      break;
+
+    case "Sebagian Disetujui":
+      statusDesc = "Sebagian hasil penjualan telah disetujui.";
+      break;
+
+    case "Disetujui":
+      statusDesc = "Seluruh hasil penjualan hari ini telah disetor.";
+      break;
+
+    case "Ditolak":
+      statusDesc = "Setoran ditolak oleh owner.";
+      break;
   }
 
-  document.getElementById("deposit_status").textContent = statusText;
+  document.getElementById("deposit_status_desc").textContent = statusDesc;
 }
 // **************************************************************
 // GET CUSTOMER | END
