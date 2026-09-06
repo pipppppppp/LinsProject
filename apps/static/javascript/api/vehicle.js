@@ -17,6 +17,7 @@ const form = {
   title: document.getElementById("modal_label"),
   id: document.getElementById("vehicle_id"),
   customer_id: document.getElementById("customer_id"),
+  vehicle_category: document.getElementById("vehicle_category"),
   plate_number: document.getElementById("plate_number"),
   vehicle_brand: document.getElementById("vehicle_brand"),
   vehicle_type: document.getElementById("vehicle_type"),
@@ -116,6 +117,9 @@ function renderTable() {
     html += `
       <tr>
         <td>${index + 1}</td>
+        <td>
+          ${vehicle.vehicle_category === "Motor" ? '<i class="bi bi-bicycle me-2"></i> Motor' : '<i class="bi bi-car-front-fill me-2"></i> Mobil'}
+        </td>
         <td>${vehicle.plate_number}</td>
         <td>${vehicle.vehicle_brand}</td>
         <td>${vehicle.vehicle_type}</td>
@@ -142,6 +146,7 @@ async function saveVehicle() {
   const vehicle = {
     id: form.id.value,
     customer_id: form.customer_id.value,
+    vehicle_category: form.vehicle_category.value,
     plate_number: form.plate_number.value.trim().toUpperCase(),
     vehicle_brand: formatTitle(form.vehicle_brand.value),
     vehicle_type: formatTitle(form.vehicle_type.value),
@@ -230,6 +235,19 @@ async function handleTableClick(e) {
     form.customer_id.value = vehicle.customer_id;
     form.plate_number.value = vehicle.plate_number;
     form.vehicle_brand.value = vehicle.vehicle_brand;
+
+    form.vehicle_type.innerHTML = `
+      <option value="">Pilih Tipe</option>
+    `;
+
+    if (vehicleTypes[vehicle.vehicle_brand]) {
+      vehicleTypes[vehicle.vehicle_brand].forEach((type) => {
+        form.vehicle_type.innerHTML += `
+      <option value="${type}">${type}</option>
+    `;
+      });
+    }
+
     form.vehicle_type.value = vehicle.vehicle_type;
     form.vehicle_year.value = vehicle.vehicle_year;
     form.vehicle_color.value = vehicle.vehicle_color;
@@ -290,4 +308,52 @@ if (vehicleModal) {
 }
 // **************************************************************
 // MODAL EVENT | END
+// **************************************************************
+
+// **************************************************************
+// VEHICLE TYPE | START
+// **************************************************************
+const vehicleData = {
+  Motor: vehicleMotor,
+  Mobil: vehicleMobil,
+};
+
+form.vehicle_category.addEventListener("change", function () {
+  const category = this.value;
+
+  form.vehicle_brand.innerHTML = `
+    <option value="">Pilih Merek</option>
+  `;
+
+  form.vehicle_type.innerHTML = `
+    <option value="">Pilih Tipe</option>
+  `;
+
+  if (!category || !vehicleData[category]) return;
+
+  Object.keys(vehicleData[category]).forEach((brand) => {
+    form.vehicle_brand.innerHTML += `
+      <option value="${brand}">${brand}</option>
+    `;
+  });
+});
+
+form.vehicle_brand.addEventListener("change", function () {
+  const category = form.vehicle_category.value;
+  const brand = this.value;
+
+  form.vehicle_type.innerHTML = `
+    <option value="">Pilih Tipe</option>
+  `;
+
+  if (!category || !brand || !vehicleData[category]?.[brand]) return;
+
+  vehicleData[category][brand].forEach((type) => {
+    form.vehicle_type.innerHTML += `
+      <option value="${type}">${type}</option>
+    `;
+  });
+});
+// **************************************************************
+// VEHICLE TYPE | END
 // **************************************************************

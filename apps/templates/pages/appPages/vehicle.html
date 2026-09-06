@@ -119,13 +119,14 @@
             <table class="table table-hover mb-0" id="table1">
               <thead class="table-secondary">
                 <tr>
-                  <th width="60">No</th>
-                  <th width="180">Plat Nomor</th>
+                  <th width="50">No</th>
+                  <th width="130">Jenis Kendaraan</th>
+                  <th width="150">Plat Nomor</th>
                   <th width="130">Merk</th>
-                  <th>Tipe</th>
-                  <th width="100">Tahun</th>
-                  <th width="120">Warna</th>
-                  <th width="140" class="text-center">Aksi</th>
+                  <th width="220">Tipe</th>
+                  <th width="90">Tahun</th>
+                  <th width="130">Warna</th>
+                  <th width="120" class="text-center">Aksi</th>
                 </tr>
               </thead>
 
@@ -190,10 +191,30 @@
               <div class="mb-3">
                 <label class="form-label">
                   <i class="bi bi-bicycle me-2"></i>
+                  Jenis Kendaraan
+                </label>
+
+                <select id="vehicle_category" class="form-select">
+                  <option value="">Pilih Jenis Kendaraan</option>
+                  <option value="Motor">Motor</option>
+                  <option value="Mobil">Mobil</option>
+                </select>
+              </div>
+
+              <div class="mb-3">
+                <label class="form-label">
+                  <i class="bi bi-bicycle me-2"></i>
                   Merek
                 </label>
 
-                <input type="text" id="vehicle_brand" class="form-control" placeholder="Masukkan merek kendaraan" />
+                <!-- <input type="text" id="vehicle_brand" class="form-control" placeholder="Masukkan merek kendaraan" /> -->
+                <select id="vehicle_brand" class="form-select">
+                  <option value="">Pilih Brand</option>
+                  <option value="Honda">Honda</option>
+                  <option value="Yamaha">Yamaha</option>
+                  <option value="Suzuki">Suzuki</option>
+                  <option value="Kawasaki">Kawasaki</option>
+                </select>
               </div>
 
               <div class="mb-3">
@@ -201,8 +222,10 @@
                   <i class="bi bi-tag me-2"></i>
                   Tipe
                 </label>
-
-                <input type="text" id="vehicle_type" class="form-control" placeholder="Masukkan tipe kendaraan" />
+                <select id="vehicle_type" class="form-select">
+                  <option value="">Pilih Tipe</option>
+                </select>
+                <!-- <input type="text" id="vehicle_type" class="form-control" placeholder="Masukkan tipe kendaraan" /> -->
               </div>
 
               <div class="mb-3">
@@ -258,5 +281,7 @@
 <script src="{{ url_for('static', filename='javascript/helper/formatter.js') }}"></script>
 <script src="{{ url_for('static', filename='javascript/helper/swal.js') }}"></script>
 <script src="{{ url_for('static', filename='javascript/helper/validators.js') }}"></script>
+<script src="{{ url_for('static', filename='javascript/data/vehicle_motor.js') }}"></script>
+<script src="{{ url_for('static', filename='javascript/data/vehicle_mobil.js') }}"></script>
 <script src="{{ url_for('static', filename='javascript/api/vehicle.js') }}"></script>
 {% endblock %}

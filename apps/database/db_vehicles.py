@@ -4,7 +4,7 @@ class Vehicles(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     workshop_id = db.Column(db.Integer, db.ForeignKey("workshops.id"))
     customer_id = db.Column(db.Integer, db.ForeignKey("customers.id"))
-
+    vehicle_category = db.Column(db.String(20), nullable=False)
     plate_number = db.Column(db.String(20), nullable=False)
     vehicle_brand = db.Column(db.String(50), nullable=False)
     vehicle_type = db.Column(db.String(100), nullable=False)

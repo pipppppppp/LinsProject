@@ -98,8 +98,8 @@ from .database import db_cash_deposits
 from .database import db_subscription_payment
 # Database Seed
 from .database import seed
-with app.app_context():
-    seed.seed_users()
+# with app.app_context():
+#     seed.seed_users()
 
 # ====================== END - DATABASE CONFIGURATION ======================
 
