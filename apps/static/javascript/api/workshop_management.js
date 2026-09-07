@@ -13,6 +13,18 @@ const API = {
 let workshopTable = null;
 let workshopDatas = [];
 let detailWorkshopModal = null;
+
+function getWorkshopLogo(logo) {
+  if (!logo) {
+    return "/static/images/profiles/default-workshop.png";
+  }
+
+  if (logo.startsWith("http://") || logo.startsWith("https://")) {
+    return logo;
+  }
+
+  return `/static/images/profiles/${logo}`;
+}
 // **************************************************************
 // BASE INITIALIZATION | END
 // **************************************************************
@@ -82,7 +94,7 @@ function renderWorkshopTable(datas) {
 
           <td>
             <img
-              src="${data.logo ? `/static/images/profiles/${data.logo}` : "/static/images/profiles/default-workshop.png"}"
+              src="${getWorkshopLogo(data.logo)}"
               class="workshop-logo"
             >
           </td>
@@ -125,6 +137,24 @@ function renderWorkshopTable(datas) {
 }
 // **************************************************************
 // RENDER TABLE | END
+// **************************************************************
+
+// **************************************************************
+// GET LOGO WORKSHOP | START
+// **************************************************************
+function getWorkshopLogo(logo) {
+  if (!logo) {
+    return "/static/images/profiles/default-workshop.png";
+  }
+
+  if (logo.startsWith("http://") || logo.startsWith("https://")) {
+    return logo;
+  }
+
+  return `/static/images/profiles/${logo}`;
+}
+// **************************************************************
+// GET LOGO WORKSHOP | END
 // **************************************************************
 
 // **************************************************************
@@ -222,7 +252,7 @@ function generateActionButton(data) {
       </button>
 
       ${statusButton}
-      
+
     </div>
   `;
 }
