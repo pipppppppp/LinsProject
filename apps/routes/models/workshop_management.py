@@ -176,7 +176,7 @@ class WorkshopManagementModels():
             # Update Data ---------------------------------------- Finish
 
             # Return Response ========================================
-            return success(message="Workshop has been activated successfully.")
+            return success(message="Bengkel Berhasil Diaktifkan.")
 
         except Exception as e:
             return bad_request(str(e))
@@ -229,7 +229,7 @@ class WorkshopManagementModels():
             # Update Data ---------------------------------------- Finish
 
             # Return Response ========================================
-            return success(message="Workshop has been deactivated successfully.")
+            return success(message="Bengkel Berhasil Dinonaktifkan.")
 
         except Exception as e:
             return bad_request(str(e))

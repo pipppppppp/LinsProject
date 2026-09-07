@@ -222,15 +222,7 @@ function generateActionButton(data) {
       </button>
 
       ${statusButton}
-
-      <button
-        type="button"
-        class="btn btn-danger btn-sm"
-        title="Hapus Bengkel"
-        onclick="deleteWorkshop(${data.workshop_id})"
-      >
-        <i class="bi bi-trash-fill"></i>
-      </button>
+      
     </div>
   `;
 }
