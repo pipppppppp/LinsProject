@@ -368,11 +368,11 @@ async function detailWorkshop(workshop_id) {
     detailContent.innerHTML = `
           <div class="text-center mb-4">
             <img
-              src="${data.logo ? `/static/images/profiles/${data.logo}` : "/static/images/profiles/default-workshop.png"}"
+              src="${getWorkshopLogo(data.logo)}"
               class="detail-logo"
               alt="Logo ${data.workshop_name}"
             >
-    
+      
             <h4 class="mt-3">
               ${data.workshop_name}
             </h4>
